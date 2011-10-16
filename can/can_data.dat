@@ -6,10 +6,10 @@ Mash = .0625 # Mass fraction ash
 Mwat = 0 # Mass fraction of water
 Mice = 0 # Mass fraction of ice
 
-A1 = 1
-Ea1 = 20000
-A2 = 1
-Ea2 = 30000 # Activation energy 2
+AA = 1
+EaA = 20000
+AB = 1
+EaB = 30000 # Activation energy 2
 R = 8.314 # Gas constant
 
 # Viscosity Parameters

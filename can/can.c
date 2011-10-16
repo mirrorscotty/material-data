@@ -13,7 +13,6 @@
 
 /* TODO:
  * Add functions for convective heat transfer coefficient
- * Change composition to mass fraction instead of mole fraction
  * Plug memory leaks
  * Double check functions to make sure they're accurate
  */
@@ -38,9 +37,9 @@ int main(int argc, char *argv[])
 {
     initialize_variables();
     init("can_data.dat");
-	//output_data();
-//    printf("%f\n", k(80+273)/(rho(80+273)*Cp(80+273)));
-    printf("%f\n", reaction_rate1(500, 1));
+	/*output_data()*/
+    //printf("%f\n", k(80+273)/(rho(80+273)*Cp(80+273)));
+    printf("%f\n", k(80+273));
 	return 0;
 }
 
@@ -158,7 +157,13 @@ EXTCAN_API const char * getLastError()
 }
 
 /**
- * Function to that actually does the work for the library.
+ * Function to that actually does the work for the library. Basically, Comsol
+ * calls this function and passes the name of the function it actually wants
+ * to run as an argument. The eval function is responsible for calling the
+ * correct function from the library.
+ *
+ * The LOOP macro simply calls the function multiple times since Comsol expects
+ * the result to be an array with the same number of elements 
  */
 EXTCAN_API int eval(const char *func,
 		   int nArgs,
@@ -221,6 +226,7 @@ double Cp(double T)
     return Mpro*Cp_pro + Mfat*Cp_fat + Mcar*Cp_car + Mfib*Cp_fib + Mash*Cp_ash + Mwat*Cp_wat + Mice*Cp_ice;
 }
 
+/* Calculate the thermal conductivity using the Choi-Okos equations. */
 double k(double T)
 {
     /* Define all of the local variables needed */
@@ -273,6 +279,7 @@ double reaction_rate2(double T, double c)
 	return -AB*exp(-EaB/(R*T))*c;
 }
 
+/* Calculate density using the Choi-Okos equations. */
 double rho(double T)
 {
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
@@ -289,6 +296,10 @@ double rho(double T)
     return 1/(Mpro/p_pro + Mfat/p_fat + Mcar/p_car + Mfib/p_fib + Mash/p_ash + Mwat/p_wat + Mice/p_ice);
 }
 
+/* Function to return the external temperature of the can. Based on the time,
+ * this is either the hot or cold temperature, so that the can is able to be
+ * heated and cooled in a single simulation run.
+ */
 double T_ext(double t)
 {
     if(t <= t_heat) {
@@ -298,17 +309,22 @@ double T_ext(double t)
     }
 }
 
+/* Return the initial temperature. Used for setting up the temperature inside
+ * the can at the start of the simulation.
+ */
 double T_init(double t)
 {
     return To;
 }
 
+/* Calculate the viscosity using an Arrhenius-type equation. */
 double mu(double T)
 {
     return A*pow(10, (B/(T-C)));
     /* Source: http://en.wikipedia.org/wiki/Viscosity/Viscosity_of_water */
 }
 
+/* Determine the convective heat transfer coefficient */
 double h(double T)
 {
     double Re, Pr, p, Cp_wat, k;
@@ -331,5 +347,4 @@ double h(double T)
     /* Source: An introduction to Heat and Mass Transfer (Middleman) */
     return (0.35 + 0.56*pow(Re,0.52))*pow(Pr,0.3)*k/L;
 }
-    
-    
+

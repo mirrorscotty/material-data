@@ -1,6 +1,6 @@
 ; Freezing.def : Declares the module parameters for the DLL.
 
-LIBRARY		"freezing"
+LIBRARY		"can"
 DESCRIPTION	"Nifty library for calculating material data during the freezing process"
 
 EXPORTS

@@ -118,19 +118,16 @@ int delete_buffer(char** buffer)
  * values. The macro is horrible and uses the worst bit of code imaginable:
  * the goto statment.
  */
-#define FIND(X,Y,STR) if(strstr(STR, X)) {strcpy(Y.name, X); goto end;}
-variable read_line(char* line)
+#define FIND(X,Y,STR) if(strstr(STR, X)) {strcpy(Y->name, X); goto end;}
+struct var* read_line(char* line)
 {
 	char *value;
-	variable data;
+	struct var *data;
 
     value = NULL;
-    data.name = NULL;
-    data.value = 0;
-	data.name = (char*) malloc(sizeof(char)*20);
-    memset(data.name, '\0', 20);
+    data = new_var();
 
-    if(data.name == NULL) {
+    if(data->name == NULL) {
         report_error("Null pointer error.");
     }
 
@@ -163,16 +160,18 @@ variable read_line(char* line)
 
     end:
 
-	if(strcmp(data.name, "")) {
+	if(strcmp(data->name, "")) {
 		if((value = strpbrk(line, "0123456789.-"))) {
-			data.value = atof(value);
+			data->value = atof(value);
 		}
 	} else {
-		strcpy(data.name, "NULL");
-		data.value = 3.141592654;
+		strcpy(data->name, "NULL");
+		data->value = 3.141592654;
 	}
-	if(strcmp(data.name, "NULL") != 0) {
-		printf("%s --> %f\n", data.name, data.value);
+	if(strcmp(data->name, "NULL") != 0) {
+		printf("%s --> %f\n", data->name, data->value);
+        destroy_var(data);
+        data = NULL;
 	}
 	
 	return data;
@@ -196,11 +195,11 @@ char* remove_comments(char* line)
 }
 
 /* Lets play abuse the preprocessor! */
-#define STO(NAME, VAR) if(strcmp(VAR.name, #NAME) == 0) { NAME = VAR.value; }
+#define STO(NAME, VAR) if(VAR) {if(strcmp(VAR->name, #NAME) == 0) { NAME = VAR->value; }}
 
 /* Store the data that has been parsed into the annoyingly ugly global varibles */
 /* Also, this function is a terrible hack. */
-int store_data(variable data)
+int store_data(struct var *data)
 {
  	STO(Mpro, data)
 	STO(Mfat, data)
@@ -230,7 +229,9 @@ int store_data(variable data)
 	STO(L, data)
 
     /* Free the memory allocated to store the variable's name. */
-    free(data.name);
+    if(data) {
+        free(data->name);
+    }
 
     return 0;
 }
@@ -242,4 +243,64 @@ int print_global_vars()
 	PRNT(R)
 
 	return 0;
+}
+
+struct var* push_var(struct var *list, struct var *data)
+{
+    if(data) {
+        data->next = list;
+        list = data;
+    }
+    return list;
+}
+
+struct var* pop_var(struct var *list)
+{
+    struct var *tmp;
+    if(list) {
+        tmp = list;
+        list = list->next;
+        tmp->next = NULL;
+    }
+    return tmp;
+}
+
+void destroy_var(struct var *data)
+{
+    if(data) {
+        if(data->name) 
+            free(data->name);
+        free(data);
+    }
+    return;
+}
+
+void destroy_list(struct var *list)
+{
+    while(list) {
+        destroy_var(pop_var(list));
+    }
+}
+
+struct var* new_var()
+{
+    struct var *data;
+    data = (struct var *) calloc(1, sizeof(struct var));
+    data->name = NULL;
+    data->value = 0;
+    data->next = NULL;
+
+    data->name = (char*) calloc(20, sizeof(char));
+    MALLOC_CHECK(data->name)
+
+    return data;
+}
+
+/* TODO: Error handling */
+double find_val(char *name, struct var *list)
+{
+    while(strcmp(name, list->name) != 0) {
+        list++;
+    }
+    return list->value;
 }

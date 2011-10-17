@@ -7,8 +7,15 @@
 
 #define MALLOC_CHECK(x) if(!(x)){fprintf(stderr, "Failed to allocate memory"); exit(0);}
 
+/* TODO:
+ * Add functions for convective heat transfer coefficient
+ * Change composition to mass fraction instead of mole fraction
+ * Plug memory leaks
+ * Double check functions to make sure they're accurate
+ */
+
 typedef struct {
-    char name[20];
+    char *name;
     double value;
 } variable;
 
@@ -19,53 +26,22 @@ static const char *error = NULL;
  * hard coded into the dll using these variables. This should be changed to
  * allow them to be read in from a data file.
  */
+double MW_w, MW_s, Xw, Xs, Cp_solids, Cp_water, Cp_ice, p_solids, p_water;
+double p_ice, k_solids, k_water, k_ice, Ea, A, To, Tf, L, R;
 
-double MW_w = 18; // Molecular weight of water
-double MW_s = 2.6148e5; // Average molecular weight of solids
-
-double Xw = .9966; // Initial mole fraction of water
-double Xs = .0034; // Mole fraction of solids
-
-// Heat capacities in J/(mol K)
-double Cp_solids = 50;
-double Cp_water = 75.3;
-double Cp_ice = 60;
-
-// Densities in kg/m^3
-double p_solids = 1200;
-double p_water = 1000;
-double p_ice = 916.9;
-
-// Heat capacities in W/(m K)
-double k_solids = 3;
-double k_water = 0.596;
-double k_ice = 2.1;
-
-// Rate of reaction parameters
-double Ea = 10000;
-double A = 1;
-
-double T0 = 280; // Initial Temperature
-double Tf = 273.15; // Freezing point of pure water
-
-double L = 6010; // J/mol Latent heat of fusion of water
-double R = 8.3145; // J/(mol K)
-
-
-
-
+/*
 int main(int argc, char *argv[])
 {
     init("freezing_data.dat");
 	output_data();
 	return 0;
 }
-
+*/
 
 /* Test function to spit out a table of data with the x values in one column
  * and the results of a function the other.
  */
-
+/*
 int output_data()
 {
 	double min, max;
@@ -92,20 +68,22 @@ int output_data()
 	}
 
 	fclose(fp);
-	free(x);
-	free(y);
+//	free(x);
+//	free(y);
 
 	return 0;
 }
-
+*/
 
 char** read_datafile(char *filename)
 {
     FILE *fp;
-    fp = fopen(filename, "r");
-    int i, j;
-
+    int i;
+    int j;
     char **buffer;
+
+    fp = fopen(filename, "r");
+
     /* Only read the first 200 lines */
     buffer = (char **) malloc(sizeof(char*)*200);
     MALLOC_CHECK(buffer)
@@ -122,6 +100,9 @@ char** read_datafile(char *filename)
             if(buffer[i][j] == '\0') {
                 break;
             }
+	    if(buffer[i][j] == '\n') {
+	    	break;
+	    }
         }
     }
     
@@ -136,105 +117,129 @@ int delete_buffer(char** buffer)
         free(buffer[i]);
     }
     free(buffer);
+
+    return 0;
 }
 
 /* Parse the data file contents and return an array of variable names and
  * values. 
  */
-variable* parse_datafile(char **buffer)
+#define FIND(X,Y,STR) if(strstr(STR, X)) {strcpy(Y.name, X);}
+variable read_line(char* line)
 {
-    /* Allocate space for 19 variables total */
-    variable* lines;
-    lines = (variable*) malloc(sizeof(variable)*19);
-    MALLOC_CHECK(lines)
-    
-    int i, j;
-    int nameread = 0;
-    int psn = 0;
-    int var = 0; /* Keep track of the current variable */
-    char* tmp;
-    tmp = (char*) malloc(sizeof(char)*20);
-    MALLOC_CHECK(tmp)
+	char *value;
 
-    for(i=0; i<200; i++) {
-        psn = 0;
-        for(j=0; j<80; j++) {
-            /* Ignore comments and the end of the line */
-            if((buffer[i][j] == '#') ||
-               (buffer[i][j] == '\0') ||
-               (buffer[i][j] == '\n')) {
-               tmp[psn] = '\0'; /* Null terminate the tmp buffer so nothing */
-                                /* crazy happens. */
-               break;
-            }
-            /* If we haven't read in the variable's name yet, do that. */
-            if(!nameread) {
-                /* If the character is an equals sign, then we've got the name */
-                if (buffer[i][j] != '=') {
-                    /* Don't read spaces */
-                    if (buffer[i][j] != ' ') {
-                        tmp[psn] = buffer[i][j];
-                        psn++;
-                    }
-                } else {
-                    tmp[psn+1] = '\0'; /* Null terminate the string */
-                    nameread = 1; /* Name: read */
-                    psn = 0; /* Reset the position in the tmp variable to 0 */
-                    strcpy(lines[var].name, tmp);
-                }
-            } else { /* Read in the number now */
-                /* Still not reading spaces */
-                if (buffer[i][j] != ' ') {
-                    tmp[psn] = buffer[i][j];
-                    psn++;
-                }
-            }
-        }
-        /* If a variable name was read, then assume that the value was also
-         * read. Store the value and go to the next variable.
-         */
-        if (nameread) {
-            /* Convert the value to a double and store it */
-            lines[var].value = atof(tmp); 
-            var++;
-        }
-    }
+	variable data;
+	data.name = (char*) malloc(sizeof(char)*20);
 
-    //free(tmp);
+	FIND("MW_w", data, line)
+	FIND("MW_s", data, line)
+	FIND("Xw", data, line)
+	FIND("Xs", data, line)
+	FIND("Cp_solids", data, line)
+	FIND("Cp_water", data, line)
+	FIND("Cp_ice", data, line)
+	FIND("p_water", data, line)
+	FIND("p_solids", data, line)
+	FIND("p_ice", data, line)
+	FIND("k_solids", data, line)
+	FIND("k_water", data, line)
+	FIND("k_ice", data, line)
+	FIND("Ea", data, line)
+	FIND("A", data, line)
+	FIND("To", data, line)
+	FIND("Tf", data, line)
+	FIND("L", data, line)
+	FIND("R", data, line)
 
-    return lines;
+	if(strcmp(data.name, "")) {
+		if(value = strpbrk(line, "0123456789.-")) {
+			data.value = atof(value);
+		}
+	} else {
+		strcpy(data.name,"NULL");
+		data.value = 3.141592654;
+	}
+	if(strcmp(data.name, "NULL") != 0) {
+		printf("%s --> %f\n", data.name, data.value);
+	}
+	
+	return data;
+}
+
+/* Rather than delete the last part of the string, just replace the first '#'
+ * with a null character.
+ */
+char* remove_comments(char* line)
+{
+	char* comment;
+	comment = strchr(line, '#');
+	
+	if(comment) {
+	//	printf("%s", comment);
+		*comment = '\0';
+	}
+
+	return line;
 }
 
 /* Lets play abuse the preprocessor! */
-#define STO(VAR, NAME) if(strcmp(VAR.name, "NAME")) { NAME = VAR.value; }
+#define STO(VAR, NAME) if(strcmp(VAR.name, #NAME) == 0) { NAME = VAR.value; }
 
 /* Store the data that has been parsed into the annoyingly ugly global varibles */
 /* Also, this function is a terrible hack. */
-int store_data(variable* data)
+int store_data(variable data)
 {
-    int i;
-    for(i=0; i<19; i++) {
-        STO(data[i], MW_w)
-        STO(data[i], MW_s)
-        STO(data[i], Xw)
-        STO(data[i], Xs)
-        STO(data[i], Cp_solids)
-        STO(data[i], Cp_water)
-        STO(data[i], Cp_ice)
-        STO(data[i], p_solids)
-        STO(data[i], p_water)
-        STO(data[i], p_ice)
-        STO(data[i], k_solids)
-        STO(data[i], k_water)
-        STO(data[i], Ea)
-        STO(data[i], A)
-        STO(data[i], T0)
-        STO(data[i], Tf)
-        STO(data[i], L)
-        STO(data[i], R)
-    }
+        STO(data, MW_w)
+        STO(data, MW_s)
+        STO(data, Xw)
+        STO(data, Xs)
+        STO(data, Cp_solids)
+        STO(data, Cp_water)
+        STO(data, Cp_ice)
+        STO(data, p_solids)
+        STO(data, p_water)
+        STO(data, p_ice)
+        STO(data, k_solids)
+        STO(data, k_water)
+        STO(data, Ea)
+        STO(data, A)
+        STO(data, To)
+        STO(data, Tf)
+        STO(data, L)
+        STO(data, R)
+
+    return 0;
 }
 
+#define PRNT(X) printf("Value of %s: %f\n", #X, X);
+int print_global_vars()
+{
+	PRNT(MW_w)
+        PRNT(MW_s)
+        PRNT(Xw)
+        PRNT(Xs)
+        PRNT(Cp_solids)
+        PRNT(Cp_water)
+        PRNT(Cp_ice)
+        PRNT(p_solids)
+        PRNT(p_water)
+        PRNT(p_ice)
+        PRNT(k_solids)
+        PRNT(k_water)
+        PRNT(Ea)
+        PRNT(A)
+        PRNT(To)
+        PRNT(Tf)
+        PRNT(L)
+        PRNT(R)
+
+	return 0;
+}
+
+/* The following three functions are required in order to interface correctly
+ * with Comsol
+ */
 /**
  * Initialization function for the library.
  */
@@ -242,11 +247,25 @@ EXTFZ_API int init(const char *str)
 {
     //Commented because it's not ready!
     char** buffer;
-    variable* vars;
+    //variable vars[20], tmp;
+    int i, j;
+    j = 0;
 
     buffer = read_datafile(str);
-    vars = parse_datafile(buffer);
-    store_data(vars);
+
+    for(i=0; i < 200; i++) {
+        buffer[i] = remove_comments(buffer[i]);
+        store_data(read_line(buffer[i]));
+        //if(!strcmp("NULL", tmp.name)) {
+        //    vars[j] = tmp;
+        //    j++;
+        //}
+    }
+
+
+    //vars = parse_datafile(buffer);
+
+	print_global_vars();
 
     //delete_buffer(buffer);
     //free(vars);
@@ -392,7 +411,7 @@ double Xv_water(double T)
  */
 double reaction_rate(double T, double c)
 {
-	return -A*exp(-Ea/(R*T))*Xv_water(T0)/Xv_water(T)*c;
+	return -A*exp(-Ea/(R*T))*Xv_water(To)/Xv_water(T)*c;
 }
 
 

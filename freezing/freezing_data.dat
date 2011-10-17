@@ -27,7 +27,7 @@ k_ice = 2.1
 Ea = 10000
 A = 1
 
-T0 = 280 # Initial Temperature
+To = 280 # Initial Temperature
 Tf = 273.15 # Freezing point of pure water
 
 L = 6010 # J/mol Latent heat of fusion of water

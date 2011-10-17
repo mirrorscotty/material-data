@@ -1,0 +1,2 @@
+Compile with:
+cl -o freezing.dll freezing.c /D FZ_DLLEXPORT /link /DLL /DEF:"Freezing.def"

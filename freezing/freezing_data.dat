@@ -1,0 +1,35 @@
+# Annoying global variable definitions. For now, all the model parameters are
+# hard coded into the dll using these variables. This should be changed to
+# allow them to be read in from a data file.
+
+MW_w = 18 # Molecular weight of water
+MW_s = 2.6148e5 # Average molecular weight of solids
+
+Xw = .9966 # Initial mole fraction of water
+Xs = .0034 # Mole fraction of solids
+
+# Heat capacities in J/(mol K)
+Cp_solids = 50
+Cp_water = 75.3
+Cp_ice = 60
+
+# Densities in kg/m^3
+p_solids = 1200
+p_water = 1000
+p_ice = 916.9
+
+# Heat capacities in W/(m K)
+k_solids = 3
+k_water = 0.596
+k_ice = 2.1
+
+# Rate of reaction parameters
+Ea = 10000
+A = 1
+
+T0 = 280 # Initial Temperature
+Tf = 273.15 # Freezing point of pure water
+
+L = 6010 # J/mol Latent heat of fusion of water
+R = 8.3145 # J/(mol K)
+

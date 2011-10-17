@@ -2,30 +2,24 @@
 # hard coded into the dll using these variables. This should be changed to
 # allow them to be read in from a data file.
 
-MW_w = 18 # Molecular weight of water
-MW_s = 2.6148e5 # Average molecular weight of solids
+MW_wat = 18 # Molecular weight of water
+MW_pro = 2.6148e5 # Average molecular weight of solids
+MW_fat = 2e5
+MW_car = 2e5
+MW_fib = 2e5
+MW_ash = 2e5
 
-Xw = .9966 # Initial mole fraction of water
-Xs = .0034 # Mole fraction of solids
-
-# Heat capacities in J/(mol K)
-Cp_solids = 50
-Cp_water = 75.3
-Cp_ice = 60
-
-# Densities in kg/m^3
-p_solids = 1200
-p_water = 1000
-p_ice = 916.9
-
-# Heat capacities in W/(m K)
-k_solids = 3
-k_water = 0.596
-k_ice = 2.1
+Mwat = .9966 # Initial mole fraction of water
+Mpro = .0024 # Mole fraction of solids
+Mfat = .0001
+Mcar = .0002
+Mfib = .0003
+Mash = .0004
+Mice = 0 # Initial mass fraction of ice
 
 # Rate of reaction parameters
-Ea = 10000
-A = 1
+Ea = 10000 # Activation Energy (J/mol)
+A = 1 # k0 value (1/s)
 
 To = 280 # Initial Temperature
 Tf = 273.15 # Freezing point of pure water

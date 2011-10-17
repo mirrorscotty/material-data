@@ -26,22 +26,20 @@ static const char *error = NULL;
  * hard coded into the dll using these variables. This should be changed to
  * allow them to be read in from a data file.
  */
-double MW_w, MW_s, Xw, Xs, Cp_solids, Cp_water, Cp_ice, p_solids, p_water;
-double p_ice, k_solids, k_water, k_ice, Ea, A, To, Tf, L, R;
+double MW_wat, MW_pro, MW_fat, MW_car, MW_fib, MW_ash;
+double Mwat, Mpro, Mfat, Mcar, Mfib, Mash, Mice;
+double Ea, A, To, Tf, L, R;
 
-/*
 int main(int argc, char *argv[])
 {
     init("freezing_data.dat");
 	output_data();
 	return 0;
 }
-*/
 
 /* Test function to spit out a table of data with the x values in one column
  * and the results of a function the other.
  */
-/*
 int output_data()
 {
 	double min, max;
@@ -61,7 +59,7 @@ int output_data()
 
     //MALLOC_CHECK(x || y)
 
-	for (i=1; i <= points; i++) {
+	for (i=1; i < points; i++) {
 		x[i] = min+(max-min)*i/points;
 		y[i] = Cp(x[i]);
 		fprintf(fp, "%f,%f\n", x[i], y[i]);
@@ -73,7 +71,6 @@ int output_data()
 
 	return 0;
 }
-*/
 
 char** read_datafile(char *filename)
 {
@@ -132,19 +129,19 @@ variable read_line(char* line)
 	variable data;
 	data.name = (char*) malloc(sizeof(char)*20);
 
-	FIND("MW_w", data, line)
-	FIND("MW_s", data, line)
-	FIND("Xw", data, line)
-	FIND("Xs", data, line)
-	FIND("Cp_solids", data, line)
-	FIND("Cp_water", data, line)
-	FIND("Cp_ice", data, line)
-	FIND("p_water", data, line)
-	FIND("p_solids", data, line)
-	FIND("p_ice", data, line)
-	FIND("k_solids", data, line)
-	FIND("k_water", data, line)
-	FIND("k_ice", data, line)
+	FIND("MW_wat", data, line)
+	FIND("MW_pro", data, line)
+	FIND("MW_fat", data, line)
+	FIND("MW_car", data, line)
+	FIND("MW_fib", data, line)
+	FIND("MW_ash", data, line)
+	FIND("Mwat", data, line)
+	FIND("Mpro", data, line)
+	FIND("Mfat", data, line)
+	FIND("Mcar", data, line)
+	FIND("Mfib", data, line)
+	FIND("Mash", data, line)
+	FIND("Mice", data, line)
 	FIND("Ea", data, line)
 	FIND("A", data, line)
 	FIND("To", data, line)
@@ -190,18 +187,19 @@ char* remove_comments(char* line)
 /* Also, this function is a terrible hack. */
 int store_data(variable data)
 {
-        STO(data, MW_w)
-        STO(data, MW_s)
-        STO(data, Xw)
-        STO(data, Xs)
-        STO(data, Cp_solids)
-        STO(data, Cp_water)
-        STO(data, Cp_ice)
-        STO(data, p_solids)
-        STO(data, p_water)
-        STO(data, p_ice)
-        STO(data, k_solids)
-        STO(data, k_water)
+        STO(data, MW_wat)
+        STO(data, MW_pro)
+        STO(data, MW_fat)
+        STO(data, MW_car)
+        STO(data, MW_fib)
+        STO(data, MW_ash)
+        STO(data, Mwat)
+        STO(data, Mpro)
+        STO(data, Mfat)
+        STO(data, Mcar)
+        STO(data, Mfib)
+        STO(data, Mash)
+        STO(data, Mice)
         STO(data, Ea)
         STO(data, A)
         STO(data, To)
@@ -215,18 +213,6 @@ int store_data(variable data)
 #define PRNT(X) printf("Value of %s: %f\n", #X, X);
 int print_global_vars()
 {
-	PRNT(MW_w)
-        PRNT(MW_s)
-        PRNT(Xw)
-        PRNT(Xs)
-        PRNT(Cp_solids)
-        PRNT(Cp_water)
-        PRNT(Cp_ice)
-        PRNT(p_solids)
-        PRNT(p_water)
-        PRNT(p_ice)
-        PRNT(k_solids)
-        PRNT(k_water)
         PRNT(Ea)
         PRNT(A)
         PRNT(To)
@@ -318,7 +304,30 @@ EXTFZ_API int eval(const char *func,
  */
 double M_ice(double x, double y)
 {
-	return ( x*MW_w/(x*MW_w+(1-x-y)*MW_w+y*MW_s) );
+    double MW_s = MW_solids();
+	return ( x*MW_wat/(x*MW_wat+(1-x-y)*MW_wat+y*MW_s) );
+}
+
+/* Calculate the mole fraction of "a" given it's mass fraction and molecular
+ * weight. The total number of mole is calculated from the composition data
+ * provided in the data file. */
+double MoleFrac(double Ma, double MWa)
+{
+    double total_moles;
+    total_moles = (Mwat+Mice)/MW_wat + Mpro/MW_pro + Mfat/MW_fat + Mcar/MW_car + Mfib/MW_fib + Mash/MW_ash;
+    return (Ma/MWa)/total_moles;
+}
+
+/* Determine the average molecular weight of the solids. */
+double MW_solids()
+{
+    return (MW_pro + MW_fat + MW_car + MW_fib + MW_ash)/5.0;
+}
+
+/* Mole fraction of solids */
+double X_solids()
+{
+    return 1-MoleFrac((Mwat+Mice), MW_wat);
 }
 
 /**
@@ -328,14 +337,16 @@ double M_ice(double x, double y)
 double X_ice(double T)
 {
 	/* Calculate the initial freezing temperature */
-	double Ti, x_w1;
+	double Ti, x_w1, Xs;
+
+    Xs = X_solids();
 	Ti = pow( (1/Tf - R/L*log(1-Xs)), -1);
 	
 	if(T>Ti) {
 		return 0; /* No ice formed above the freezing point */
 	} else {
 		x_w1 = exp((1/Tf - 1/T) * L/R);
-		return ( 1-x_w1-Xs );
+		return ( 1-x_w1-X_solids() );
 	}
 }
 
@@ -345,7 +356,11 @@ double X_ice(double T)
 double Cp(double T)
 {
 	double Mi, Mw, Ms, dMi, dMw, Ti;
+    double Xw, Xs;
 	double dT = 0.0001; /* Used for calculating derivatives */
+
+    Xw = MoleFrac(Mwat, MW_wat);
+    Xs = X_solids();
 
 	/* Calculate the initial freezing temperature */
 	Ti = pow( (1/Tf - R/L*log(1-Xs)), -1);
@@ -357,39 +372,122 @@ double Cp(double T)
 	dMi = (M_ice(X_ice(T+dT), Xs)-Mi)/dT;
 	dMw = (M_ice(Xw-X_ice(T+dT), Xs)-Mw)/dT;
 
-	return ( Mw*Cp_water + Ms*Cp_solids + Mi*Cp_ice - L*dMi -
-	         (dMw*Cp_water + dMi*Cp_ice)*(Ti-T) );
+	return ( Mw*Cp_water(T) + Ms*Cp_solids(T) + Mi*Cp_ice(T) - L*dMi -
+	         (dMw*Cp_water(T) + dMi*Cp_ice(T))*(Ti-T) );
 }
 
-/**
- * Calculate thermal conductivity as a function of temperature
- */
+double Cp_water(double T)
+{
+    T = T-273.15;
+    if(T >= 0) {
+        return 4.1289 + 9.0864e-5*T - 5.4731e-6*pow(T, 2);
+    } else {
+        return 4.1289 + 5.3062e-3*T - 9.9516e-4*pow(T, 2);
+    }
+}
+
+double Cp_solids(double T)
+{
+    T = T-273.15;
+    double Cp_pro, Cp_fat, Cp_car, Cp_ash, Cp_fib;
+    Cp_pro = 2.0082 + 1.2089e-3*T - 1.3129e-6*pow(T, 2);
+    Cp_fat = 1.9842 + 1.4733e-4*T - 4.8008e-6*pow(T, 2);
+    Cp_car = 1.5488 + 1.9625e-3*T - 5.9399e-6*pow(T, 2);
+    Cp_ash = 1.0926 + 1.8896e-3*T - 3.6817e-6*pow(T, 2);
+    Cp_fib = 1.8459 + 1.8306e-3*T - 4.6509e-6*pow(T, 2);
+
+    return Mpro*Cp_pro + Mfat*Cp_fat + Mcar*Cp_car + Mfib*Cp_fib + Mash*Cp_ash;
+}
+
+double Cp_ice(double T)
+{
+    T = T-273.15;
+    return 2.0623 + 6.0769e-3*T;
+}
+
+/* Calculate the thermal conductivity using the Choi-Okos equations. */
 double k(double T)
 {
-	double Mi, Mw, Ms, Xvi, Xvs, Xvw;
-	Mi = M_ice(X_ice(T), Xs);
-	Mw = M_ice(Xw-X_ice(T), Xs);
-	Ms = 1-Mi-Mw;
+    T = T-273.15;
+    /* Define all of the local variables needed */
+    double k_pro, k_fat, k_car, k_fib, k_ash, k_wat, k_ice;
+    double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
+    double Xv_pro, Xv_fat, Xv_car, Xv_fib, Xv_ash, Xv_wat, Xv_ice;
 
-	Xvi = (Mi/p_ice) / (Mi/p_ice + Mw/p_water + Ms/p_solids);
-	Xvw = (Mw/p_water) / (Mi/p_ice + Mw/p_water + Ms/p_solids);
-	Xvs = (Ms/p_solids) / (Mi/p_ice + Mw/p_water + Ms/p_solids);
+    /* Calculate the thermal conductivities of the materials */
+    k_pro = 1.7881e-1 + 1.1958e-3*T - 2.7178e-6*pow(T, 2);
+    k_fat = 1.8071e-1 - 2.7604e-4*T - 1.7749e-7*pow(T, 2);
+    k_car = 2.0141e-1 + 1.3874e-3*T - 4.3312e-6*pow(T, 2);
+    k_fib = 1.8331e-1 + 1.2497e-3*T - 3.1683e-6*pow(T, 2);
+    k_ash = 3.2962e-1 + 1.4011e-3*T - 2.9069e-6*pow(T, 2);
+    k_wat = 5.7109e-1 + 1.762e-3*T - 6.703e-6*pow(T, 2);
+    k_ice = 2.2196 - 6.248*10e-3*T + 1.0154e-4*pow(T, 2);
 
-	return k_ice*Xvi + k_water*Xvw + k_solids*Xvs;
+    /* Calculate the densities */
+    p_pro = 1.3299e3 - 5.1840e-1*T;
+    p_fat = 9.2559e2 - 4.1757e-1*T;
+    p_car = 1.5991e3 - 3.1046e-1*T;
+    p_fib = 1.3115e3 - 3.6589e-1*T;
+    p_ash = 2.4238e3 - 2.8063e-1*T;
+    p_wat = 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
+    p_ice = 916.89 - 1.3071e-1*T;
+
+    /* Determine the volume fraction of each component */
+    Xv_pro = (Mpro/p_pro) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_fat = (Mfat/p_fat) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_car = (Mcar/p_car) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_fib = (Mfib/p_fib) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_ash = (Mash/p_ash) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_wat = (Mwat/p_wat) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_ice = (Mice/p_ice) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+
+    /* Calculate the thermal conductivity and return it */
+    return k_pro*Xv_pro + k_fat*Xv_fat + k_car*Xv_car + k_fib*Xv_fib + k_ash*Xv_ash + k_wat*Xv_wat + k_ice*Xv_ice;
 }
 
-/**
- * Calculate the density of the slab as it freezes as a function of temperature
- * using the Choi-Okos equations.
- */
+/* Calculate density using the Choi-Okos equations. */
 double rho(double T)
 {
-	double Mi, Mw, Ms;
-	Mi = M_ice(X_ice(T), Xs);
-	Mw = M_ice(Xw-X_ice(T), Xs);
-	Ms = 1-Mi-Mw;
-	
-	return 1/(Mi/p_ice + Mw/p_water + Ms/p_solids);
+    T = T-273.15;
+    double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
+
+    /* Calculate the densities */
+    p_pro = 1.3299e3 - 5.1840e-1*T;
+    p_fat = 9.2559e2 - 4.1757e-1*T;
+    p_car = 1.5991e3 - 3.1046e-1*T;
+    p_fib = 1.3115e3 - 3.6589e-1*T;
+    p_ash = 2.4238e3 - 2.8063e-1*T;
+    p_wat = 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
+    p_ice = 916.89 - 1.3071e-1*T;
+
+    return 1/(Mpro/p_pro + Mfat/p_fat + Mcar/p_car + Mfib/p_fib + Mash/p_ash + Mwat/p_wat + Mice/p_ice);
+}
+
+double p_solids(double T)
+{
+    T = T-273.15;
+    double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
+
+    /* Calculate the densities */
+    p_pro = 1.3299e3 - 5.1840e-1*T;
+    p_fat = 9.2559e2 - 4.1757e-1*T;
+    p_car = 1.5991e3 - 3.1046e-1*T;
+    p_fib = 1.3115e3 - 3.6589e-1*T;
+    p_ash = 2.4238e3 - 2.8063e-1*T;
+
+    return 1/(Mpro/p_pro + Mfat/p_fat + Mcar/p_car + Mfib/p_fib + Mash/p_ash);
+}
+
+double p_water(double T)
+{
+    T = T-273.15;
+    return 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
+}
+
+double p_ice(double T)
+{
+    T = T-273.15;
+    return 916.89 - 1.3071e-1*T;
 }
 
 /**
@@ -398,11 +496,13 @@ double rho(double T)
 double Xv_water(double T)
 {
 	double Mi, Mw, Ms;
-	Mi = M_ice(X_ice(T), Xs);
-	Mw = M_ice(Xw-X_ice(T), Xs);
+    
+	Mi = M_ice(X_ice(T), X_solids());
+	Mw = M_ice(MoleFrac(Mwat, MW_wat)-X_ice(T), X_solids());
 	Ms = 1-Mi-Mw;
-	
-	return (Mw/p_water) / (Mi/p_ice + Mw/p_water + Ms/p_solids);
+
+    /* FixMe! */
+	return (Mw/p_water(T)) / (Mi/p_ice(T) + Mw/p_water(T) + Ms/p_solids(T));
 }
 
 /**

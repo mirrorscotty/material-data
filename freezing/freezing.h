@@ -24,6 +24,17 @@ double M_ice(double, double); /* Verified implicitely */
 double X_ice(double); /* Verified */
 double Xv_water(double); /* Verified */
 
+/* New Functions! */
+double MoleFrac(double, double);
+double MW_solids();
+double X_solids();
+double Cp_solids(double);
+double Cp_water(double);
+double Cp_ice(double);
+double p_solids(double);
+double p_water(double);
+double p_ice(double);
+
 EXTFZ_API int init(const char*);
 EXTFZ_API const char * getLastError();
 EXTFZ_API int eval(const char*, int, const double**, const double**, int, double*, double*);

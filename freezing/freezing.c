@@ -9,7 +9,6 @@
 
 /* TODO:
  * Add functions for convective heat transfer coefficient
- * Change composition to mass fraction instead of mole fraction
  * Plug memory leaks
  * Double check functions to make sure they're accurate
  */
@@ -22,24 +21,24 @@ typedef struct {
 /* Define a variable to hold any error messages returned by the function */
 static const char *error = NULL;
 
-/* Annoying global variable definitions. For now, all the model parameters are
- * hard coded into the dll using these variables. This should be changed to
- * allow them to be read in from a data file.
- */
+/* Annoying global variable definitions. */
 double MW_wat, MW_pro, MW_fat, MW_car, MW_fib, MW_ash;
 double Mwat, Mpro, Mfat, Mcar, Mfib, Mash, Mice;
 double Ea, A, To, Tf, L, R;
 
+/*
 int main(int argc, char *argv[])
 {
     init("freezing_data.dat");
 	output_data();
 	return 0;
 }
+*/
 
 /* Test function to spit out a table of data with the x values in one column
  * and the results of a function the other.
  */
+/*
 int output_data()
 {
 	double min, max;
@@ -71,7 +70,7 @@ int output_data()
 
 	return 0;
 }
-
+*/
 char** read_datafile(char *filename)
 {
     FILE *fp;
@@ -388,8 +387,8 @@ double Cp_water(double T)
 
 double Cp_solids(double T)
 {
-    T = T-273.15;
     double Cp_pro, Cp_fat, Cp_car, Cp_ash, Cp_fib;
+    T = T-273.15;
     Cp_pro = 2.0082 + 1.2089e-3*T - 1.3129e-6*pow(T, 2);
     Cp_fat = 1.9842 + 1.4733e-4*T - 4.8008e-6*pow(T, 2);
     Cp_car = 1.5488 + 1.9625e-3*T - 5.9399e-6*pow(T, 2);
@@ -408,11 +407,13 @@ double Cp_ice(double T)
 /* Calculate the thermal conductivity using the Choi-Okos equations. */
 double k(double T)
 {
-    T = T-273.15;
     /* Define all of the local variables needed */
     double k_pro, k_fat, k_car, k_fib, k_ash, k_wat, k_ice;
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
     double Xv_pro, Xv_fat, Xv_car, Xv_fib, Xv_ash, Xv_wat, Xv_ice;
+
+    /* Convert the temperature from Kelvin to Celcius */
+    T = T-273.15;
 
     /* Calculate the thermal conductivities of the materials */
     k_pro = 1.7881e-1 + 1.1958e-3*T - 2.7178e-6*pow(T, 2);
@@ -448,8 +449,9 @@ double k(double T)
 /* Calculate density using the Choi-Okos equations. */
 double rho(double T)
 {
-    T = T-273.15;
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
+
+    T = T-273.15;
 
     /* Calculate the densities */
     p_pro = 1.3299e3 - 5.1840e-1*T;
@@ -465,8 +467,8 @@ double rho(double T)
 
 double p_solids(double T)
 {
-    T = T-273.15;
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
+    T = T-273.15;
 
     /* Calculate the densities */
     p_pro = 1.3299e3 - 5.1840e-1*T;

@@ -74,11 +74,18 @@ int output_data()
 char** read_datafile(char *filename)
 {
     FILE *fp;
+
     int i;
     int j;
     char **buffer;
 
     fp = fopen(filename, "r");
+    /* Make sure the specified file actually exists before trying to read it */
+    if(!fp) {
+        error = "Cannot open data file";
+	fprintf(stderr, "%s: %s\n", error, filename);
+        exit(0);
+    }
 
     /* Only read the first 200 lines */
     buffer = (char **) malloc(sizeof(char*)*200);

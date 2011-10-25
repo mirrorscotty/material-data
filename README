@@ -1,0 +1,3 @@
+Code for a set of libraries that provide material data to the Comsol FEM
+Solver. Each folder is a separate library and should be compiled into a DLL
+using the Windows C compiler. All code is written to interface with Comsol 4.2.

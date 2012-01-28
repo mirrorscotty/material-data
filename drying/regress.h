@@ -1,6 +1,10 @@
 #ifndef REGRESS_H
 #define REGRESS_H
 
+/* Macro to shorten code where a number is added to the current value of an
+ * element in a matrix. */
+#define addval(A, VAL, I, J) setval((A), (VAL) + val((A), (I), (J)), (I), (J))
+
 typedef struct {
     double **array;
     int rows;
@@ -25,5 +29,6 @@ matrix* ParseMatrix(char*);
 matrix* linspace(double, double, int);
 void Map(matrix*, double (*func)(double));
 void mtxprnt(matrix*);
+void mtxprntfile(matrix*, char*);
 
 #endif

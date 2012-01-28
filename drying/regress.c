@@ -9,39 +9,17 @@ double square(double x)
 {
     return pow(x, 2);
 }
-/*
-int main(int argc, char *argv[])
-{
-    matrix *x, *y, *beta, *A;
-    x = linspace(0, 1, 10);
-    y = linspace(0, 1, 10);
-    Map(y, &square);
 
-    beta = polyfit(x, y, 2);
-    mtxprnt(beta);
-
-    return 0;
-}
-*/
 matrix* regress(matrix *y, matrix *X)
 {
     matrix *Xt, *XtX, *XtXinv, *XtXinvXt, *beta;
 
-    //puts("\nXt = ");
     Xt = mtxtrn(X);
-    //mtxprnt(Xt);
-    //puts("XtX = ");
     XtX = mtxmul(Xt, X);
-    //mtxprnt(XtX);
-    //puts("XtXinv = ");
     XtXinv = CalcInv(XtX);
-    //mtxprnt(XtXinv);
-    //puts("XtXinvXt = ");
     XtXinvXt = mtxmul(XtXinv, Xt);
-    //mtxprnt(XtXinvXt);
 
     beta = mtxmul(XtXinvXt, y);
-    //mtxprnt(beta);
 
     DestroyMatrix(Xt);
     DestroyMatrix(XtX);
@@ -103,11 +81,11 @@ int mtxlen2(matrix *A)
 double val(matrix *A, int row, int col)
 {
     if(row >= mtxlen2(A)) {
-        fprintf(stderr, "Error: index out of bounds.");
+        fprintf(stderr, "Error: index out of bounds.\n");
         return;
     }
     if(col >= mtxlen1(A)) {
-        fprintf(stderr, "Error: Index out of bounds.");
+        fprintf(stderr, "Error: Index out of bounds.\n");
         return;
     }
     return A->array[row][col];
@@ -116,11 +94,11 @@ double val(matrix *A, int row, int col)
 void setval(matrix *A, double value, int row, int col)
 {
     if(row >= mtxlen2(A)) {
-        fprintf(stderr, "Error: index out of bounds.");
+        fprintf(stderr, "Error: index out of bounds.\n");
         return;
     }
     if(col >= mtxlen1(A)) {
-        fprintf(stderr, "Error: Index out of bounds.");
+        fprintf(stderr, "Error: Index out of bounds.\n");
         return;
     }
     A->array[row][col] = value;
@@ -137,6 +115,22 @@ void mtxprnt(matrix *A)
         }
         printf("]\n");
     }
+}
+
+void mtxprntfile(matrix *A, char *filename)
+{
+    int i, j;
+    FILE *file;
+
+    file = fopen(filename, "w");
+    
+    for(i=0; i<mtxlen2(A); i++) {
+        for(j=0; j<mtxlen1(A); j++) {
+            fprintf(file, "%e,", val(A, i, j));
+        }
+	fprintf(file, "\n");
+    }
+    fclose(file);
 }
 
 /* Return the transpose of a square matrix */
@@ -194,9 +188,6 @@ matrix* mtxmul(matrix *A, matrix *B)
         for(k=0; k<Bc; k++) {
             for(j=0; j<Ac; j++) {
                 C->array[i][k] += A->array[i][j] * B->array[j][k];
-                /* // Don't show work
-                printf("C[%d][%d] += %f * %f (Value = %f)\n", i, k, A->array[i][j], B->array[j][k], C->array[i][k]);
-                */
             }
         }
     }
@@ -204,7 +195,7 @@ matrix* mtxmul(matrix *A, matrix *B)
     return C;
 }
 
-/* Code lifted from http://www.daniweb.com/software-development/c/code/216687 */
+/* Code here courtesy of http://www.daniweb.com/software-development/c/code/216687 */
 matrix* CalcMinor(matrix* A, int row, int col) {
     int i, j, a, b;
     int order;
@@ -356,7 +347,7 @@ matrix* CreateMatrix(int row, int col)
     for(i=0; i<row; i++) {
         A->array[i] = (double*) calloc(col, sizeof(double));
         if(!A->array[i]) {
-            fprintf(stderr, "Failed to allocate %d bytes: %s\n", sizeof(double)*col, strerror(errno));
+            fprintf(stderr, "Failed to allocate %lu bytes: %s\n", sizeof(double)*col, strerror(errno));
             return A;
         }
     }
@@ -396,11 +387,9 @@ matrix* ParseMatrix(char* raw)
     /* Allocate memory to store the rows of the matrix as strings */
     values = (double**) calloc(sizeof(double*), MAXROWS);
     rows = (char**) malloc(sizeof(char*)*MAXROWS);
-    /* Checkme! */
     for(i=0; i<MAXROWS; i++) {
         values[i] = (double*) calloc(sizeof(double), MAXCOLS);
         rows[i] = (char*) calloc(sizeof(char), LINELENGTH);
-        /* Checkme! */
     }
 
     /* Row 1: */

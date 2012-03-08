@@ -30,6 +30,7 @@ double mu(double);
 
 void initialize_variables();
 int output_data();
+int report_error(const char*);
 
 EXTCAN_API int init(const char*);
 EXTCAN_API const char * getLastError();

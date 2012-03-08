@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "can.h"
+#include "datafile.h"
 
 #ifdef __linux__ /* Not using windows */
 #include<errno.h> /* Include the standard error reporting library */
@@ -33,15 +34,18 @@ double Sutherland, Tref, muref;
 double To, Text_hot, Text_cold;
 double v, L, t_heat;
 
-int main(int argc, char *argv[])
-{
-    initialize_variables();
-    init("can_data.dat");
+/* Variables for the finite difference solver */
+double Deltax, NNodes, Deltat, NTimeSteps;
+
+//int main(int argc, char *argv[])
+//{
+//    initialize_variables();
+//    init("can_data.dat");
 	/*output_data()*/
     //printf("%f\n", k(80+273)/(rho(80+273)*Cp(80+273)));
-    printf("%f\n", k(80+273));
-	return 0;
-}
+//    printf("%f\n", k(80+273));
+//	return 0;
+//}
 
 /* Set all global variables to an initial value of zero in case something goes
  * horrible, horribly wrong and something tries to read an uninitialized value.
@@ -74,6 +78,11 @@ void initialize_variables()
     v = 0;
     L = 0;
     t_heat = 0;
+
+    Deltax = 0;
+    NNodes = 0;
+    Deltat = 0;
+    NTimeSteps = 0;
 }
 
 int report_error(const char *str)
@@ -266,17 +275,16 @@ double k(double T)
 }
 
 /**
- * Calculate the rate of reaction factoring in increase in concentration as a
- * result of the ice crystals forming.
+ * Calculate the reaction rate constant.
  */
 double reaction_rate1(double T, double c)
 {
-	return -AA*exp(-EaA/(R*T))*c;
+	return AA*exp(-EaA/(R*T));
 }
 
 double reaction_rate2(double T, double c)
 {
-	return -AB*exp(-EaB/(R*T))*c;
+	return AB*exp(-EaB/(R*T));
 }
 
 /* Calculate density using the Choi-Okos equations. */

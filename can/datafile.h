@@ -17,5 +17,7 @@ int store_data(struct var*);
 int get_vars(char*);
 struct var* new_var();
 void destroy_var(struct var*);
+int print_global_vars(void);
+int get_vars(char*);
 
 #endif

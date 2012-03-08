@@ -17,6 +17,8 @@ extern double Sutherland, Tref, muref;
 extern double To, Text_hot, Text_cold;
 extern double v, L, t_heat;
 
+extern double Deltax, NNodes, Deltat, NTimeSteps;
+
 /**
  * Initialization function for the library.
  */
@@ -65,7 +67,7 @@ char** read_datafile(char *filename)
 
     fp = fopen(filename, "r");
     if(!fp) {
-       report_error("Cannot open data file for reading.");
+       report_error("Cannot open data file for reading");
        exit(1);
     }
        
@@ -158,6 +160,11 @@ struct var* read_line(char* line)
 	FIND("t_heat", data, line)
 	FIND("L", data, line)
 
+    FIND("Deltax", data, line)
+    FIND("NNodes", data, line)
+    FIND("Deltat", data, line)
+    FIND("NTimeSteps", data, line)
+
     end:
 
 	if(strcmp(data->name, "")) {
@@ -170,8 +177,8 @@ struct var* read_line(char* line)
 	}
 	if(strcmp(data->name, "NULL") != 0) {
 		printf("%s --> %f\n", data->name, data->value);
-        destroy_var(data);
-        data = NULL;
+        //destroy_var(data);
+        //data = NULL;
 	}
 	
 	return data;
@@ -227,6 +234,11 @@ int store_data(struct var *data)
 	STO(v, data)
 	STO(t_heat, data)
 	STO(L, data)
+
+    STO(Deltax, data)
+    STO(NNodes, data)
+    STO(Deltat, data)
+    STO(NTimeSteps, data)
 
     /* Free the memory allocated to store the variable's name. */
     if(data) {

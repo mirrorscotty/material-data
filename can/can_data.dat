@@ -1,3 +1,8 @@
+NNodes = 6 # Number of nodes to use
+Deltax = .1 # Node spacing
+NTimeSteps = 5000 # Number of time steps to use
+Deltat = .01 # Length of a time step
+
 Mpro = .5 # Mass fraction protein 
 Mfat = .25 # Mass fraction fat
 Mcar = .125 # Mass fraction carbohydrates

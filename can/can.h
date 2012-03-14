@@ -1,6 +1,10 @@
 #ifndef CAN_H
 #define CAN_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef CAN_DLLEXPORT
 #define EXTCAN_API __declspec(dllexport)
 #else
@@ -35,5 +39,9 @@ int report_error(const char*);
 EXTCAN_API int init(const char*);
 EXTCAN_API const char * getLastError();
 EXTCAN_API int eval(const char*, int, const double**, const double**, int, double*, double*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

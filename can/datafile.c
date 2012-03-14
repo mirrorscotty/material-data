@@ -46,7 +46,7 @@ int get_vars(char *str)
 
     //vars = parse_datafile(buffer);
 
-	print_global_vars();
+	//print_global_vars();
 
     delete_buffer(buffer);
     //free(vars);
@@ -175,11 +175,11 @@ struct var* read_line(char* line)
 		strcpy(data->name, "NULL");
 		data->value = 3.141592654;
 	}
-	if(strcmp(data->name, "NULL") != 0) {
-		printf("%s --> %f\n", data->name, data->value);
+	//if(strcmp(data->name, "NULL") != 0) {
+	//	printf("%s --> %f\n", data->name, data->value);
         //destroy_var(data);
         //data = NULL;
-	}
+	//}
 	
 	return data;
 }
@@ -242,7 +242,7 @@ int store_data(struct var *data)
 
     /* Free the memory allocated to store the variable's name. */
     if(data) {
-        free(data->name);
+     //   free(data->name);
     }
 
     return 0;
@@ -290,7 +290,7 @@ void destroy_var(struct var *data)
 void destroy_list(struct var *list)
 {
     while(list) {
-        destroy_var(pop_var(list));
+        destroy_var(list = pop_var(list));
     }
 }
 

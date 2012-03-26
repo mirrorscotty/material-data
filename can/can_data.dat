@@ -11,17 +11,21 @@ Mash = .0625 # Mass fraction ash
 Mwat = 0 # Mass fraction of water
 Mice = 0 # Mass fraction of ice
 
+HConv = 3000
+
 AA = 1
 EaA = 20000
+CAinit = 1
 AB = 1
 EaB = 30000 # Activation energy 2
+CBinit = 1
 R = 8.314 # Gas constant
 
 # Viscosity Parameters
 # For water, A = 2.414e-5, B = 247.8, and C = 140
-A = 2.414e-5 # Pa*s
-B = 247.8 # K
-C = 140 # K
+#A = 2.414e-5 # Pa*s
+#B = 247.8 # K
+#C = 140 # K
 
 # Parameters used for air cooling
 Pressure = 101300 # Pa
@@ -35,7 +39,7 @@ To = 300 # Initial temperature of the can
 Text_hot = 500 # External temperature during heating(in K)
 Text_cold = 200 # External temperature during cooling (in K) *Not Used*
 
-v = 10 # velocity of the fluid outside the pipe (in m/s)
+#v = 10 # velocity of the fluid outside the pipe (in m/s)
 L = .2 # pipe diameter (in meters)
 t_heat = 9e999 # Heating time (in seconds) Always use the hot temperature
 

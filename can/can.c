@@ -279,11 +279,15 @@ double k(double T)
  */
 double reaction_rate1(double T, double c)
 {
+    // Fix since I'm too lazy to load it from the GUI;
+    R = 8.314;
 	return AA*exp(-EaA/(R*T));
 }
 
 double reaction_rate2(double T, double c)
 {
+    // Fix since I'm too lazy to load it from the GUI;
+    R = 8.314;
 	return AB*exp(-EaB/(R*T));
 }
 

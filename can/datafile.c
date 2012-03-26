@@ -145,9 +145,9 @@ struct var* read_line(char* line)
 	FIND("AB", data, line)
 	FIND("EaB", data, line)
 	FIND("R", data, line)
-	FIND("A", data, line)
-	FIND("B", data, line)
-	FIND("C", data, line)
+	//FIND("A", data, line)
+	//FIND("B", data, line)
+	//FIND("C", data, line)
 	FIND("Pressure", data, line)
 	FIND("molar_mass", data, line)
 	FIND("Sutherland", data, line)
@@ -156,7 +156,7 @@ struct var* read_line(char* line)
 	FIND("To", data, line)
 	FIND("Text_hot", data, line)
 	FIND("Text_cold", data, line)
-	FIND("v", data, line)
+	//FIND("v", data, line)
 	FIND("t_heat", data, line)
 	FIND("L", data, line)
 
@@ -164,6 +164,10 @@ struct var* read_line(char* line)
     FIND("NNodes", data, line)
     FIND("Deltat", data, line)
     FIND("NTimeSteps", data, line)
+
+    FIND("HConv", data, line)
+    FIND("CAinit", data, line)
+    FIND("CBinit", data, line)
 
     end:
 
@@ -175,11 +179,11 @@ struct var* read_line(char* line)
 		strcpy(data->name, "NULL");
 		data->value = 3.141592654;
 	}
-	//if(strcmp(data->name, "NULL") != 0) {
-	//	printf("%s --> %f\n", data->name, data->value);
+	if(strcmp(data->name, "NULL") != 0) {
+		printf("%s --> %f\n", data->name, data->value);
         //destroy_var(data);
         //data = NULL;
-	//}
+	}
 	
 	return data;
 }

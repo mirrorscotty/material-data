@@ -28,7 +28,7 @@ double reaction_rate1(double, double);
 double reaction_rate2(double, double);
 double T_init(double);
 double T_ext(double);
-double h(double);
+//double h(double);
 double rho(double); 
 double mu(double);
 

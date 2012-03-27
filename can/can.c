@@ -337,26 +337,26 @@ double mu(double T)
 }
 
 /* Determine the convective heat transfer coefficient */
-double h(double T)
-{
-    double Re, Pr, p, Cp_wat, k;
-    T = T-273.15; /* Convert to Celcius */
-
-    /* Calculate the required data for water */
-    k = 5.7109e-1 + 1.762e-3*T - 6.703e-6*pow(T, 2);
-    if(T >= 0) {
-        Cp_wat = 4.1289 + 9.0864e-5*T - 5.4731e-6*pow(T, 2);
-    } else {
-        Cp_wat = 4.1289 + 5.3062e-3*T - 9.9516e-4*pow(T, 2);
-    }
-    p = 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
-
-    T = T + 273.15; /* Convert back to Kelvin to find viscosity */
-    /* Calculate the Reynolds and Prandlt numbers */
-    Re = p*v*L/mu(T);
-    Pr = Cp_wat*mu(T)/k;
-    
-    /* Source: An introduction to Heat and Mass Transfer (Middleman) */
-    return (0.35 + 0.56*pow(Re,0.52))*pow(Pr,0.3)*k/L;
-}
+//double h(double T)
+//{
+//    double Re, Pr, p, Cp_wat, k;
+//   T = T-273.15; /* Convert to Celcius */
+//
+//    /* Calculate the required data for water */
+//   k = 5.7109e-1 + 1.762e-3*T - 6.703e-6*pow(T, 2);
+//    if(T >= 0) {
+//        Cp_wat = 4.1289 + 9.0864e-5*T - 5.4731e-6*pow(T, 2);
+//    } else {
+//        Cp_wat = 4.1289 + 5.3062e-3*T - 9.9516e-4*pow(T, 2);
+//    }
+//    p = 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
+//
+//    T = T + 273.15; /* Convert back to Kelvin to find viscosity */
+//    /* Calculate the Reynolds and Prandlt numbers */
+//    Re = p*v*L/mu(T);
+//    Pr = Cp_wat*mu(T)/k;
+//    
+//    /* Source: An introduction to Heat and Mass Transfer (Middleman) */
+//    return (0.35 + 0.56*pow(Re,0.52))*pow(Pr,0.3)*k/L;
+//}
 

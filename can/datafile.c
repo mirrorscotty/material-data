@@ -270,6 +270,26 @@ struct var* push_var(struct var *list, struct var *data)
     return list;
 }
 
+/* Add a variable to the list if it's not already there and update it's value
+ * if it exists. Returns NULL if the variable already exists. Otherwise, it
+ * returns the variable that was appended to the list. */
+struct var* edit_var(struct var *list, struct var *data)
+{
+    while(list->next) {
+        puts("Yaaay.");
+        if(strcmp(list->name, data->name) == 0) {
+            list->value = data->value;
+            destroy_var(data);
+            return NULL;
+        }
+        list = list->next;
+    }
+    list->next = new_var();
+    strcpy(list->next->name, data->name);
+    list->next->value = data->value;
+    return data;
+}
+
 struct var* pop_var(struct var *list)
 {
     struct var *tmp;
@@ -284,8 +304,8 @@ struct var* pop_var(struct var *list)
 void destroy_var(struct var *data)
 {
     if(data) {
-        if(data->name) 
-            free(data->name);
+    //if(data->name) 
+    //        free(data->name);
         free(data);
     }
     return;
@@ -293,8 +313,11 @@ void destroy_var(struct var *data)
 
 void destroy_list(struct var *list)
 {
+    struct var *tmp;
     while(list) {
-        destroy_var(list = pop_var(list));
+        tmp = list->next;
+        destroy_var(list);
+        list = tmp;
     }
 }
 
@@ -315,8 +338,10 @@ struct var* new_var()
 /* TODO: Error handling */
 double find_val(char *name, struct var *list)
 {
+    printf("%s, %g\n", list->name, list->value);
     while(strcmp(name, list->name) != 0) {
-        list++;
+        list=list->next;
+        printf("%s, %g\n", list->name, list->value);
     }
     return list->value;
 }

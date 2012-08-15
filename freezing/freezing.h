@@ -16,6 +16,7 @@
 #define LOOP2(x) for(i=0;i<blockSize;i++){outReal[i]=x(inReal[0][i],inReal[1][i]);}
 
 /* Function prototypes */
+double alpha(double);
 double Cp(double); /* Verified */
 double k(double); /* Verified */
 double reaction_rate(double, double); /* Verified */

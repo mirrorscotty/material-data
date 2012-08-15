@@ -478,4 +478,11 @@ double reaction_rate(double T, double c)
 	return -A*exp(-Ea/(R*T))*Xv_water(To)/Xv_water(T)*c;
 }
 
+/**
+ * Determine the thermal diffusivity of the material.
+ */
+double alpha(double T)
+{
+    return k(T)/(rho(T) * Cp(T));
+}
 

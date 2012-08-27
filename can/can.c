@@ -174,6 +174,7 @@ EXTCAN_API const char * getLastError()
  * The LOOP macro simply calls the function multiple times since Comsol expects
  * the result to be an array with the same number of elements 
  */
+/*
 EXTCAN_API int eval(const char *func,
 		   int nArgs,
 		   const double **inReal,
@@ -207,6 +208,7 @@ EXTCAN_API int eval(const char *func,
 	}
     return 1;
 }
+*/
 
 /* Functions to actually calculate stuff. */
 

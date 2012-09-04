@@ -70,7 +70,7 @@ char** read_datafile(char *filename)
 /* Deallocate the memory for the buffer created with "read_datafile" */
 int delete_buffer(char** buffer)
 {
-    int i, j;
+    int i;
     for(i=0; i < 200; i++) {
         free(buffer[i]);
     }
@@ -111,7 +111,7 @@ variable read_line(char* line)
 	FIND("R", data, line)
 
 	if(strcmp(data.name, "")) {
-		if(value = strpbrk(line, "0123456789.-")) {
+		if( (value = strpbrk(line, "0123456789.-")) ) {
 			data.value = atof(value);
 		}
 	} else {
@@ -198,7 +198,7 @@ EXTFZ_API int init(const char *str)
     int i, j;
     j = 0;
 
-    buffer = read_datafile(str);
+    buffer = read_datafile( (char*)str );
 
     for(i=0; i < 200; i++) {
         buffer[i] = remove_comments(buffer[i]);
@@ -240,7 +240,7 @@ EXTFZ_API int eval(const char *func,
 		   double *outReal,
 		   double *outImag)
 {
-	int i, j;
+	int i;
 	if(strcmp(func, "Cp") == 0) {
 		LOOP(Cp)
 	} else if(strcmp(func, "rho") == 0) {

@@ -20,6 +20,7 @@ extern "C" {
 #define LOOP2(x) for(i=0;i<blockSize;i++){outReal[i]=x(inReal[0][i],inReal[1][i]);}
 #define MALLOC_CHECK(x) if(x == NULL){report_error("Failed to allocate memory for #x"); exit(1);}
 
+#define alpha(T) (k((T))/(rho((T))*Cp((T))))
 
 /* Function prototypes */
 double Cp(double);

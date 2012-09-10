@@ -276,6 +276,11 @@ double k(double T)
     return k_pro*Xv_pro + k_fat*Xv_fat + k_car*Xv_car + k_fib*Xv_fib + k_ash*Xv_ash + k_wat*Xv_wat + k_ice*Xv_ice;
 }
 
+//double alpha(double T)
+//{
+//    return k(T)/(rho(T)*Cp(T));
+//}
+
 /**
  * Calculate the reaction rate constant.
  */

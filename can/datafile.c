@@ -160,10 +160,10 @@ struct var* read_line(char* line)
 	FIND("t_heat", data, line)
 	FIND("L", data, line)
 
-    FIND("Deltax", data, line)
+    FIND("DomainWidth", data, line)
     FIND("NNodes", data, line)
     FIND("Deltat", data, line)
-    FIND("NTimeSteps", data, line)
+    FIND("EndTime", data, line)
 
     FIND("HConv", data, line)
     FIND("CAinit", data, line)

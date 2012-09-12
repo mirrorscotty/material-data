@@ -256,7 +256,13 @@ int store_data(struct var *data)
 int print_global_vars()
 {
     /* TODO: Fix this function */
-	PRNT(R)
+	PRNT(Mpro)
+	PRNT(Mfat)
+	PRNT(Mcar)
+	PRNT(Mfib)
+	PRNT(Mash)
+    PRNT(Mwat)
+    PRNT(Mice)
 
 	return 0;
 }

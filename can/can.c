@@ -215,6 +215,7 @@ EXTCAN_API int eval(const char *func,
 /**
  * Calculate heat capacity using the magic of the Choi-Okos Equations.
  * T is in Kelvins
+ * Cp has units of J/K
  */
 double Cp(double T)
 {
@@ -238,12 +239,16 @@ double Cp(double T)
 }
 
 /* Calculate the thermal conductivity using the Choi-Okos equations. */
+/* T has units of K and a valid range of -40C to 150C
+ * k has units of W/(m K) */
 double k(double T)
 {
     /* Define all of the local variables needed */
     double k_pro, k_fat, k_car, k_fib, k_ash, k_wat, k_ice;
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
     double Xv_pro, Xv_fat, Xv_car, Xv_fib, Xv_ash, Xv_wat, Xv_ice;
+
+    T -= 273.15;
 
     /* Calculate the thermal conductivities of the materials */
     k_pro = 1.7881e-1 + 1.1958e-3*T - 2.7178e-6*pow(T, 2);
@@ -299,9 +304,13 @@ double reaction_rate2(double T, double c)
 }
 
 /* Calculate density using the Choi-Okos equations. */
+/* T has units of K and a valid range of -40C to 150C
+ * rho has units of kg/m^3 */
 double rho(double T)
 {
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
+
+    T -= 273.15;
 
     /* Calculate the densities */
     p_pro = 1.3299e3 - 5.1840e-1*T;

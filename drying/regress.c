@@ -48,7 +48,7 @@ matrix* polyfit(matrix* x, matrix* y, int order)
     int i, j, nelem;
 
     X = NULL;
-    nelem = mtxlen1(x); /* Row matrix */
+    nelem = nCols(x); /* Row matrix */
 
     X = CreateMatrix(nelem, order+1);
 
@@ -67,24 +67,24 @@ matrix* polyfit(matrix* x, matrix* y, int order)
 }
  
 /* Get the length of a 1D matrix of doubles */
-int mtxlen1(matrix *A)
+int nCols(matrix *A)
 {
     return A->cols;
 }
 
 /* Return the number of rows in a two dimensional matrix of doubles */
-int mtxlen2(matrix *A)
+int nRows(matrix *A)
 {
     return A->rows;
 }
 
 double val(matrix *A, int row, int col)
 {
-    if(row >= mtxlen2(A)) {
+    if(row >= nRows(A)) {
         fprintf(stderr, "Error: index out of bounds.\n");
         return;
     }
-    if(col >= mtxlen1(A)) {
+    if(col >= nCols(A)) {
         fprintf(stderr, "Error: Index out of bounds.\n");
         return;
     }
@@ -93,11 +93,11 @@ double val(matrix *A, int row, int col)
 
 void setval(matrix *A, double value, int row, int col)
 {
-    if(row >= mtxlen2(A)) {
+    if(row >= nRows(A)) {
         fprintf(stderr, "Error: index out of bounds.\n");
         return;
     }
-    if(col >= mtxlen1(A)) {
+    if(col >= nCols(A)) {
         fprintf(stderr, "Error: Index out of bounds.\n");
         return;
     }
@@ -108,9 +108,9 @@ void mtxprnt(matrix *A)
 {
     int i, j;
     
-    for(i=0; i<mtxlen2(A); i++) {
+    for(i=0; i<nRows(A); i++) {
         printf("[ ");
-        for(j=0; j<mtxlen1(A); j++) {
+        for(j=0; j<nCols(A); j++) {
             printf("%e ", val(A, i, j));
         }
         printf("]\n");
@@ -124,8 +124,8 @@ void mtxprntfile(matrix *A, char *filename)
 
     file = fopen(filename, "w");
     
-    for(i=0; i<mtxlen2(A); i++) {
-        for(j=0; j<mtxlen1(A); j++) {
+    for(i=0; i<nRows(A); i++) {
+        for(j=0; j<nCols(A); j++) {
             fprintf(file, "%e,", val(A, i, j));
         }
 	fprintf(file, "\n");
@@ -137,13 +137,13 @@ void mtxprntfile(matrix *A, char *filename)
 matrix* mtxtrn(matrix *x)
 {
     matrix *xt;
-    int rows = mtxlen2(x);
-    int cols = mtxlen1(x);
+    int rows = nRows(x);
+    int cols = nCols(x);
     int i, j;
 
     xt = NULL;
 /*
-    if(mtxlen2(x) != mtxlen1(x)) {
+    if(nRows(x) != nCols(x)) {
         fprintf(stderr, "ERROR!");
         return xt;
     }
@@ -169,10 +169,10 @@ matrix* mtxmul(matrix *A, matrix *B)
 
     C = NULL;
     
-    Ar = mtxlen2(A);
-    Ac = mtxlen1(A);
-    Br = mtxlen2(B);
-    Bc = mtxlen1(B);
+    Ar = nRows(A);
+    Ac = nCols(A);
+    Br = nRows(B);
+    Bc = nCols(B);
 
     /* If the matricies dimensions aren't correct, return NULL */
     if(Ac != Br) {
@@ -202,7 +202,7 @@ matrix* CalcMinor(matrix* A, int row, int col) {
     matrix *minor;
 
     minor = NULL;
-    order = mtxlen2(A);
+    order = nRows(A);
 
     if(order <= 1)
         return NULL;
@@ -238,7 +238,7 @@ double CalcDeterminant(matrix *p)
 
     result = 0;
     minor = NULL;
-    order = mtxlen2(p);
+    order = nRows(p);
 
     if(order < 1) {
         fprintf(stderr, "CalcDeterminant(): Invalid Matrix.");
@@ -268,9 +268,9 @@ matrix* CalcAdj(matrix* A)
     double cofactor;
     matrix *minor, *adj, *adjt;
     
-    adj = CreateMatrix(mtxlen2(A), mtxlen2(A));
-    for(i=0; i<mtxlen2(A); i++) {
-        for(j=0; j<mtxlen2(A); j++) {
+    adj = CreateMatrix(nRows(A), nRows(A));
+    for(i=0; i<nRows(A); i++) {
+        for(j=0; j<nRows(A); j++) {
             minor = CalcMinor(A, i, j);
             cofactor = pow(-1, (i+j+2)) * CalcDeterminant(minor);
             DestroyMatrix(minor);
@@ -294,10 +294,10 @@ matrix* CalcInv(matrix* A)
     inv = NULL;
     det = CalcDeterminant(A);
     adj = CalcAdj(A);
-    inv = CreateMatrix(mtxlen2(A), mtxlen2(A));
+    inv = CreateMatrix(nRows(A), nRows(A));
     
-    for(i=0; i<mtxlen2(A); i++) {
-        for(j=0; j<mtxlen2(A); j++) {
+    for(i=0; i<nRows(A); i++) {
+        for(j=0; j<nRows(A); j++) {
             setval(inv, val(adj, i, j)/det, i, j);
         }
     }
@@ -308,8 +308,8 @@ matrix* CalcInv(matrix* A)
 void Map(matrix* A, double (*func)(double))
 {
     int i, j;
-    for(i=0; i<mtxlen2(A); i++) {
-        for(j=0; j<mtxlen1(A); j++) {
+    for(i=0; i<nRows(A); i++) {
+        for(j=0; j<nCols(A); j++) {
             setval(A, (*func)(val(A, i, j)), i, j);
         }
     }

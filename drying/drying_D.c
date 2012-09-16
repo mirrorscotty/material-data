@@ -150,7 +150,7 @@ double Ebf(double T, double x)
 int FindFirstZeroIndex(matrix *A)
 {
     int i;
-    for(i=0; i<mtxlen1(A); i++)
+    for(i=0; i<nCols(A); i++)
         if(val(A, 0, i) == 0)
             return i;
     return i;
@@ -163,7 +163,7 @@ int FindMaxIndex(matrix *A)
 
     max = 0;
 
-    for(i=0; i<mtxlen1(A); i++) {
+    for(i=0; i<nCols(A); i++) {
         if(val(A, 0, i) > max) {
             maxindex = i;
             max = val(A, 0, i);

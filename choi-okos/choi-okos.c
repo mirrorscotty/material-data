@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "can.h"
+#include "choi-okos.h"
 #include "datafile.h"
 
 #ifdef __linux__ /* Not using windows */
@@ -146,71 +146,9 @@ int output_data()
 	return 0;
 }
 
-/* The following three functions are required in order to interface correctly
- * with Comsol
- */
-/**
- * Initialization function for the library.
- */
-EXTCAN_API int init(const char *str)
-{
-    return get_vars(str);
-}
-
-/**
- * Error reporting function. Returns the last error message set.
- */
-EXTCAN_API const char * getLastError()
-{
-	return error;
-}
-
-/**
- * Function to that actually does the work for the library. Basically, Comsol
- * calls this function and passes the name of the function it actually wants
- * to run as an argument. The eval function is responsible for calling the
- * correct function from the library.
- *
- * The LOOP macro simply calls the function multiple times since Comsol expects
- * the result to be an array with the same number of elements 
- */
-/*
-EXTCAN_API int eval(const char *func,
-		   int nArgs,
-		   const double **inReal,
-		   const double **inImag,
-		   int blockSize,
-		   double *outReal,
-		   double *outImag)
-{
-	int i;
-	if(strcmp(func, "Cp") == 0) {
-		LOOP(Cp)
-	} else if(strcmp(func, "rho") == 0) {
-		LOOP(rho)
-	} else if(strcmp(func, "reaction_rate1") == 0) {
-		LOOP2(reaction_rate1)
-	} else if(strcmp(func, "reaction_rate2") == 0) {
-        LOOP2(reaction_rate2)
-    } else if(strcmp(func, "k") == 0) {
-		LOOP(k)
-	} else if(strcmp(func, "T_ext") == 0) {
-        LOOP(T_ext)
-    } else if(strcmp(func, "h") == 0) {
-        LOOP(h)
-    } else if(strcmp(func, "T_init") == 0) {
-        LOOP(T_init)
-    } else if(strcmp(func, "mu") == 0) {
-        LOOP(mu)
-    } else {
-		error = "Cannot find function";
-		return 0;
-	}
-    return 1;
-}
-*/
-
 /* Functions to actually calculate stuff. */
+
+/* ----------------------- Heat Transfer Stuff ----------------------- */
 
 /**
  * Calculate heat capacity using the magic of the Choi-Okos Equations.
@@ -279,28 +217,6 @@ double k(double T)
 
     /* Calculate the thermal conductivity and return it */
     return k_pro*Xv_pro + k_fat*Xv_fat + k_car*Xv_car + k_fib*Xv_fib + k_ash*Xv_ash + k_wat*Xv_wat + k_ice*Xv_ice;
-}
-
-//double alpha(double T)
-//{
-//    return k(T)/(rho(T)*Cp(T));
-//}
-
-/**
- * Calculate the reaction rate constant.
- */
-double reaction_rate1(double T, double c)
-{
-    // Fix since I'm too lazy to load it from the GUI;
-    R = 8.314;
-	return AA*exp(-EaA/(R*T));
-}
-
-double reaction_rate2(double T, double c)
-{
-    // Fix since I'm too lazy to load it from the GUI;
-    R = 8.314;
-	return AB*exp(-EaB/(R*T));
 }
 
 /* Calculate density using the Choi-Okos equations. */
@@ -376,3 +292,164 @@ double mu(double T)
 //    return (0.35 + 0.56*pow(Re,0.52))*pow(Pr,0.3)*k/L;
 //}
 
+/* ----------------------- Freezing Stuff ----------------------- */
+/**
+ * Calculate the mass fraction of ice given the mole fraction of ice and solids
+ * x -> ice/water
+ * y -> solids
+ */
+double M_ice(double x, double y)
+{
+    double MW_s = MW_solids();
+    return ( x*MW_wat/(x*MW_wat+(1-x-y)*MW_wat+y*MW_s) );
+}
+
+/* Calculate the mole fraction of "a" given it's mass fraction and molecular
+ * weight. The total number of mole is calculated from the composition data
+ * provided in the data file. */
+double MoleFrac(double Ma, double MWa)
+{
+    double total_moles;
+    total_moles = (Mwat+Mice)/MW_wat + Mpro/MW_pro + Mfat/MW_fat + Mcar/MW_car + Mfib/MW_fib + Mash/MW_ash;
+    return (Ma/MWa)/total_moles;
+}
+
+/* Determine the average molecular weight of the solids. */
+double MW_solids()
+{
+    return (MW_pro + MW_fat + MW_car + MW_fib + MW_ash)/5.0;
+}
+
+/* Mole fraction of solids */
+double X_solids()
+{
+    return 1-MoleFrac((Mwat+Mice), MW_wat);
+}
+
+/**
+ * Calculate the mole fraction of ice in food given the temperature and mole
+ * fraction of solids
+ */
+double X_ice(double T)
+{
+    /* Calculate the initial freezing temperature */
+    double Ti, x_w1, Xs;
+
+    Xs = X_solids();
+    Ti = pow( (1/Tf - R/L*log(1-Xs)), -1);
+
+    if(T>Ti) {
+        return 0; /* No ice formed above the freezing point */
+    } else {
+        x_w1 = exp((1/Tf - 1/T) * L/R);
+        return ( 1-x_w1-X_solids() );
+    }
+}
+
+double p_solids(double T)
+{
+    double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
+    T = T-273.15;
+
+    /* Calculate the densities */
+    p_pro = 1.3299e3 - 5.1840e-1*T;
+    p_fat = 9.2559e2 - 4.1757e-1*T;
+    p_car = 1.5991e3 - 3.1046e-1*T;
+    p_fib = 1.3115e3 - 3.6589e-1*T;
+    p_ash = 2.4238e3 - 2.8063e-1*T;
+
+    return 1/(Mpro/p_pro + Mfat/p_fat + Mcar/p_car + Mfib/p_fib + Mash/p_ash);
+}
+
+double p_water(double T)
+{
+    T = T-273.15;
+    return 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
+}
+
+double p_ice(double T)
+{
+    T = T-273.15;
+    return 916.89 - 1.3071e-1*T;
+}
+
+/**
+ * Determine the volume fraction of water
+ */
+double Xv_water(double T)
+{
+    double Mi, Mw, Ms;
+
+    Mi = M_ice(X_ice(T), X_solids());
+    Mw = M_ice(MoleFrac(Mwat, MW_wat)-X_ice(T), X_solids());
+    Ms = 1-Mi-Mw;
+
+    /* FixMe! */
+    return (Mw/p_water(T)) / (Mi/p_ice(T) + Mw/p_water(T) + Ms/p_solids(T));
+}
+
+/**
+ * Calculate the rate of reaction factoring in increase in concentration as a
+ * result of the ice crystals forming.
+ */
+double reaction_rate(double T, double c)
+{
+    return -A*exp(-Ea/(R*T))*Xv_water(To)/Xv_water(T)*c;
+}
+
+/**
+ * Calculate the heat capacity of the partially frozen food products.
+ * TODO: Compare this against the regular Cp function for temperatures above
+ * freezing.
+ */
+double CpFz(double T)
+{
+    double Mi, Mw, Ms, dMi, dMw, Ti;
+    double Xw, Xs;
+    double dT = 0.0001; /* Used for calculating derivatives */
+
+    Xw = MoleFrac(Mwat, MW_wat);
+    Xs = X_solids();
+
+    /* Calculate the initial freezing temperature */
+    Ti = pow( (1/Tf - R/L*log(1-Xs)), -1);
+
+    Mi = M_ice(X_ice(T), Xs); /* Mass fraction of ice */
+    Mw = M_ice(Xw-X_ice(T), Xs); /* Mass fraction of water */
+    Ms = 1-Mi-Mw; /* Mass fraction of solids */
+
+    dMi = (M_ice(X_ice(T+dT), Xs)-Mi)/dT;
+    dMw = (M_ice(Xw-X_ice(T+dT), Xs)-Mw)/dT;
+
+    return ( Mw*Cp_water(T) + Ms*Cp_solids(T) + Mi*Cp_ice(T) - L*dMi -
+             (dMw*Cp_water(T) + dMi*Cp_ice(T))*(Ti-T) );
+}
+
+double Cp_water(double T)
+{
+    T = T-273.15;
+    if(T >= 0) {
+        return 4.1289 + 9.0864e-5*T - 5.4731e-6*pow(T, 2);
+    } else {
+        return 4.1289 + 5.3062e-3*T - 9.9516e-4*pow(T, 2);
+    }
+}
+
+double Cp_solids(double T)
+{
+    double Cp_pro, Cp_fat, Cp_car, Cp_ash, Cp_fib;
+    T = T-273.15;
+    Cp_pro = 2.0082 + 1.2089e-3*T - 1.3129e-6*pow(T, 2);
+    Cp_fat = 1.9842 + 1.4733e-4*T - 4.8008e-6*pow(T, 2);
+    Cp_car = 1.5488 + 1.9625e-3*T - 5.9399e-6*pow(T, 2);
+    Cp_ash = 1.0926 + 1.8896e-3*T - 3.6817e-6*pow(T, 2);
+    Cp_fib = 1.8459 + 1.8306e-3*T - 4.6509e-6*pow(T, 2);
+
+    return Mpro*Cp_pro + Mfat*Cp_fat + Mcar*Cp_car + Mfib*Cp_fib + Mash*Cp_ash;
+}
+
+double Cp_ice(double T)
+{
+    T = T-273.15;
+    return 2.0623 + 6.0769e-3*T;
+}

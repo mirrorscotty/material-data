@@ -7,7 +7,7 @@
 #include "datafile.h"
 
 #ifdef __linux__ /* Not using windows */
-#include<errno.h> /* Include the standard error reporting library */
+#include <errno.h> /* Include the standard error reporting library */
 #endif
 
 #define MALLOC_CHECK_ 1
@@ -34,18 +34,26 @@ double Sutherland, Tref, muref;
 double To, Text_hot, Text_cold;
 double v, L, t_heat;
 
+/* Variables for freezing */
+double MW_wat, MW_pro, MW_fat, MW_car, MW_fib, MW_ash;
+double Hfus;
+double Tf;
+
+
 /* Variables for the finite difference solver */
 double Deltax, NNodes, Deltat, NTimeSteps;
 
-//int main(int argc, char *argv[])
-//{
-//    initialize_variables();
-//    init("can_data.dat");
-	/*output_data()*/
-    //printf("%f\n", k(80+273)/(rho(80+273)*Cp(80+273)));
-//    printf("%f\n", k(80+273));
-//	return 0;
-//}
+/*
+int main(int argc, char *argv[])
+{
+    initialize_variables();
+    get_vars("randomdata.dat");
+    //output_data()
+    printf("%f\n", Cp(-60+273.15));
+    printf("%f\n", CpFz(-60+273.15));
+    return 0;
+}
+*/
 
 /* Set all global variables to an initial value of zero in case something goes
  * horrible, horribly wrong and something tries to read an uninitialized value.
@@ -336,19 +344,19 @@ double X_ice(double T)
     double Ti, x_w1, Xs;
 
     Xs = X_solids();
-    Ti = pow( (1/Tf - R/L*log(1-Xs)), -1);
+    Ti = pow( (1/Tf - R/Hfus*log(1-Xs)), -1);
 
     if(T>Ti) {
         return 0; /* No ice formed above the freezing point */
     } else {
-        x_w1 = exp((1/Tf - 1/T) * L/R);
+        x_w1 = exp((1/Tf - 1/T) * Hfus/R);
         return ( 1-x_w1-X_solids() );
     }
 }
 
 double p_solids(double T)
 {
-    double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
+    double p_pro, p_fat, p_car, p_fib, p_ash;
     T = T-273.15;
 
     /* Calculate the densities */
@@ -394,7 +402,7 @@ double Xv_water(double T)
  */
 double reaction_rate(double T, double c)
 {
-    return -A*exp(-Ea/(R*T))*Xv_water(To)/Xv_water(T)*c;
+    return -AA*exp(-EaA/(R*T))*Xv_water(To)/Xv_water(T)*c;
 }
 
 /**
@@ -412,7 +420,7 @@ double CpFz(double T)
     Xs = X_solids();
 
     /* Calculate the initial freezing temperature */
-    Ti = pow( (1/Tf - R/L*log(1-Xs)), -1);
+    Ti = pow( (1/Tf - R/Hfus*log(1-Xs)), -1);
 
     Mi = M_ice(X_ice(T), Xs); /* Mass fraction of ice */
     Mw = M_ice(Xw-X_ice(T), Xs); /* Mass fraction of water */
@@ -421,7 +429,7 @@ double CpFz(double T)
     dMi = (M_ice(X_ice(T+dT), Xs)-Mi)/dT;
     dMw = (M_ice(Xw-X_ice(T+dT), Xs)-Mw)/dT;
 
-    return ( Mw*Cp_water(T) + Ms*Cp_solids(T) + Mi*Cp_ice(T) - L*dMi -
+    return ( Mw*Cp_water(T) + Ms*Cp_solids(T) + Mi*Cp_ice(T) - Hfus*dMi -
              (dMw*Cp_water(T) + dMi*Cp_ice(T))*(Ti-T) );
 }
 

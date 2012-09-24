@@ -2,7 +2,7 @@
 #include<string.h>
 #include<stdio.h>
 #include "datafile.h"
-#include "can.h"
+#include "choi-okos.h"
 
 /* Data file parsing functions. Most of these are specific to just the can
  * model because of annoying global variables.
@@ -18,6 +18,9 @@ extern double To, Text_hot, Text_cold;
 extern double v, L, t_heat;
 
 extern double Deltax, NNodes, Deltat, NTimeSteps;
+
+extern double MW_wat, MW_pro, MW_fat, MW_car, MW_fib, MW_ash;
+extern double Hfus, Tf;
 
 /**
  * Initialization function for the library.
@@ -133,6 +136,16 @@ struct var* read_line(char* line)
         report_error("Null pointer error.");
     }
 
+    /* Freezing Variables */
+    FIND("MW_pro", data, line)
+    FIND("MW_fat", data, line)
+    FIND("MW_car", data, line)
+    FIND("MW_fib", data, line)
+    FIND("MW_ash", data, line)
+    FIND("MW_wat", data, line)
+    FIND("Hfus", data, line)
+
+    /* The rest of the stuff */
 	FIND("Mpro", data, line)
 	FIND("Mfat", data, line)
 	FIND("Mcar", data, line)
@@ -212,6 +225,15 @@ char* remove_comments(char* line)
 /* Also, this function is a terrible hack. */
 int store_data(struct var *data)
 {
+
+    STO(MW_wat, data)
+    STO(MW_pro, data)
+    STO(MW_fat, data)
+    STO(MW_car, data)
+    STO(MW_fib, data)
+    STO(MW_ash, data)
+    STO(Hfus, data)
+
  	STO(Mpro, data)
 	STO(Mfat, data)
 	STO(Mcar, data)

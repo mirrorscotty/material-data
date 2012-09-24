@@ -8,6 +8,7 @@ extern "C" {
 #define MALLOC_CHECK(x) if(x == NULL){report_error("Failed to allocate memory for #x"); exit(1);}
 
 #define alpha(T) (k((T))/(rho((T))*Cp((T))))
+#define alphaFZ(T) (k((T))/(rho((T))*CpFz((T))))
 
 /* Function prototypes */
 double Cp(double);

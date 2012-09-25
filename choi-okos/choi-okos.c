@@ -27,17 +27,18 @@ static const char *error = NULL;
  * allow them to be read in from a data file.
  */
 double Mpro, Mfat, Mcar, Mfib, Mash, Mwat, Mice;
-double AA, EaA, AB, EaB, R;
+double AA, EaA, AB, EaB;
 double A, B, C;
 double Pressure, molar_mass;
 double Sutherland, Tref, muref;
-double To, Text_hot, Text_cold;
+double To, Text_hot, Text_cold, Tinf;
 double v, L, t_heat;
 
 /* Variables for freezing */
 double MW_wat, MW_pro, MW_fat, MW_car, MW_fib, MW_ash;
-double Hfus;
-double Tf;
+double Hfus = 6010;
+double Tf = 273.15;
+double R = 8.314;
 
 
 /* Variables for the finite difference solver */
@@ -49,8 +50,8 @@ int main(int argc, char *argv[])
     initialize_variables();
     get_vars("randomdata.dat");
     //output_data()
-    printf("%f\n", Cp(-60+273.15));
-    printf("%f\n", CpFz(-60+273.15));
+    printf("%f\n", Cp(273.15));
+    printf("%f\n", CpFz(273.15));
     return 0;
 }
 */
@@ -261,6 +262,11 @@ double T_ext(double t)
     }
 }
 
+/* Return the external temperature if it's not changing. */
+double T_inf() {
+    return Tinf;
+}
+
 /* Return the initial temperature. Used for setting up the temperature inside
  * the can at the start of the simulation.
  */
@@ -350,7 +356,7 @@ double X_ice(double T)
         return 0; /* No ice formed above the freezing point */
     } else {
         x_w1 = exp((1/Tf - 1/T) * Hfus/R);
-        return ( 1-x_w1-X_solids() );
+        return ( 1-x_w1-Xs );
     }
 }
 
@@ -397,12 +403,32 @@ double Xv_water(double T)
 }
 
 /**
+ * Determine the volume fraction of ice
+ */
+double Xv_ice(double T)
+{
+    double Mi, Mw, Ms;
+
+    Mi = M_ice(X_ice(T), X_solids());
+    Mw = M_ice(MoleFrac(Mwat, MW_wat)-X_ice(T), X_solids());
+    Ms = 1-Mi-Mw;
+
+    /* FixMe! */
+    return (Mi/p_ice(T)) / (Mi/p_ice(T) + Mw/p_water(T) + Ms/p_solids(T));
+}
+
+/**
  * Calculate the rate of reaction factoring in increase in concentration as a
  * result of the ice crystals forming.
  */
 double reaction_rate(double T, double c)
 {
     return -AA*exp(-EaA/(R*T))*Xv_water(To)/Xv_water(T)*c;
+}
+
+double alphaFZ(double T)
+{
+    return k(T)/(rho(T)*CpFz(T));
 }
 
 /**
@@ -415,6 +441,7 @@ double CpFz(double T)
     double Mi, Mw, Ms, dMi, dMw, Ti;
     double Xw, Xs;
     double dT = 0.0001; /* Used for calculating derivatives */
+    //double dT = 1;
 
     Xw = MoleFrac(Mwat, MW_wat);
     Xs = X_solids();
@@ -429,7 +456,7 @@ double CpFz(double T)
     dMi = (M_ice(X_ice(T+dT), Xs)-Mi)/dT;
     dMw = (M_ice(Xw-X_ice(T+dT), Xs)-Mw)/dT;
 
-    return ( Mw*Cp_water(T) + Ms*Cp_solids(T) + Mi*Cp_ice(T) - Hfus*dMi -
+    return ( Mw*Cp_water(T) + Ms*Cp_solids(T) + Mi*Cp_ice(T)  - Hfus*dMi -
              (dMw*Cp_water(T) + dMi*Cp_ice(T))*(Ti-T) );
 }
 

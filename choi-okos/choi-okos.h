@@ -8,15 +8,16 @@ extern "C" {
 #define MALLOC_CHECK(x) if(x == NULL){report_error("Failed to allocate memory for #x"); exit(1);}
 
 #define alpha(T) (k((T))/(rho((T))*Cp((T))))
-#define alphaFZ(T) (k((T))/(rho((T))*CpFz((T))))
 
 /* Function prototypes */
+double alphaFZ(double);
 double Cp(double);
 double k(double);
 double reaction_rate1(double, double);
 double reaction_rate2(double, double);
 double T_init(double);
 double T_ext(double);
+double T_inf();
 //double h(double);
 double rho(double); 
 double mu(double);
@@ -34,6 +35,7 @@ double p_solids(double);
 double p_water(double);
 double p_ice(double);
 double Xv_water(double);
+double Xv_ice(double);
 double reaction_rate(double, double);
 double CpFz(double);
 double Cp_water(double);

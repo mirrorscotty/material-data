@@ -195,6 +195,8 @@ double k(double T)
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
     double Xv_pro, Xv_fat, Xv_car, Xv_fib, Xv_ash, Xv_wat, Xv_ice;
 
+    double Mi = M_ice(X_ice(T), X_solids());
+
     T -= 273.15;
 
     /* Calculate the thermal conductivities of the materials */
@@ -216,13 +218,13 @@ double k(double T)
     p_ice = 916.89 - 1.3071e-1*T;
 
     /* Determine the volume fraction of each component */
-    Xv_pro = (Mpro/p_pro) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_fat = (Mfat/p_fat) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_car = (Mcar/p_car) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_fib = (Mfib/p_fib) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_ash = (Mash/p_ash) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_wat = (Mwat/p_wat) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_ice = (Mice/p_ice) / (Mwat/p_wat+Mice/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_pro = (Mpro/p_pro) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_fat = (Mfat/p_fat) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_car = (Mcar/p_car) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_fib = (Mfib/p_fib) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_ash = (Mash/p_ash) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_wat = ((Mwat-Mi)/p_wat) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_ice = (Mi/p_ice) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
 
     /* Calculate the thermal conductivity and return it */
     return k_pro*Xv_pro + k_fat*Xv_fat + k_car*Xv_car + k_fib*Xv_fib + k_ash*Xv_ash + k_wat*Xv_wat + k_ice*Xv_ice;
@@ -235,6 +237,8 @@ double rho(double T)
 {
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
 
+    double Mi = M_ice(X_ice(T), X_solids());
+
     T -= 273.15;
 
     /* Calculate the densities */
@@ -246,7 +250,7 @@ double rho(double T)
     p_wat = 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
     p_ice = 916.89 - 1.3071e-1*T;
 
-    return 1/(Mpro/p_pro + Mfat/p_fat + Mcar/p_car + Mfib/p_fib + Mash/p_ash + Mwat/p_wat + Mice/p_ice);
+    return 1/(Mpro/p_pro + Mfat/p_fat + Mcar/p_car + Mfib/p_fib + Mash/p_ash + (Mwat-Mi)/p_wat + Mi/p_ice);
 }
 
 /* Function to return the external temperature of the can. Based on the time,
@@ -307,16 +311,7 @@ double mu(double T)
 //}
 
 /* ----------------------- Freezing Stuff ----------------------- */
-/**
- * Calculate the mass fraction of ice given the mole fraction of ice and solids
- * x -> ice/water
- * y -> solids
- */
-double M_ice(double x, double y)
-{
-    double MW_s = MW_solids();
-    return ( x*MW_wat/(x*MW_wat+(1-x-y)*MW_wat+y*MW_s) );
-}
+
 
 /* Calculate the mole fraction of "a" given it's mass fraction and molecular
  * weight. The total number of mole is calculated from the composition data
@@ -328,18 +323,22 @@ double MoleFrac(double Ma, double MWa)
     return (Ma/MWa)/total_moles;
 }
 
-/* Determine the average molecular weight of the solids. */
+/* Determine the average molecular weight of the solids.
+ * TODO: fix this function so that it makes sense.
+ */
 double MW_solids()
 {
     return (MW_pro + MW_fat + MW_car + MW_fib + MW_ash)/5.0;
 }
 
-/* Mole fraction of solids */
-double X_solids()
+/* Might as well have this function be just as incorrect as the one above it.
+ */
+double MW_average()
 {
-    return 1-MoleFrac((Mwat+Mice), MW_wat);
+    return (5*MW_solids() + MW_wat)/6;
 }
 
+#ifdef CALC_ICE_FORMATION
 /**
  * Calculate the mole fraction of ice in food given the temperature and mole
  * fraction of solids
@@ -359,6 +358,33 @@ double X_ice(double T)
         return ( 1-x_w1-Xs );
     }
 }
+
+double IceMassFrac(double T) {
+    return X_ice(T)*MW_wat/MW_average();
+}
+
+/* Mole fraction of solids */
+double X_solids()
+{
+    return 1-MoleFrac((Mwat+Mice), MW_wat);
+}
+
+/**
+ * Calculate the mass fraction of ice given the mole fraction of ice and solids
+ * x -> ice/water
+ * y -> solids
+ */
+double M_ice(double x, double y)
+{
+    double MW_s = MW_solids();
+    return ( x*MW_wat/(x*MW_wat+(1-x-y)*MW_wat+y*MW_s) );
+}
+
+#else
+double X_ice(double T) { return 0; }
+double X_solids() { return 1; }
+double M_ice(double x, double y) { return 0; }
+#endif
 
 double p_solids(double T)
 {
@@ -440,8 +466,8 @@ double CpFz(double T)
 {
     double Mi, Mw, Ms, dMi, dMw, Ti;
     double Xw, Xs;
-    double dT = 0.0001; /* Used for calculating derivatives */
-    //double dT = 1;
+    //double dT = 0.0001; /* Used for calculating derivatives */
+    double dT = 1;
 
     Xw = MoleFrac(Mwat, MW_wat);
     Xs = X_solids();

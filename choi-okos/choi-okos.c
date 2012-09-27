@@ -35,7 +35,7 @@ double To, Text_hot, Text_cold, Tinf;
 double v, L, t_heat;
 
 /* Variables for freezing */
-double MW_wat, MW_pro, MW_fat, MW_car, MW_fib, MW_ash;
+double MW_wat, MW_pro, MW_fat=1, MW_car, MW_fib, MW_ash;
 double Hfus = 6010;
 double Tf = 273.15;
 double R = 8.314;

@@ -41,6 +41,7 @@ double CpFz(double);
 double Cp_water(double);
 double Cp_solids(double);
 double Cp_ice(double);
+double IceMassFrac(double);
 
 
 #ifdef __cplusplus

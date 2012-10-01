@@ -58,6 +58,9 @@ int main(int argc, char *argv[])
 
 /* Set all global variables to an initial value of zero in case something goes
  * horrible, horribly wrong and something tries to read an uninitialized value.
+ *
+ * This function hasn't been updated in a while, so it probably doesn't set
+ * everything to zero that it should. Ah well.
  */
 void initialize_variables()
 {
@@ -155,7 +158,7 @@ int output_data()
 	return 0;
 }
 
-/* Functions to actually calculate stuff. */
+/* Functions to actually calculate properties. */
 
 /* ----------------------- Heat Transfer Stuff ----------------------- */
 
@@ -319,25 +322,38 @@ double mu(double T)
 double MoleFrac(double Ma, double MWa)
 {
     double total_moles;
-    total_moles = (Mwat+Mice)/MW_wat + Mpro/MW_pro + Mfat/MW_fat + Mcar/MW_car + Mfib/MW_fib + Mash/MW_ash;
+    total_moles = (Mwat+Mice)/MW_wat + Mpro/MW_pro + Mcar/MW_car + Mfib/MW_fib + Mash/MW_ash;
     return (Ma/MWa)/total_moles;
 }
 
-/* Determine the average molecular weight of the solids.
- * TODO: fix this function so that it makes sense.
+/* Determine the average molecular weight of the soluble solids. Fat is not
+ * soluble.
  */
 double MW_solids()
 {
-    return (MW_pro + MW_fat + MW_car + MW_fib + MW_ash)/5.0;
+    double  Xpro = MoleFrac(Mpro, MW_pro),
+            Xcar = MoleFrac(Mcar, MW_car),
+            Xfib = MoleFrac(Mfib, MW_fib),
+            Xash = MoleFrac(Mash, MW_ash),
+            Xs = Xpro + Xcar + Xfib + Xash;
+
+
+    return (MW_pro*Xpro + MW_car*Xcar + MW_fib*Xfib + MW_ash*Xash)/Xs;
 }
 
-/* Might as well have this function be just as incorrect as the one above it.
- */
+/* Return the average mass fraction of the aqueous phase. */
 double MW_average()
 {
-    return (5*MW_solids() + MW_wat)/6;
+    double  Xpro = MoleFrac(Mpro, MW_pro),
+            Xcar = MoleFrac(Mcar, MW_car),
+            Xfib = MoleFrac(Mfib, MW_fib),
+            Xash = MoleFrac(Mash, MW_ash),
+            Xwat = MoleFrac(Mwat, MW_wat);
+    return Xwat*MW_wat + Xpro*MW_pro + Xcar*MW_car + Xfib*MW_fib + Xash*MW_ash;
 }
 
+/* Only have these functions work if we're using the freezing model. Adding
+ * this stuff to the sterilization model kind of breaks it. */
 #ifdef CALC_ICE_FORMATION
 /**
  * Calculate the mole fraction of ice in food given the temperature and mole
@@ -366,7 +382,12 @@ double IceMassFrac(double T) {
 /* Mole fraction of solids */
 double X_solids()
 {
-    return 1-MoleFrac((Mwat+Mice), MW_wat);
+    double  Xpro = MoleFrac(Mpro, MW_pro),
+            Xcar = MoleFrac(Mcar, MW_car),
+            Xfib = MoleFrac(Mfib, MW_fib),
+            Xash = MoleFrac(Mash, MW_ash),
+            Xs = Xpro + Xcar + Xfib + Xash;
+    return Xs;
 }
 
 /**
@@ -380,12 +401,14 @@ double M_ice(double x, double y)
     return ( x*MW_wat/(x*MW_wat+(1-x-y)*MW_wat+y*MW_s) );
 }
 
-#else
+#else /* Return safe values if we're not doing freezing */
 double X_ice(double T) { return 0; }
 double X_solids() { return 1; }
 double M_ice(double x, double y) { return 0; }
 #endif
 
+/* Return the density of all of the solids (excluding ice, which is calculated
+ * separately. */
 double p_solids(double T)
 {
     double p_pro, p_fat, p_car, p_fib, p_ash;
@@ -401,12 +424,14 @@ double p_solids(double T)
     return 1/(Mpro/p_pro + Mfat/p_fat + Mcar/p_car + Mfib/p_fib + Mash/p_ash);
 }
 
+/* Density of liquid water. */
 double p_water(double T)
 {
     T = T-273.15;
     return 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
 }
 
+/* Density of ice. */
 double p_ice(double T)
 {
     T = T-273.15;
@@ -486,6 +511,7 @@ double CpFz(double T)
              (dMw*Cp_water(T) + dMi*Cp_ice(T))*(Ti-T) );
 }
 
+/* Heat capacity of just liquid water. */
 double Cp_water(double T)
 {
     T = T-273.15;
@@ -496,6 +522,7 @@ double Cp_water(double T)
     }
 }
 
+/* Heat capacity of all solids, excluding ice. */
 double Cp_solids(double T)
 {
     double Cp_pro, Cp_fat, Cp_car, Cp_ash, Cp_fib;
@@ -509,6 +536,7 @@ double Cp_solids(double T)
     return Mpro*Cp_pro + Mfat*Cp_fat + Mcar*Cp_car + Mfib*Cp_fib + Mash*Cp_ash;
 }
 
+/* Heat capacity of ice */
 double Cp_ice(double T)
 {
     T = T-273.15;

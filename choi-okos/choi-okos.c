@@ -109,9 +109,7 @@ int report_error(const char *str)
 }
 
 /* Test function to spit out a table of data with the x values in one column
- * and the results of a function the other.
- */
-
+ * and the results of a function the other. */
 int output_data()
 {
 	double min, max;
@@ -188,9 +186,11 @@ double Cp(double T)
     return Mpro*Cp_pro + Mfat*Cp_fat + Mcar*Cp_car + Mfib*Cp_fib + Mash*Cp_ash + Mwat*Cp_wat + Mice*Cp_ice;
 }
 
-/* Calculate the thermal conductivity using the Choi-Okos equations. */
-/* T has units of K and a valid range of -40C to 150C
- * k has units of W/(m K) */
+/**
+ * Calculate the thermal conductivity using the Choi-Okos equations.
+ * T has units of K and a valid range of -40C to 150C
+ * k has units of W/(m K)
+ */
 double k(double T)
 {
     /* Define all of the local variables needed */
@@ -233,9 +233,11 @@ double k(double T)
     return k_pro*Xv_pro + k_fat*Xv_fat + k_car*Xv_car + k_fib*Xv_fib + k_ash*Xv_ash + k_wat*Xv_wat + k_ice*Xv_ice;
 }
 
-/* Calculate density using the Choi-Okos equations. */
-/* T has units of K and a valid range of -40C to 150C
- * rho has units of kg/m^3 */
+/**
+ * Calculate density using the Choi-Okos equations.
+ * T has units of K and a valid range of -40C to 150C
+ * rho has units of kg/m^3
+ */
 double rho(double T)
 {
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
@@ -283,11 +285,11 @@ double T_init(double t)
 }
 
 /* Calculate the viscosity using an Arrhenius-type equation. */
-double mu(double T)
-{
-    return A*pow(10, (B/(T-C)));
-    /* Source: http://en.wikipedia.org/wiki/Viscosity/Viscosity_of_water */
-}
+//double mu(double T)
+//{
+//    return A*pow(10, (B/(T-C)));
+//    /* Source: http://en.wikipedia.org/wiki/Viscosity/Viscosity_of_water */
+//}
 
 /* Determine the convective heat transfer coefficient */
 //double h(double T)
@@ -316,9 +318,11 @@ double mu(double T)
 /* ----------------------- Freezing Stuff ----------------------- */
 
 
-/* Calculate the mole fraction of "a" given it's mass fraction and molecular
+/**
+ * Calculate the mole fraction of "a" given it's mass fraction and molecular
  * weight. The total number of mole is calculated from the composition data
- * provided in the data file. */
+ * provided in the data file.
+ */
 double MoleFrac(double Ma, double MWa)
 {
     double total_moles;
@@ -326,7 +330,8 @@ double MoleFrac(double Ma, double MWa)
     return (Ma/MWa)/total_moles;
 }
 
-/* Determine the average molecular weight of the soluble solids. Fat is not
+/**
+ * Determine the average molecular weight of the soluble solids. Fat is not
  * soluble.
  */
 double MW_solids()
@@ -341,7 +346,9 @@ double MW_solids()
     return (MW_pro*Xpro + MW_car*Xcar + MW_fib*Xfib + MW_ash*Xash)/Xs;
 }
 
-/* Return the average mass fraction of the aqueous phase. */
+/**
+ * Return the average mass fraction of the aqueous phase.
+ */
 double MW_average()
 {
     double  Xpro = MoleFrac(Mpro, MW_pro),
@@ -357,7 +364,8 @@ double MW_average()
 #ifdef CALC_ICE_FORMATION
 /**
  * Calculate the mole fraction of ice in food given the temperature and mole
- * fraction of solids
+ * fraction of solids.
+ * T has units of Kelvin.
  */
 double X_ice(double T)
 {
@@ -375,11 +383,19 @@ double X_ice(double T)
     }
 }
 
+/**
+ * @brief IceMassFrac
+ * @param T Temperature (in K)
+ * @return Mass fraction of ice.
+ */
 double IceMassFrac(double T) {
     return X_ice(T)*MW_wat/MW_average();
 }
 
-/* Mole fraction of solids */
+/**
+ * @brief Calculate the mole fraction of soluble solids.
+ * @return Mole fraction of solids.
+ */
 double X_solids()
 {
     double  Xpro = MoleFrac(Mpro, MW_pro),
@@ -391,9 +407,10 @@ double X_solids()
 }
 
 /**
- * Calculate the mass fraction of ice given the mole fraction of ice and solids
- * x -> ice/water
- * y -> solids
+ * @brief Calculate the mass fraction of ice given the mole fraction of ice and solids.
+ * @param x Mole fraction of ice/water
+ * @param y Mole fraction of solids
+ * @return Mass fraction of ice.
  */
 double M_ice(double x, double y)
 {
@@ -409,6 +426,12 @@ double M_ice(double x, double y) { return 0; }
 
 /* Return the density of all of the solids (excluding ice, which is calculated
  * separately. */
+/**
+ * @brief Determine the density of all the solids.
+ * Ice is excluded from this calculation and is determined separately.
+ * @param T Temperature (in K)
+ * @return Average density (kg/m^3)
+ */
 double p_solids(double T)
 {
     double p_pro, p_fat, p_car, p_fib, p_ash;
@@ -439,7 +462,9 @@ double p_ice(double T)
 }
 
 /**
- * Determine the volume fraction of water
+ * @brief Determine the volume fraction of water.
+ * @param T Temperature (K)
+ * @return Volume fraction of water
  */
 double Xv_water(double T)
 {
@@ -454,7 +479,9 @@ double Xv_water(double T)
 }
 
 /**
- * Determine the volume fraction of ice
+ * @brief Determine the volume fraction of ice.
+ * @param T Temperature (K)
+ * @return Volume fraction of ice
  */
 double Xv_ice(double T)
 {
@@ -469,23 +496,34 @@ double Xv_ice(double T)
 }
 
 /**
+ * @brief Reactionr ate
  * Calculate the rate of reaction factoring in increase in concentration as a
  * result of the ice crystals forming.
+ * @param T Temperature (K)
+ * @param c Concentration (kg/L)
+ * @return Derivative of concentration with respect to time.
  */
 double reaction_rate(double T, double c)
 {
     return -AA*exp(-EaA/(R*T))*Xv_water(To)/Xv_water(T)*c;
 }
 
+/**
+ * @brief Calculate thermal diffusivity during freezing.
+ * @param T Temperature (K)
+ * @return Thermal diffusivity (m^2/s)
+ */
 double alphaFZ(double T)
 {
     return k(T)/(rho(T)*CpFz(T));
 }
 
 /**
- * Calculate the heat capacity of the partially frozen food products.
+ * @brief Calculate the heat capacity of the partially frozen food products.
  * TODO: Compare this against the regular Cp function for temperatures above
  * freezing.
+ * @param T Temperature (K)
+ * @return Heat capacity ( W/(m K) )
  */
 double CpFz(double T)
 {
@@ -511,7 +549,11 @@ double CpFz(double T)
              (dMw*Cp_water(T) + dMi*Cp_ice(T))*(Ti-T) );
 }
 
-/* Heat capacity of just liquid water. */
+/**
+ * @brief Heat capacity of just liquid water.
+ * @param T Temperature (K)
+ * @return Heat capacity ( W/(m K) )
+ */
 double Cp_water(double T)
 {
     T = T-273.15;
@@ -522,7 +564,11 @@ double Cp_water(double T)
     }
 }
 
-/* Heat capacity of all solids, excluding ice. */
+/**
+ * @brief Heat capacity of all solids, excluding ice.
+ * @param T Temperature (K)
+ * @return Heat capacity ( W/(m K) )
+ */
 double Cp_solids(double T)
 {
     double Cp_pro, Cp_fat, Cp_car, Cp_ash, Cp_fib;
@@ -536,7 +582,11 @@ double Cp_solids(double T)
     return Mpro*Cp_pro + Mfat*Cp_fat + Mcar*Cp_car + Mfib*Cp_fib + Mash*Cp_ash;
 }
 
-/* Heat capacity of ice */
+/**
+ * @brief Heat capacity of ice
+ * @param T Temperature (K)
+ * @return Heat capacity ( W/(m K) )
+ */
 double Cp_ice(double T)
 {
     T = T-273.15;

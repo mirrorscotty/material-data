@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "can.h"
+#include "datafile.h"
 
 #ifdef __linux__ /* Not using windows */
 #include<errno.h> /* Include the standard error reporting library */
@@ -33,15 +34,18 @@ double Sutherland, Tref, muref;
 double To, Text_hot, Text_cold;
 double v, L, t_heat;
 
-int main(int argc, char *argv[])
-{
-    initialize_variables();
-    init("can_data.dat");
+/* Variables for the finite difference solver */
+double Deltax, NNodes, Deltat, NTimeSteps;
+
+//int main(int argc, char *argv[])
+//{
+//    initialize_variables();
+//    init("can_data.dat");
 	/*output_data()*/
     //printf("%f\n", k(80+273)/(rho(80+273)*Cp(80+273)));
-    printf("%f\n", k(80+273));
-	return 0;
-}
+//    printf("%f\n", k(80+273));
+//	return 0;
+//}
 
 /* Set all global variables to an initial value of zero in case something goes
  * horrible, horribly wrong and something tries to read an uninitialized value.
@@ -74,6 +78,11 @@ void initialize_variables()
     v = 0;
     L = 0;
     t_heat = 0;
+
+    Deltax = 0;
+    NNodes = 0;
+    Deltat = 0;
+    NTimeSteps = 0;
 }
 
 int report_error(const char *str)
@@ -165,6 +174,7 @@ EXTCAN_API const char * getLastError()
  * The LOOP macro simply calls the function multiple times since Comsol expects
  * the result to be an array with the same number of elements 
  */
+/*
 EXTCAN_API int eval(const char *func,
 		   int nArgs,
 		   const double **inReal,
@@ -198,12 +208,14 @@ EXTCAN_API int eval(const char *func,
 	}
     return 1;
 }
+*/
 
 /* Functions to actually calculate stuff. */
 
 /**
  * Calculate heat capacity using the magic of the Choi-Okos Equations.
  * T is in Kelvins
+ * Cp has units of J/K
  */
 double Cp(double T)
 {
@@ -227,12 +239,16 @@ double Cp(double T)
 }
 
 /* Calculate the thermal conductivity using the Choi-Okos equations. */
+/* T has units of K and a valid range of -40C to 150C
+ * k has units of W/(m K) */
 double k(double T)
 {
     /* Define all of the local variables needed */
     double k_pro, k_fat, k_car, k_fib, k_ash, k_wat, k_ice;
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
     double Xv_pro, Xv_fat, Xv_car, Xv_fib, Xv_ash, Xv_wat, Xv_ice;
+
+    T -= 273.15;
 
     /* Calculate the thermal conductivities of the materials */
     k_pro = 1.7881e-1 + 1.1958e-3*T - 2.7178e-6*pow(T, 2);
@@ -265,24 +281,36 @@ double k(double T)
     return k_pro*Xv_pro + k_fat*Xv_fat + k_car*Xv_car + k_fib*Xv_fib + k_ash*Xv_ash + k_wat*Xv_wat + k_ice*Xv_ice;
 }
 
+//double alpha(double T)
+//{
+//    return k(T)/(rho(T)*Cp(T));
+//}
+
 /**
- * Calculate the rate of reaction factoring in increase in concentration as a
- * result of the ice crystals forming.
+ * Calculate the reaction rate constant.
  */
 double reaction_rate1(double T, double c)
 {
-	return -AA*exp(-EaA/(R*T))*c;
+    // Fix since I'm too lazy to load it from the GUI;
+    R = 8.314;
+	return AA*exp(-EaA/(R*T));
 }
 
 double reaction_rate2(double T, double c)
 {
-	return -AB*exp(-EaB/(R*T))*c;
+    // Fix since I'm too lazy to load it from the GUI;
+    R = 8.314;
+	return AB*exp(-EaB/(R*T));
 }
 
 /* Calculate density using the Choi-Okos equations. */
+/* T has units of K and a valid range of -40C to 150C
+ * rho has units of kg/m^3 */
 double rho(double T)
 {
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
+
+    T -= 273.15;
 
     /* Calculate the densities */
     p_pro = 1.3299e3 - 5.1840e-1*T;
@@ -325,26 +353,26 @@ double mu(double T)
 }
 
 /* Determine the convective heat transfer coefficient */
-double h(double T)
-{
-    double Re, Pr, p, Cp_wat, k;
-    T = T-273.15; /* Convert to Celcius */
-
-    /* Calculate the required data for water */
-    k = 5.7109e-1 + 1.762e-3*T - 6.703e-6*pow(T, 2);
-    if(T >= 0) {
-        Cp_wat = 4.1289 + 9.0864e-5*T - 5.4731e-6*pow(T, 2);
-    } else {
-        Cp_wat = 4.1289 + 5.3062e-3*T - 9.9516e-4*pow(T, 2);
-    }
-    p = 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
-
-    T = T + 273.15; /* Convert back to Kelvin to find viscosity */
-    /* Calculate the Reynolds and Prandlt numbers */
-    Re = p*v*L/mu(T);
-    Pr = Cp_wat*mu(T)/k;
-    
-    /* Source: An introduction to Heat and Mass Transfer (Middleman) */
-    return (0.35 + 0.56*pow(Re,0.52))*pow(Pr,0.3)*k/L;
-}
+//double h(double T)
+//{
+//    double Re, Pr, p, Cp_wat, k;
+//   T = T-273.15; /* Convert to Celcius */
+//
+//    /* Calculate the required data for water */
+//   k = 5.7109e-1 + 1.762e-3*T - 6.703e-6*pow(T, 2);
+//    if(T >= 0) {
+//        Cp_wat = 4.1289 + 9.0864e-5*T - 5.4731e-6*pow(T, 2);
+//    } else {
+//        Cp_wat = 4.1289 + 5.3062e-3*T - 9.9516e-4*pow(T, 2);
+//    }
+//    p = 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
+//
+//    T = T + 273.15; /* Convert back to Kelvin to find viscosity */
+//    /* Calculate the Reynolds and Prandlt numbers */
+//    Re = p*v*L/mu(T);
+//    Pr = Cp_wat*mu(T)/k;
+//    
+//    /* Source: An introduction to Heat and Mass Transfer (Middleman) */
+//    return (0.35 + 0.56*pow(Re,0.52))*pow(Pr,0.3)*k/L;
+//}
 

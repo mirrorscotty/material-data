@@ -26,51 +26,6 @@ double MW_wat, MW_pro, MW_fat, MW_car, MW_fib, MW_ash;
 double Mwat, Mpro, Mfat, Mcar, Mfib, Mash, Mice;
 double Ea, A, To, Tf, L, R;
 
-/*
-int main(int argc, char *argv[])
-{
-    init("freezing_data.dat");
-	output_data();
-	return 0;
-}
-*/
-
-/* Test function to spit out a table of data with the x values in one column
- * and the results of a function the other.
- */
-/*
-int output_data()
-{
-	double min, max;
-	int points, i;
-	const char *file = "out.csv";
-
-	FILE *fp;
-	fp = fopen(file, "w");
-
-	min = 100;
-	max = 280;
-	points = 100;
-
-	double *x, *y;
-	x = (double*) malloc(sizeof(double)*points);
-	y = (double*) malloc(sizeof(double)*points);
-
-    //MALLOC_CHECK(x || y)
-
-	for (i=1; i < points; i++) {
-		x[i] = min+(max-min)*i/points;
-		y[i] = Cp(x[i]);
-		fprintf(fp, "%f,%f\n", x[i], y[i]);
-	}
-
-	fclose(fp);
-//	free(x);
-//	free(y);
-
-	return 0;
-}
-*/
 char** read_datafile(char *filename)
 {
     FILE *fp;
@@ -103,9 +58,9 @@ char** read_datafile(char *filename)
             if(buffer[i][j] == '\0') {
                 break;
             }
-	    if(buffer[i][j] == '\n') {
-	    	break;
-	    }
+            if(buffer[i][j] == '\n') {
+                break;
+            }
         }
     }
     
@@ -115,7 +70,7 @@ char** read_datafile(char *filename)
 /* Deallocate the memory for the buffer created with "read_datafile" */
 int delete_buffer(char** buffer)
 {
-    int i, j;
+    int i;
     for(i=0; i < 200; i++) {
         free(buffer[i]);
     }
@@ -156,7 +111,7 @@ variable read_line(char* line)
 	FIND("R", data, line)
 
 	if(strcmp(data.name, "")) {
-		if(value = strpbrk(line, "0123456789.-")) {
+		if( (value = strpbrk(line, "0123456789.-")) ) {
 			data.value = atof(value);
 		}
 	} else {
@@ -243,7 +198,7 @@ EXTFZ_API int init(const char *str)
     int i, j;
     j = 0;
 
-    buffer = read_datafile(str);
+    buffer = read_datafile( (char*)str );
 
     for(i=0; i < 200; i++) {
         buffer[i] = remove_comments(buffer[i]);
@@ -285,7 +240,7 @@ EXTFZ_API int eval(const char *func,
 		   double *outReal,
 		   double *outImag)
 {
-	int i, j;
+	int i;
 	if(strcmp(func, "Cp") == 0) {
 		LOOP(Cp)
 	} else if(strcmp(func, "rho") == 0) {
@@ -523,4 +478,11 @@ double reaction_rate(double T, double c)
 	return -A*exp(-Ea/(R*T))*Xv_water(To)/Xv_water(T)*c;
 }
 
+/**
+ * Determine the thermal diffusivity of the material.
+ */
+double alpha(double T)
+{
+    return k(T)/(rho(T) * Cp(T));
+}
 

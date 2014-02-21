@@ -1,6 +1,10 @@
 #ifndef CAN_H
 #define CAN_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef CAN_DLLEXPORT
 #define EXTCAN_API __declspec(dllexport)
 #else
@@ -16,6 +20,7 @@
 #define LOOP2(x) for(i=0;i<blockSize;i++){outReal[i]=x(inReal[0][i],inReal[1][i]);}
 #define MALLOC_CHECK(x) if(x == NULL){report_error("Failed to allocate memory for #x"); exit(1);}
 
+#define alpha(T) (k((T))/(rho((T))*Cp((T))))
 
 /* Function prototypes */
 double Cp(double);
@@ -24,15 +29,20 @@ double reaction_rate1(double, double);
 double reaction_rate2(double, double);
 double T_init(double);
 double T_ext(double);
-double h(double);
+//double h(double);
 double rho(double); 
 double mu(double);
 
 void initialize_variables();
 int output_data();
+int report_error(const char*);
 
 EXTCAN_API int init(const char*);
 EXTCAN_API const char * getLastError();
 EXTCAN_API int eval(const char*, int, const double**, const double**, int, double*, double*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

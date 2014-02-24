@@ -44,3 +44,25 @@ double DiffCh10(double X, double T)
     return Deff;
 }
 
+double DiffCh10GAB(double X, double T)
+{
+    gab *dat;
+    dat = CreateGABData();
+
+    double Deff;
+    /* Source: Xiong et al (1991) */
+    double D0 = 6.3910e-8;
+
+    /* Source: Litchfield and Okos (1986) */
+    double Ea = 25900;
+
+    double K = 1032.6;
+    double Eb = BindingEnergyGAB(dat, X, T);
+    double R = 8.314;
+
+    Deff = D0 * exp(-Ea/(R*T))
+        * ( K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T))) );
+
+    return Deff;
+}
+

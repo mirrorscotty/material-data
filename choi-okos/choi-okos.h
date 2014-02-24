@@ -9,20 +9,41 @@ extern "C" {
 
 #define alpha(T) (k((T))/(rho((T))*Cp((T))))
 
+struct _choi_okos {
+    double R; /* Gas constant */
+
+    /* Mass fractions of components */
+    double Mpro; /* Protein */
+    double Mfat; /* Fat */
+    double Mcar; /* Carbohydrates */
+    double Mfib; /* Fiber */
+    double Mash; /* Ash */
+    double Mwat; /* Water */
+    double Mice; /* Ice */
+
+    /* Molar masses of pure components */
+    double MW_pro;
+    double MW_fat;
+    double MW_car;
+    double MW_fib;
+    double MW_ash;
+    double MW_wat;
+
+    /* Freezing parameters */
+    double Hfus; /* Heat of fusion (for water) */
+    double Tf; /* Normal freezing point (for water) */
+};
+typedef struct _choi_okos choi_okos;
+
 /* Function prototypes */
 double alphaFZ(double);
-double Cp(double);
-double k(double);
-double reaction_rate1(double, double);
-double reaction_rate2(double, double);
-double T_init(double);
-double T_ext(double);
-double T_inf();
-//double h(double);
-double rho(double); 
-double mu(double);
+double Cp(choi_okos*, double);
+double k(choi_okos*, double);
+double rho(choi_okos*, double); 
+double mu(choi_okos*, double);
 
-void initialize_variables();
+choi_okos *CreateChoiOkos(double, double, double, double, double, double, double);
+void DestroyChoiOkos(choi_okos*);
 int output_data();
 int report_error(const char*);
 
@@ -36,7 +57,6 @@ double p_water(double);
 double p_ice(double);
 double Xv_water(double);
 double Xv_ice(double);
-double reaction_rate(double, double);
 double CpFz(double);
 double Cp_water(double);
 double Cp_solids(double);

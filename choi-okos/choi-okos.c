@@ -18,83 +18,41 @@
  * Double check functions to make sure they're accurate
  */
 
-
 /* Define a variable to hold any error messages returned by the function */
 static const char *error = NULL;
 
-/* Annoying global variable definitions. For now, all the model parameters are
- * hard coded into the dll using these variables. This should be changed to
- * allow them to be read in from a data file.
- */
-double Mpro, Mfat, Mcar, Mfib, Mash, Mwat, Mice;
-double AA, EaA, AB, EaB;
-double A, B, C;
-double Pressure, molar_mass;
-double Sutherland, Tref, muref;
-double To, Text_hot, Text_cold, Tinf;
-double v, L, t_heat;
-
-/* Variables for freezing */
-double MW_wat, MW_pro, MW_fat=1, MW_car, MW_fib, MW_ash;
-double Hfus = 6010;
-double Tf = 273.15;
-double R = 8.314;
-
-
-/* Variables for the finite difference solver */
-double Deltax, NNodes, Deltat, NTimeSteps;
-
-/*
-int main(int argc, char *argv[])
+choi_okos* CreateChoiOkos(double Mpro, double Mfat, double Mcar,
+                          double Mfib, double Mash, double Mwat,
+                          double Mice)
 {
-    initialize_variables();
-    get_vars("randomdata.dat");
-    //output_data()
-    printf("%f\n", Cp(273.15));
-    printf("%f\n", CpFz(273.15));
-    return 0;
+    choi_okos *co;
+    co = (choi_okos*) calloc(sizeof(choi_okos), 1);
+    co->Mpro = Mpro;
+    co->Mfat = Mfat;
+    co->Mcar = Mcar;
+    co->Mfib = Mfib;
+    co->Mash = Mash;
+    co->Mwat = Mwat;
+    co->Mice = Mice;
+
+    /* We don't do freezing... yet. */
+    co->MW_pro = 0;
+    co->MW_fat = 1;
+    co->MW_car = 0;
+    co->MW_fib = 0;
+    co->MW_ash = 0;
+    co->MW_wat = 0;
+
+    co->Hfus = 6010;
+    co->Tf = 273.15;
+    co->R = 8.314;
+
+    return co;
 }
-*/
 
-/* Set all global variables to an initial value of zero in case something goes
- * horrible, horribly wrong and something tries to read an uninitialized value.
- *
- * This function hasn't been updated in a while, so it probably doesn't set
- * everything to zero that it should. Ah well.
- */
-void initialize_variables()
+void DestroyChoiOkos(choi_okos *co)
 {
-    Mpro = 0;
-    Mfat = 0;
-    Mcar = 0;
-    Mfib = 0;
-    Mash = 0;
-    Mwat = 0;
-    Mice = 0;
-    AA = 0;
-    EaA = 0;
-    AB = 0;
-    EaB = 0;
-    R = 0;
-    A = 0;
-    B = 0;
-    C = 0;
-    Pressure = 0;
-    molar_mass = 0;
-    Sutherland = 0;
-    Tref = 0;
-    muref = 0;
-    To = 0;
-    Text_hot = 0;
-    Text_cold = 0;
-    v = 0;
-    L = 0;
-    t_heat = 0;
-
-    Deltax = 0;
-    NNodes = 0;
-    Deltat = 0;
-    NTimeSteps = 0;
+    free(co);
 }
 
 int report_error(const char *str)
@@ -108,54 +66,6 @@ int report_error(const char *str)
     #endif
 }
 
-/* Test function to spit out a table of data with the x values in one column
- * and the results of a function the other. */
-int output_data()
-{
-	double min, max;
-	int points, i;
-	const char *file = "out.csv";
-
-	FILE *fp;
-	double x, cp_, k_, rho_;
-
-    min = 0;
-    max = 0;
-    points = 0;
-    i = 0;
-    fp = NULL;
-    x = 0;
-    cp_ = 0;
-    k_ = 0;
-    rho_ = 0;
-
-	fp = fopen(file, "w");
-    if(!fp) {
-        report_error("Failed to open file for writing.");
-    }
-
-	min = 300;
-	max = 480;
-	points = 100;
-
-	for (i=1; i <= points; i++) {
-		x = min+(max-min)*i/points;
-		cp_ = Cp(x);
-        k_ = k(x);
-        rho_ = rho(x);
-		fprintf(fp, "%f,%f,%f,%f\n", x, cp_, k_, rho_);
-	}
-
-    if(fp) {
-        if(fclose(fp) != 0) {
-           report_error("Failed to close file.");
-           exit(1);           
-        }
-    }
-
-	return 0;
-}
-
 /* Functions to actually calculate properties. */
 
 /* ----------------------- Heat Transfer Stuff ----------------------- */
@@ -165,7 +75,7 @@ int output_data()
  * T is in Kelvins
  * Cp has units of J/K
  */
-double Cp(double T)
+double Cp(choi_okos *co, double T)
 {
     double Cp_wat, Cp_ice, Cp_pro, Cp_fat, Cp_car, Cp_ash, Cp_fib;
 
@@ -183,7 +93,8 @@ double Cp(double T)
     Cp_ash = 1.0926 + 1.8896e-3*T - 3.6817e-6*pow(T, 2);
     Cp_fib = 1.8459 + 1.8306e-3*T - 4.6509e-6*pow(T, 2);
  
-    return Mpro*Cp_pro + Mfat*Cp_fat + Mcar*Cp_car + Mfib*Cp_fib + Mash*Cp_ash + Mwat*Cp_wat + Mice*Cp_ice;
+    return co->Mpro*Cp_pro + co->Mfat*Cp_fat + co->Mcar*Cp_car
+        + co->Mfib*Cp_fib + co->Mash*Cp_ash + co->Mwat*Cp_wat + co->Mice*Cp_ice;
 }
 
 /**
@@ -191,14 +102,16 @@ double Cp(double T)
  * T has units of K and a valid range of -40C to 150C
  * k has units of W/(m K)
  */
-double k(double T)
+double k(choi_okos *co, double T)
 {
     /* Define all of the local variables needed */
     double k_pro, k_fat, k_car, k_fib, k_ash, k_wat, k_ice;
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
     double Xv_pro, Xv_fat, Xv_car, Xv_fib, Xv_ash, Xv_wat, Xv_ice;
 
-    double Mi = M_ice(X_ice(T), X_solids());
+    /* Freezing currently borked */
+    //double Mi = M_ice(X_ice(T), X_solids());
+    double Mi = 0;
 
     T -= 273.15;
 
@@ -221,16 +134,29 @@ double k(double T)
     p_ice = 916.89 - 1.3071e-1*T;
 
     /* Determine the volume fraction of each component */
-    Xv_pro = (Mpro/p_pro) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_fat = (Mfat/p_fat) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_car = (Mcar/p_car) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_fib = (Mfib/p_fib) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_ash = (Mash/p_ash) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_wat = ((Mwat-Mi)/p_wat) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
-    Xv_ice = (Mi/p_ice) / ((Mwat-Mi)/p_wat+Mi/p_ice+Mpro/p_pro+Mfat/p_fat+Mcar/p_car+Mfib/p_fib+Mash/p_ash);
+    Xv_pro = (co->Mpro/p_pro) / 
+        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
+         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
+    Xv_fat = (co->Mfat/p_fat) / 
+        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
+         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
+    Xv_car = (co->Mcar/p_car) /
+        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
+         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
+    Xv_fib = (co->Mfib/p_fib) /
+        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
+         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
+    Xv_ash = (co->Mash/p_ash) /
+        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
+         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
+    Xv_wat = ((co->Mwat-Mi)/p_wat) /
+        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
+         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
+    //Xv_ice = (Mi/p_ice) / ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
 
     /* Calculate the thermal conductivity and return it */
-    return k_pro*Xv_pro + k_fat*Xv_fat + k_car*Xv_car + k_fib*Xv_fib + k_ash*Xv_ash + k_wat*Xv_wat + k_ice*Xv_ice;
+    return k_pro*Xv_pro + k_fat*Xv_fat + k_car*Xv_car + k_fib*Xv_fib
+        + k_ash*Xv_ash + k_wat*Xv_wat; //+ k_ice*Xv_ice;
 }
 
 /**
@@ -238,11 +164,12 @@ double k(double T)
  * T has units of K and a valid range of -40C to 150C
  * rho has units of kg/m^3
  */
-double rho(double T)
+double rho(choi_okos *co, double T)
 {
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
 
-    double Mi = M_ice(X_ice(T), X_solids());
+    //double Mi = M_ice(X_ice(T), X_solids());
+    double Mi = 0;
 
     T -= 273.15;
 
@@ -255,68 +182,13 @@ double rho(double T)
     p_wat = 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
     p_ice = 916.89 - 1.3071e-1*T;
 
-    return 1/(Mpro/p_pro + Mfat/p_fat + Mcar/p_car + Mfib/p_fib + Mash/p_ash + (Mwat-Mi)/p_wat + Mi/p_ice);
+    return 1/(co->Mpro/p_pro + co->Mfat/p_fat + co->Mcar/p_car + co->Mfib/p_fib
+            + co->Mash/p_ash + (co->Mwat-Mi)/p_wat + Mi/p_ice);
 }
-
-/* Function to return the external temperature of the can. Based on the time,
- * this is either the hot or cold temperature, so that the can is able to be
- * heated and cooled in a single simulation run.
- */
-double T_ext(double t)
-{
-    if(t <= t_heat) {
-        return Text_hot;
-    } else {
-        return Text_cold;
-    }
-}
-
-/* Return the external temperature if it's not changing. */
-double T_inf() {
-    return Tinf;
-}
-
-/* Return the initial temperature. Used for setting up the temperature inside
- * the can at the start of the simulation.
- */
-double T_init(double t)
-{
-    return To;
-}
-
-/* Calculate the viscosity using an Arrhenius-type equation. */
-//double mu(double T)
-//{
-//    return A*pow(10, (B/(T-C)));
-//    /* Source: http://en.wikipedia.org/wiki/Viscosity/Viscosity_of_water */
-//}
-
-/* Determine the convective heat transfer coefficient */
-//double h(double T)
-//{
-//    double Re, Pr, p, Cp_wat, k;
-//   T = T-273.15; /* Convert to Celcius */
-//
-//    /* Calculate the required data for water */
-//   k = 5.7109e-1 + 1.762e-3*T - 6.703e-6*pow(T, 2);
-//    if(T >= 0) {
-//        Cp_wat = 4.1289 + 9.0864e-5*T - 5.4731e-6*pow(T, 2);
-//    } else {
-//        Cp_wat = 4.1289 + 5.3062e-3*T - 9.9516e-4*pow(T, 2);
-//    }
-//    p = 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
-//
-//    T = T + 273.15; /* Convert back to Kelvin to find viscosity */
-//    /* Calculate the Reynolds and Prandlt numbers */
-//    Re = p*v*L/mu(T);
-//    Pr = Cp_wat*mu(T)/k;
-//    
-//    /* Source: An introduction to Heat and Mass Transfer (Middleman) */
-//    return (0.35 + 0.56*pow(Re,0.52))*pow(Pr,0.3)*k/L;
-//}
 
 /* ----------------------- Freezing Stuff ----------------------- */
-
+/* If I'm not lazy and I've actually fixed these functions, compile them. */
+#ifdef NOT_LAZY
 
 /**
  * Calculate the mole fraction of "a" given it's mass fraction and molecular
@@ -496,19 +368,6 @@ double Xv_ice(double T)
 }
 
 /**
- * @brief Reactionr ate
- * Calculate the rate of reaction factoring in increase in concentration as a
- * result of the ice crystals forming.
- * @param T Temperature (K)
- * @param c Concentration (kg/L)
- * @return Derivative of concentration with respect to time.
- */
-double reaction_rate(double T, double c)
-{
-    return -AA*exp(-EaA/(R*T))*Xv_water(To)/Xv_water(T)*c;
-}
-
-/**
  * @brief Calculate thermal diffusivity during freezing.
  * @param T Temperature (K)
  * @return Thermal diffusivity (m^2/s)
@@ -592,3 +451,4 @@ double Cp_ice(double T)
     T = T-273.15;
     return 2.0623 + 6.0769e-3*T;
 }
+#endif

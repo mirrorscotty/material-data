@@ -10,6 +10,8 @@ double BindingEnergyOswin(oswin*, double, double);
 
 double GABIsotherm(gab*, double, double);
 double GABInverse(gab*, double, double);
+double GABInverse2(gab*, double, double);
+double GABInverse3(gab*, double, double);
 double BindingEnergyGAB(gab*, double, double);
 
 #endif

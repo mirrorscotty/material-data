@@ -36,12 +36,12 @@ choi_okos* CreateChoiOkos(double Mpro, double Mfat, double Mcar,
     co->Mice = Mice;
 
     /* We don't do freezing... yet. */
-    co->MW_pro = 0;
-    co->MW_fat = 1;
-    co->MW_car = 0;
-    co->MW_fib = 0;
-    co->MW_ash = 0;
-    co->MW_wat = 0;
+    co->MW_pro = 2.6148e5;
+    co->MW_fat = 2e5;
+    co->MW_car = 2e5;
+    co->MW_fib = 2e5;
+    co->MW_ash = 2e5;
+    co->MW_wat = 18.01528;
 
     co->Hfus = 6010;
     co->Tf = 273.15;

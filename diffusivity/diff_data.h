@@ -8,6 +8,7 @@ struct _diff_data {
     double R; /* Ideal gas constant */
     double phi; /* Porosity */
 };
+typedef struct _diff_data diff_data;
 
 /* Values for the Oswin isotherm correlation */
 struct _oswin {
@@ -29,9 +30,13 @@ struct _gab {
 };
 typedef struct _gab gab;
 
+diff_data* CreateDiffData();
+void DestroyDiffData(diff_data*);
 oswin* CreateOswinData();
+oswin* CreateOswinXiong();
 void DestroyOswinData(oswin*);
 gab* CreateGABData();
+gab* CreateGABErbas();
 void DestroyGABData();
 
 #endif

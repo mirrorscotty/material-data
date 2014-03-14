@@ -56,7 +56,8 @@ double sat_wat(double cw, double phi, double T)
     rhow = rho(co, T);
     DestroyChoiOkos(co);
 
-    return cw*phi/rhow;
+    //return cw*phi/rhow;
+    return cw/(phi*rhow);
 }
 
 /* Dry basis moisture content

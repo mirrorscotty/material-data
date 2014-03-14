@@ -4,7 +4,7 @@
 
 double rho_gas(double wv, double T, double P)
 {
-    double Mg, /* Molar volume of gas phase */
+    double Mg = 1/(MWAIR/(1-wv) + MWWAT/wv), /* Average molar mass of gas */
            R = GASCONST; /* Gas constant */
     return Mg*P/(R*T);
 }

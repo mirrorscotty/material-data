@@ -4,7 +4,8 @@
 
 /* Mpro, Mfat, Mcar, Mfib, Mash, Mwat, Mice */
 #define WATERCOMP 0, 0, 0, 0, 0, 1, 0 /* Composition of water */
-#define PASTACOMP 0, 0, 0, 1, 0, 0, 0 /* Composition of pasta */
+/* Composition of pasta From Cummings et al. 1993, no water */
+#define PASTACOMP .0166, .0239, .784, .0179, .00824, 0, 0
 
 /* Heat capacities of random stuff */
 #define CPVAPOR 2080 /* Vapor heat capacity at 100C [J/(kg K)] */

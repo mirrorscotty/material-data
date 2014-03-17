@@ -25,6 +25,13 @@ double OswinInverse(oswin *dat, double X, double T)
     T = T-273.15;
     aw = pow(X/(dat->k0 + dat->k1*T), 1/(dat->n0 + dat->n1*T))
         / (pow(X/(dat->k0 + dat->k1*T), 1/(dat->n0 + dat->n1*T)) + 1);
+    
+    /* Make sure the water activities we're calculating are valid */
+    if(aw > 1)
+        aw = 1;
+    if(aw < 0)
+        aw = 0;
+
     return aw;
 }
 

@@ -73,7 +73,28 @@ double mdb_wat(double cw, double phi, double T)
     rhos = rho(co, T);
     DestroyChoiOkos(co);
 
-    return cw/(phi*rhos);
+    return cw/((1-phi)*rhos);
+}
+
+/* Dry basis moisture content when all pores are saturated
+ * phi: porosity
+ * T: temperature [K]
+ */
+double mdb_wat_sat(double phi, double T)
+{
+    double rhos, rhow;
+    double cw_sat;
+    choi_okos *co;
+
+    co = CreateChoiOkos(WATERCOMP);
+    rhow = rho(co, T);
+    DestroyChoiOkos(co);
+    co = CreateChoiOkos(PASTACOMP);
+    rhos = rho(co, T);
+    DestroyChoiOkos(co);
+
+    cw_sat = phi*rhow;
+    return cw_sat/((1-phi)*rhos);
 }
 
 /* Gas saturation

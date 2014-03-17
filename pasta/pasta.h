@@ -9,6 +9,7 @@ double conc_air(double, double, double, double, double);
 double conc_vap(double, double, double, double, double);
 
 double mdb_wat(double, double, double);
+double mdb_wat_sat(double, double);
 double sat_wat(double, double, double);
 double sat_gas(double, double, double);
 

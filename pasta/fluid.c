@@ -27,8 +27,7 @@ double perm_wat(double cw, double phi, double T)
     o = CreateOswinData();
 
     fphi = 1;
-    /* Estimate Xs by pretending that the material is saturated at aw=.95 */
-    Xs = OswinIsotherm(o, .95, T);
+    Xs = mdb_wat_sat(phi, T); /* Xdb when pores are saturated with water */
     Sr = 0.05/Xs; /* Completely made up number! */
     Sw = sat_wat(cw, phi, T);
 
@@ -40,3 +39,4 @@ double perm_wat(double cw, double phi, double T)
         kw = 0;
     return kw;
 }
+

@@ -29,7 +29,7 @@ double pvap_wat(double T)
 
     /* Calcualte vapor pressure with Antione's Equation */
     pvap = pow(10, A - B/(C+T)); 
-    pvap = 101300/760; /* Convert from mmHg to Pa */
+    pvap = pvap * 101300./760.; /* Convert from mmHg to Pa */
 
     return pvap;
 }

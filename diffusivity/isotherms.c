@@ -72,7 +72,7 @@ double BindingEnergyOswin(oswin *dat, double X, double T)
 double GABIsotherm(gab *dat, double aw, double T)
 {
     double Xdb, Xm, C, k;
-    T=T-273.15;
+    //T=T-273.15;
     
     /* Calculate the constant values based on temperature. */
     Xm = dat->m0*exp(dat->dHm/T);

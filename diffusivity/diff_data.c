@@ -102,6 +102,47 @@ gab* CreateGABErbas()
     return d;
 }
 
+gab* CreateGABAndrieu()
+{
+    gab *d;
+    d = (gab*) calloc(sizeof(gab), 1);
+
+    /* Parameters for monolayer moisture content */
+    d->m0 = 0.0259;
+    d->dHm = 30.9639;
+
+    /* C values */
+    d->C0 = 170.7282;
+    d->dHC = -81.1285;
+
+    /* k values */
+    d->k0 = 0.7997;
+    d->dHk = -4.1838;
+
+    return d;
+}
+
+gab* CreateGABAndrieuK()
+{
+    gab *d;
+    d = (gab*) calloc(sizeof(gab), 1);
+
+    /* Parameters for monolayer moisture content */
+    d->m0 = 0.0017;
+    d->dHm = 1.1353e3;
+
+    /* C values */
+    d->C0 = 2.8339e-8;
+    d->dHC = 6.5458e3;
+
+    /* k values */
+    d->k0 = 1.8320;
+    d->dHk = -238.4933;
+
+    return d;
+}
+
+
 void DestroyGABData(gab *d)
 {
     free(d);

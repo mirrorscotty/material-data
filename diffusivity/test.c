@@ -106,7 +106,7 @@ void PlotXdb()
     matrix *data;
     int i;
     gab *d;
-    d = CreateGABErbas();
+    d = CreateGABAndrieuK();
 
     aw = linspaceV(.005, .94, 300);
 
@@ -117,7 +117,7 @@ void PlotXdb()
     for(i=0; i<len(aw); i++) {
         setvalV(X40, i, GABIsotherm(d, valV(aw, i), 25+273.15));
         setvalV(X55, i, GABIsotherm(d, valV(aw, i), 55+273.15));
-        setvalV(X71, i, GABIsotherm(d, valV(aw, i), 125+273.15));
+        setvalV(X71, i, GABIsotherm(d, valV(aw, i), 90+273.15));
     }
     data = CatColVector(4, aw, X40, X55, X71);
     mtxprntfile(data, "XdbGAB.csv");
@@ -164,16 +164,23 @@ void TestDCap()
 int main(int argc, char *argv[])
 {
     oswin *data;
+    diff_data *d;
     data = CreateOswinData();
-
+    d = CreateDiffData();
 
 //    printf("Water Activity: %g\n", GABInverse(data, .5, 20));
     //diff_test();
-//    GAB_test();
-    PlotDeff();
-    PlotEb();
     PlotXdb();
-    TestDCap();
+//
+/*    printf("D:\n%g\n%g\n%g\n%g\n%g\n%g\n%g\n%g\n",
+            CapillaryDiff(d, data, .1787, 60+273.15),
+            CapillaryDiff(d, data, .1156, 60+273.15),
+            CapillaryDiff(d, data, .0862, 60+273.15),
+            CapillaryDiff(d, data, .069, 60+273.15),
+            CapillaryDiff(d, data, .0577, 60+273.15),
+            CapillaryDiff(d, data, .0489, 60+273.15),
+            0.,
+            CapillaryDiff(d, data, .0285, 60+273.15)); */
 
     return 0;
 }

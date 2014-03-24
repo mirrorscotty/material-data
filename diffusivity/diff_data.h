@@ -37,6 +37,8 @@ oswin* CreateOswinXiong();
 void DestroyOswinData(oswin*);
 gab* CreateGABData();
 gab* CreateGABErbas();
+gab* CreateGABAndrieu();
+gab* CreateGABAndrieuK();
 void DestroyGABData();
 
 #endif

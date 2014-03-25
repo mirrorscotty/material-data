@@ -6,6 +6,7 @@ struct _diff_data {
     double kw; /* Permeability of water */
     double muw; /* Viscosity of water */
     double R; /* Ideal gas constant */
+    double Sr; /* Irreducible water saturation */
     double phi; /* Porosity */
 };
 typedef struct _diff_data diff_data;
@@ -38,7 +39,6 @@ void DestroyOswinData(oswin*);
 gab* CreateGABData();
 gab* CreateGABErbas();
 gab* CreateGABAndrieu();
-gab* CreateGABAndrieuK();
 void DestroyGABData();
 
 #endif

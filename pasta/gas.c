@@ -2,6 +2,12 @@
 
 #include "pasta.h"
 
+/** Gas density based on the ideal gas law
+ * @param wv Vapor mass fraction [-]
+ * @param T Temperature [K]
+ * @param P Pressure [Pa]
+ * @returns Density [kg/m^3]
+ */
 double rho_gas(double wv, double T, double P)
 {
     double Mg = 1/(MWAIR/(1-wv) + MWWAT/wv), /* Average molar mass of gas */
@@ -9,9 +15,10 @@ double rho_gas(double wv, double T, double P)
     return Mg*P/(R*T);
 }
 
-/* Vapor pressure of water from 1 C to 374 C (source: Wikipedia)
- * T: Temperature [K]
- * return: vapor pressure [Pa]
+/**
+ * Vapor pressure of water from 1 C to 374 C (source: Wikipedia)
+ * @param T Temperature [K]
+ * @returns vapor pressure [Pa]
  */
 double pvap_wat(double T)
 {

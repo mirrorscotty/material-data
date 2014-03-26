@@ -1,12 +1,14 @@
 #include "pasta.h"
 #include "choi-okos.h"
 
-/* Effective density
- * cw: mass concentration of water [kg/m^3]
- * wv: mass fraction of water vapor
- * phi: porosity
- * T: temperature [K]
- * P: pressure [Pa]
+/**
+ * Effective density
+ * @param cw Mass concentration of water [kg/m^3]
+ * @param wv Mass fraction of water vapor [-]
+ * @param phi porosity [-]
+ * @param T temperature [K]
+ * @param P pressure [Pa]
+ * @returns Density [kg/m^3]
  */
 double rho_eff(double cw, double wv, double phi, double T, double P)
 {
@@ -34,12 +36,14 @@ double rho_eff(double cw, double wv, double phi, double T, double P)
     return rho_eff;
 }
 
-/* Effective heat capacity
- * cw: mass concentration of water [kg/m^3]
- * wv: mass fraction of water vapor
- * phi: porosity
- * T: temperature [K]
- * P: pressure [Pa]
+/**
+ * Effective heat capacity
+ * @param cw mass concentration of water [kg/m^3]
+ * @param wv mass fraction of water vapor [-]
+ * @param phi porosity [-]
+ * @param T temperature [K]
+ * @param P pressure [Pa]
+ * @returns Specific heat capacity [J/K]
  */
 double Cp_eff(double cw, double wv, double phi, double T, double P)
 {
@@ -76,12 +80,14 @@ double Cp_eff(double cw, double wv, double phi, double T, double P)
     return Cp_eff;
 }
 
-/* Effective thermal conductivity
- * cw: mass concentration of water [kg/m^3]
- * wv: mass fraction of water vapor
- * phi: porosity
- * T: temperature [K]
- * P: pressure [Pa]
+/**
+ * Effective thermal conductivity
+ * @param cw mass concentration of water [kg/m^3]
+ * @param wv mass fraction of water vapor [-]
+ * @param phi porosity [-]
+ * @param T temperature [K]
+ * @param P pressure [Pa]
+ * @returns Thermal conductivity [W/m-K]
  */
 double k_eff(double cw, double wv, double phi, double T, double P)
 {

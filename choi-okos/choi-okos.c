@@ -36,6 +36,7 @@ choi_okos* CreateChoiOkos(double Mpro, double Mfat, double Mcar,
     co->Mice = Mice;
 
     /* We don't do freezing... yet. */
+    /* TODO: Find appropriate values for each of these */
     co->MW_pro = 2.6148e5;
     co->MW_fat = 2e5;
     co->MW_car = 2e5;
@@ -72,8 +73,9 @@ int report_error(const char *str)
 
 /**
  * Calculate heat capacity using the magic of the Choi-Okos Equations.
- * T is in Kelvins
- * Cp has units of J/K
+ * @param co Composition data
+ * @param T Temperature [K]
+ * @returns Heat capacity [J/K]
  */
 double Cp(choi_okos *co, double T)
 {
@@ -99,8 +101,9 @@ double Cp(choi_okos *co, double T)
 
 /**
  * Calculate the thermal conductivity using the Choi-Okos equations.
- * T has units of K and a valid range of -40C to 150C
- * k has units of W/(m K)
+ * @param co Composition data
+ * @param T Temperature [K] Must be between -40C to 150C
+ * @returns Thermal conductivity [W/(m K)]
  */
 double k(choi_okos *co, double T)
 {
@@ -113,7 +116,7 @@ double k(choi_okos *co, double T)
     //double Mi = M_ice(X_ice(T), X_solids());
     double Mi = 0;
 
-    T -= 273.15;
+    T -= 273.15; /* Convert from Kelvin to Celcius */
 
     /* Calculate the thermal conductivities of the materials */
     k_pro = 1.7881e-1 + 1.1958e-3*T - 2.7178e-6*pow(T, 2);
@@ -161,8 +164,9 @@ double k(choi_okos *co, double T)
 
 /**
  * Calculate density using the Choi-Okos equations.
- * T has units of K and a valid range of -40C to 150C
- * rho has units of kg/m^3
+ * @param co Composition data
+ * @param T Temperature [K] Must be between -40C to 150C
+ * @param rho has units of [kg/m^3]
  */
 double rho(choi_okos *co, double T)
 {
@@ -171,7 +175,7 @@ double rho(choi_okos *co, double T)
     //double Mi = M_ice(X_ice(T), X_solids());
     double Mi = 0;
 
-    T -= 273.15;
+    T -= 273.15; /* Convert from Kelvin to Celcius */
 
     /* Calculate the densities */
     p_pro = 1.3299e3 - 5.1840e-1*T;

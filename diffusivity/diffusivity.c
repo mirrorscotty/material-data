@@ -3,6 +3,15 @@
 #include "isotherms.h"
 #include <math.h>
 
+/**
+ * Calculate capillary diffusivity in a porous medium. Most of the equations are
+ * taken from Zhu 2011.
+ * @param d Diffusivity data structure
+ * @param o Set of Oswin parameters
+ * @param X Moisture content [kg/kg, db]
+ * @param T Temperature [K]
+ * @returns Diffusivity [m^2/s]
+ */
 double CapillaryDiff(diff_data *data, oswin *o, double X, double T)
 {
     double Dcap, DPcDSw, DawDX, aw, Xs, kw, Sw, Sr, fphi;
@@ -40,6 +49,15 @@ double CapillaryDiff(diff_data *data, oswin *o, double X, double T)
     return Dcap; 
 }
 
+/**
+ * Calculate capillary diffusivity in a porous medium. The key equation is taken
+ * from Zhu et al. 2011.
+ * @param d Diffusivity data structure
+ * @param o Set of Oswin parameters
+ * @param X Moisture content [kg/kg, db]
+ * @param T Temperature [K]
+ * @returns Diffusivity [m^2/s]
+ */
 double CapDiff(diff_data *d, oswin *o, double X, double T)
 {
     double D, DawDe, aw, vl, e, Xs, Sw, Sr, kw, fphi;
@@ -73,60 +91,87 @@ double CapDiff(diff_data *d, oswin *o, double X, double T)
     /* Water activity from the Oswin isotherm model */
     aw = OswinInverse(o, X, T);
 
+    /* Equation 3.45 from Zhu et al. 2011 */
     D = e*kw/d->muw * d->R*T/vl * (log(aw) + e/aw * DawDe);
     return D;
 }
 
+/**
+ * Determine the capillary pressure based on dry basis moisture content and
+ * temperature. The equation is from Miranda and Silva 2005
+ * @param d diffusivity data structure
+ * @param o set of Oswin isotherm parameters
+ * @param X Moisture content [kg/kg, db]
+ * @param T Temperature [K]
+ * @returns Pressure [Pa]
+ */
 double CapillaryPressure(diff_data *d, oswin *o, double X, double T)
 {
     double aw, Pc;
     choi_okos *co;
     co = CreateChoiOkos(0, 0, 0, 0, 0, 1, 0);
+    /* Calculate water activity from the Oswin isotherm */
     aw = OswinInverse(o, X, T);
 
+    /* Calculate capillary pressure based on water activity */
     Pc = -rho(co,T)*co->R*T/co->MW_wat * log(aw);
     DestroyChoiOkos(co);
     return Pc;
 }
 
+/** 
+ * Calculate diffusivity in pasta based on the model outlined in chapter 10 of
+ * the Handbook of Food Engineering, Second Edition. This function uses the
+ * Oswin isotherm to determine binding energy.
+ * @param X Moisture Content [kg/kg db]
+ * @param T Temperature [K]
+ * @returns Diffusivity [m^2/s]
+ *
+ * @see DiffCh10GAB
+ */
 double DiffCh10(double X, double T)
 {
     oswin *dat;
     dat = CreateOswinData();
 
-    double Deff;
-    /* Source: Xiong et al (1991) */
-    double D0 = 6.3910e-8;
+    double Deff,
+           D0 = 6.3910e-8, /* Source: Xiong et al (1991) */
+           Ea = 25900, /* Source: Litchfield and Okos (1986) */
+           K = 1032.558, /* Source: Xiong et al. (1991) */
+           Eb = BindingEnergyOswin(dat, X, T),
+           R = 8.314; /* Gas Constant */
 
-    /* Source: Litchfield and Okos (1986) */
-    double Ea = 25900;
-
-    double K = 1032.6;
-    double Eb = BindingEnergyOswin(dat, X, T);
-    double R = 8.314;
-
+    /* Equation 13 from Ch10 of Handbook of Food Engineering, Second Edition */
     Deff = D0 * exp(-Ea/(R*T))
         * ( K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T))) );
 
     return Deff;
 }
 
+/** 
+ * Calculate diffusivity in pasta based on the model outlined in chapter 10 of
+ * the Handbook of Food Engineering, Second Edition. This function uses the
+ * GAB isotherm to determine binding energy.
+ * @param X Moisture Content [kg/kg db]
+ * @param T Temperature [K]
+ * @returns Diffusivity [m^2/s]
+ *
+ * @see DiffCh10
+ */
 double DiffCh10GAB(double X, double T)
 {
     gab *dat;
-    dat = CreateGABData();
+    dat = CreateGABAndrieu();
 
-    double Deff;
-    /* Source: Xiong et al (1991) */
-    double D0 = 6.3910e-8;
+    double Deff,
+           D0 = 6.3910e-8, /* Source: Xiong et al (1991) */
+           Ea = 25900, /* Source: Litchfield and Okos (1986) */
+           K = 1032.6, /* Source: Xiong et al. (1991) */
+           Eb = BindingEnergyGAB(dat, X, T),
+           R = 8.314; /* Gas Constant */
 
-    /* Source: Litchfield and Okos (1986) */
-    double Ea = 25900;
 
-    double K = 1032.6;
-    double Eb = BindingEnergyGAB(dat, X, T);
-    double R = 8.314;
-
+    /* Equation 13 from Ch10 of Handbook of Food Engineering, Second Edition */
     Deff = D0 * exp(-Ea/(R*T))
         * ( K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T))) );
 

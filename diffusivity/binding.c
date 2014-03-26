@@ -3,56 +3,51 @@
 #include "diff_data.h"
 #include "isotherms.h"
 
-double BindingEnergyGABInt(gab *dat, double X, double T)
-{
-    double Eb, R, T2, aw1, aw2, h;
-    /* Set the value of dx used for numerical differentiation */
-    h = 1;
-    /* Gas constant */
-    R = 8.314;
-    T2 = T + h;
-
-    aw1 = GABInverse(dat, X, T);
-    aw2 = GABInverse(dat, X, T2);
-    
-    Eb = R*log(aw2/aw1)/(1/T-1/T2);
-
-    return Eb;
-}
-
-/* Calculate the binding energy based on the GAB equation.
- * X is the dry-basis moisture content
- * T is the absolute temperature
+/**
+ * Calculate the binding energy based on the GAB equation.
+ * @param dat Set of temperature dependent GAB parameters
+ * @param X Dry-basis moisture content [kg/kg db]
+ * @param T Absolute temperature [K]
+ * @returns Binding energy [J/mol]
+ *
+ * @see BindingEnergyOswin
  */
 double BindingEnergyGAB(gab *dat, double X, double T)
 {
     double Eb, h, R, dlnawdT;
-    /* Set the value of dx used for numerical differentiation */
-    h = .000001;
-    /* Gas constant */
-    R = 8.314;
+    h = .000001; /* Set the value of dx used for numerical differentiation */
+    R = 8.314; /* Gas constant */
 
+    /* Derivative of ln(aw) with respect to temperature */
     dlnawdT = (log(GABInverse(dat, X, T+h)) - log(GABInverse(dat, X, T-h)))/(2*h);
+    /* Multiply by the gas constant and finish differentiating with the chain
+     * rule */
     Eb = T*T*R*dlnawdT;
 
     return Eb;
 }
 
-/* Calculate binding energy based on the Oswin isotherm model.
- * dat is a set of constants fot the isotherm equation.
- * X is the dry basis moisture content
- * T is absolute temperature
+/**
+ * Calculate binding energy based on the Oswin isotherm model.
+ * Source: Eq 10.21, Handbook of Food Engineering, Second Edition, Ch 10
+ * @param dat Set of constants for the isotherm equation.
+ * @param X Dry basis moisture content [kg/kg db]
+ * @param T Absolute temperature [K]
+ * @returns Binding energy [J/mol]
+ *
+ * @see BindingEnergyGAB
  */
 double BindingEnergyOswin(oswin *dat, double X, double T)
 {
     double Eb, h, R, dlnawdT;
-    /* Set the value of dx used for numerical differentiation */
-    h = .000001;
-    /* Gas constant */
-    R = 8.314;
+    h = .000001; /* Set the value of dx used for numerical differentiation */
+    R = 8.314; /* Gas constant */
 
+    /* Derivative of ln(aw) with respect to temperature */
     dlnawdT = (log(OswinInverse(dat, X, T+h)) - log(OswinInverse(dat, X, T-h)))/(2*h);
 
+    /* Multiply by the gas constant and finish differentiating with the chain
+     * rule */
     Eb = T*T*R*dlnawdT;
 
     return Eb;

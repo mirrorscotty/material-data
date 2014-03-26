@@ -9,7 +9,7 @@ diff_data* CreateDiffData()
     d->kw = 1e-18; /* Intrinsic Permeability From Zhu et al. 2011 */
     d->muw = .988e-3; /* Water viscosity (Zhu et al. 2011) */
     d->phi = .9; /* Regular pasta porosity (Xiong 1991) */
-    d->Sr = .02; /* Irreducible water saturation */
+    d->Sr = .02; /* Irreducible water saturation Note: This value is made up */
     d->R = 8.314; /* Gas constant */
     return d;
 }
@@ -19,7 +19,8 @@ void DestroyDiffData(diff_data *d)
     free(d);
 }
 
-/* Set the parameters for the Oswin isotherm model to the ones determined in
+/**
+ * Set the parameters for the Oswin isotherm model to the ones determined in
  * Gina's thesis.
  */
 oswin* CreateOswinData()
@@ -35,7 +36,9 @@ oswin* CreateOswinData()
     return d;
 }
 
-/* Oswin parameters from Xiong et al. 1991 */
+/**
+ * Oswin parameters from Xiong et al. 1991
+ */
 oswin* CreateOswinXiong()
 {
     oswin *d;
@@ -49,12 +52,16 @@ oswin* CreateOswinXiong()
     return d;
 }
 
+/**
+ * Deallocate a set of Oswin parameters
+ */
 void DestroyOswinData(oswin *d)
 {
     free(d);
 }
 
-/* Set all the parameters for the GAB Equation.
+/**
+ * Set all the parameters for the GAB Equation.
  * Data fitted from Gina's thesis.
  * Each set of values describes the temperature dependence of one of the GAB
  * parameters via an equation of the form m = m0*exp(dHm/T), where T is in
@@ -80,7 +87,8 @@ gab* CreateGABData()
     return d;
 }
 
-/* GAB Data calculated from (Erbas et al. 2005)
+/**
+ * GAB Data calculated from (Erbas et al. 2005)
  * This data is for semolina.
  */
 gab* CreateGABErbas()
@@ -103,6 +111,10 @@ gab* CreateGABErbas()
     return d;
 }
 
+/**
+ * Parameters fitted from data in Andrieu et al. 1985
+ * Actual data copied from Gina's thesis
+ */
 gab* CreateGABAndrieu()
 {
     gab *d;
@@ -123,7 +135,9 @@ gab* CreateGABAndrieu()
     return d;
 }
 
-
+/**
+ * Dealocate a set of GAB parameters
+ */
 void DestroyGABData(gab *d)
 {
     free(d);

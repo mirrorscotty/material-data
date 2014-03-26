@@ -2,10 +2,12 @@
 #include "isotherms.h"
 #include "diff_data.h"
 
-/* Calculate the rate of evaporation
- * cw: mass concentration of water [kg/m^3]
- * phi: porosity
- * T: temperature [K]
+/**
+ * Calculate the rate of evaporation
+ * @param cw Mass concentration of water [kg/m^3]
+ * @param phi Porosity [-]
+ * @param T temperature [K]
+ * @returns Evaporation rate
  */
 double evap(double cw, double wv, double phi, double T, double P)
 {

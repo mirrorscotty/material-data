@@ -4,9 +4,10 @@
 #include "isotherms.h"
 #include "diff_data.h"
 
-/* Viscosity of water (from 0 C to 370 C)
- * T is temperature in units of Kelvins
- * mu is viscosity with units of N*s/m^2
+/**
+ * Viscosity of water (from 0 C to 370 C)
+ * @param T Temperature [Kelvins]
+ * @returns Viscosity [N*s/m^2]
  */
 double visc_wat(double T)
 {
@@ -15,6 +16,13 @@ double visc_wat(double T)
     return mu;
 }
 
+/**
+ * Permeability of water in pasta. Mostly taken from Zhu 2011.
+ * @param cw Water concentration [kg/m^3]
+ * @param phi Porosity [-]
+ * @param T Temperature [K]
+ * @returns Permeability [m^2]
+ */
 double perm_wat(double cw, double phi, double T)
 {
     double kw, /* Permeability of water */

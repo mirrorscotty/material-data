@@ -31,29 +31,25 @@ void Eb_test() {
 void PlotDeff()
 {
     vector *X, *D40, *D55, *D71;
-    double D0 = 6.3910e-8;
-    FILE *fp;
+    //double D0 = 6.3910e-8;
+    double D0 = 1;
     matrix *data;
     int i;
 
-    X = linspaceV(.005, .5, 300);
+    X = linspaceV(.005, .18, 300);
 
     D40 = CreateVector(300);
     D55 = CreateVector(300);
     D71 = CreateVector(300);
 
     for(i=0; i<len(X); i++) {
-        setvalV(D40, i, DiffCh10(valV(X, i), 40+273.15)/D0);
-        setvalV(D55, i, DiffCh10(valV(X, i), 55+273.15)/D0);
-        setvalV(D71, i, DiffCh10(valV(X, i), 71+273.15)/D0);
+        setvalV(D40, i, DiffCh10GAB(valV(X, i), 40+273.15)/D0);
+        setvalV(D55, i, DiffCh10GAB(valV(X, i), 55+273.15)/D0);
+        setvalV(D71, i, DiffCh10GAB(valV(X, i), 71+273.15)/D0);
     }
 
-    fp = fopen("Deff.csv", "w");
-    fprintf(fp, "\"Xdb\",\"D40\",\"D55\",\"D71\"\n");
-    for(i=0; i<len(X); i++)
-        //fprintf(fp, "%f,%g,%g,%g\n", valV(X,i), valV(D40,i)/D0, valV(D55,i)/D0, valV(D71,i)/D0);
-        fprintf(fp, "%f,%g,%g,%g\n", valV(X,i), valV(D40,i), valV(D55,i), valV(D71,i));
-    fclose(fp);
+    data = CatColVector(4, X, D40, D55, D71);
+    mtxprntfile(data, "Deff.csv");
 }
 
 void PlotEb()
@@ -213,6 +209,7 @@ int main(int argc, char *argv[])
     PlotXdb();
     PlotEb();
     PlotEbOswin();
+    PlotDeff();
 //
 /*    printf("D:\n%g\n%g\n%g\n%g\n%g\n%g\n%g\n%g\n",
             CapillaryDiff(d, data, .1787, 60+273.15),

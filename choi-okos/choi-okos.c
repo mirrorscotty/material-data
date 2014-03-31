@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "choi-okos.h"
-#include "datafile.h"
 
 #ifdef __linux__ /* Not using windows */
 #include <errno.h> /* Include the standard error reporting library */

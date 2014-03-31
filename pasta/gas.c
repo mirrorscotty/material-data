@@ -16,6 +16,19 @@ double rho_gas(double wv, double T, double P)
 }
 
 /**
+ * Calculate the molar density of the gas phase based on the ideal gas law.
+ * Source: http://en.wikipedia.org/wiki/Molar_volume
+ * @param T Temperature [K]
+ * @param P Pressure [Pa]
+ * @returns Molar density [mol/m^3]
+ */
+double moldens_gas(double T, double P)
+{
+    double R = GASCONST; /* Gas constant */
+    return P/(R*T);
+}
+
+/**
  * Vapor pressure of water from 1 C to 374 C (source: Wikipedia)
  * @param T Temperature [K]
  * @returns vapor pressure [Pa]

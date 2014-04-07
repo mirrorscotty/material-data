@@ -1,9 +1,11 @@
-#include "diff_data.h"
 #include "isotherms.h"
 #include "diffusivity.h"
-#include "matrix/matrix.h"
-#include "../choi-okos/choi-okos.h"
+#include "matrix.h"
+#include "choi-okos.h"
+#include "constants.h"
+#include "pasta.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void diff_test() {
     printf("Diffusivity Test:\n");
@@ -160,17 +162,13 @@ void TestAw()
 
 void TestDCap()
 {
-    diff_data *d;
-    oswin *o;
     choi_okos *co;
 
     vector *X, *D401, *D551, *D711, *D402, *D552, *D712;
     matrix *data;
     int i;
 
-    d = CreateDiffData();
-    o = CreateOswinData();
-    co = CreateChoiOkos(0, 0, 0, 0, 0, 1, 0);
+    co = CreateChoiOkos(WATERCOMP);
     
     X = linspaceV(0.005, 0.5, 300);
     D401 = CreateVector(300);
@@ -181,36 +179,71 @@ void TestDCap()
     D712 = CreateVector(300);
 
     for(i=0; i<len(X); i++) {
-        setvalV(D401, i, CapillaryDiff(d, o, valV(X, i), 40+273));
-        setvalV(D551, i, CapillaryDiff(d, o, valV(X, i), 55+273));
-        setvalV(D711, i, CapillaryDiff(d, o, valV(X, i), 71+273));
+        setvalV(D401, i, CapillaryDiff(valV(X, i), 40+273));
+        setvalV(D551, i, CapillaryDiff(valV(X, i), 55+273));
+        setvalV(D711, i, CapillaryDiff(valV(X, i), 71+273));
         setvalV(D402, i, DiffCh10(valV(X, i), 40+273));
         setvalV(D552, i, DiffCh10(valV(X, i), 55+273));
         setvalV(D712, i, DiffCh10(valV(X, i), 71+273));
     }
 
-    printf("Xs: 40-%g 55-%g 71-%g\n", OswinIsotherm(o, .95, 40+273), OswinIsotherm(o, .95, 55+273), OswinIsotherm(o, .95, 71+273));
-    printf("rho: 40-%g 55-%g 71-%g\n", rho(co, 40+273), rho(co, 55+273), rho(co, 71+273));
-
     data = CatColVector(7, X, D401, D551, D711, D402, D552, D712);
     mtxprntfile(data, "Dcap.csv");
 }
 
+void CompareAllDiff(double T)
+{
+    vector *X, *D10o, *D10g, *Dz1, *Dz2, *Dvap;
+    char *filename;
+    matrix *out;
+    int i;
+
+    filename = (char*) calloc(sizeof(char), 80);
+    T = T+273.15;
+
+    X = linspaceV(0.005, 0.3, 300);
+    D10o = CreateVector(300);
+    D10g = CreateVector(300);
+    Dz1 = CreateVector(300);
+    Dz2 = CreateVector(300);
+    Dvap = CreateVector(300);
+
+    for(i=0; i<len(X); i++) {
+        setvalV(D10o, i, DiffCh10(valV(X, i), T));
+        setvalV(D10g, i, DiffCh10GAB(valV(X, i), T));
+        setvalV(Dz1, i, CapillaryDiff(valV(X, i), T));
+        setvalV(Dz2, i, CapDiff(valV(X, i), T));
+        setvalV(Dvap, i, VaporDiffCh10(valV(X, i), T));
+    }
+    sprintf(filename, "Diffusivity%gK.csv", T);
+    out = CatColVector(6, X, Dvap, D10o, D10g, Dz1, Dz2);
+    mtxprntfile(out, filename);
+}
+
+void Dgas(double P)
+{
+    vector *T, *D;
+    matrix *out;
+    int i;
+
+    T = linspaceV(273.15, 373.15, 300);
+    D = CreateVector(300);
+
+    for(i=0; i<len(T); i++) {
+        setvalV(D, i, VaporDiff(valV(T,i), P));
+    }
+
+    out = CatColVector(2, T, D);
+    mtxprntfile(out, "GasDiff.csv");
+}
+
 int main(int argc, char *argv[])
 {
-    oswin *data;
-    diff_data *d;
-    data = CreateOswinData();
-    d = CreateDiffData();
-
+    oswin *o;
+    double phi = POROSITY;
+    o = CreateOswinData();
 //    printf("Water Activity: %g\n", GABInverse(data, .5, 20));
     //diff_test();
-    TestAw();
-    PlotXdb();
-    PlotEb();
-    PlotEbOswin();
-    PlotDeff();
-//
 /*    printf("D:\n%g\n%g\n%g\n%g\n%g\n%g\n%g\n%g\n",
             CapillaryDiff(d, data, .1787, 60+273.15),
             CapillaryDiff(d, data, .1156, 60+273.15),
@@ -221,6 +254,21 @@ int main(int argc, char *argv[])
             0.,
             CapillaryDiff(d, data, .0285, 60+273.15)); */
 
+    CompareAllDiff(105);
+    CompareAllDiff(71);
+    CompareAllDiff(55);
+    CompareAllDiff(44);
+    printf("44 = %g, 55 = %g, 71 = %g, 105 = %g\n",
+            VaporDiff(44+273.15, 101325),
+            VaporDiff(55+273.15, 101325),
+            VaporDiff(71+273.15, 101325),
+            VaporDiff(105+273.15, 101325));
+    //Dgas(101325);
+
+    printf("XsOswin = %g, XsSat = %g, phi = %g\n",
+            OswinIsotherm(o, .95, 273.15+25),
+            mdb_wat_sat(phi, 273.15+25),
+            phi);
     return 0;
 }
 

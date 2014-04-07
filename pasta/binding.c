@@ -1,6 +1,5 @@
 #include <math.h>
 
-#include "diff_data.h"
 #include "isotherms.h"
 
 /**

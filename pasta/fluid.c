@@ -2,7 +2,6 @@
 
 #include "pasta.h"
 #include "isotherms.h"
-#include "diff_data.h"
 
 /**
  * Viscosity of water (from 0 C to 370 C)

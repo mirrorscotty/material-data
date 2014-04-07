@@ -52,8 +52,16 @@
  */
 #define PERMWAT 1e-18
 
+/* Random extra values */
 /**
  * Porosity [-] (selected arbitrarily)
  */
-#define POROSITY 0.2
-
+#define POROSITY 0.12
+/**
+ * Intrinsic Permeability From Zhu et al. 2011
+ */
+#define KWINTR 1e-18
+/**
+ * Irreducible water saturation Note: This value is made up
+ */
+#define SR .02

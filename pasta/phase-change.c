@@ -1,6 +1,5 @@
 #include "pasta.h"
 #include "isotherms.h"
-#include "diff_data.h"
 
 /**
  * Calculate the rate of evaporation

@@ -1,15 +1,5 @@
-#ifndef DIFF_DATA_H
-#define DIFF_DATA_H
-
-struct _diff_data {
-    /* Values */
-    double kw; /* Permeability of water */
-    double muw; /* Viscosity of water */
-    double R; /* Ideal gas constant */
-    double Sr; /* Irreducible water saturation */
-    double phi; /* Porosity */
-};
-typedef struct _diff_data diff_data;
+#ifndef ISOTHERMS_H
+#define ISOTHERMS_H
 
 /* Values for the Oswin isotherm correlation */
 struct _oswin {
@@ -31,15 +21,22 @@ struct _gab {
 };
 typedef struct _gab gab;
 
-diff_data* CreateDiffData();
-void DestroyDiffData(diff_data*);
 oswin* CreateOswinData();
 oswin* CreateOswinXiong();
 void DestroyOswinData(oswin*);
 gab* CreateGABData();
 gab* CreateGABErbas();
 gab* CreateGABAndrieu();
-void DestroyGABData();
+
+double OswinIsotherm(oswin*, double, double);
+double OswinInverse(oswin*, double, double);
+double OswinDawDx(oswin*, double, double);
+
+double GABIsotherm(gab*, double, double);
+double GABInverse(gab*, double, double);
+
+double BindingEnergyGAB(gab*, double, double);
+double BindingEnergyOswin(oswin*, double, double);
 
 #endif
 

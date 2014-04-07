@@ -6,7 +6,6 @@
 
 #include "pasta.h"
 #include "isotherms.h"
-#include "diff_data.h"
 #include "sensitivity.h"
 #include "choi-okos.h"
 

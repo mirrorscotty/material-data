@@ -94,6 +94,18 @@ double mdb_wat(double cw, double phi, double T)
     return cw/((1-phi)*rhos);
 }
 
+double conc_wat(double Xdb, double phi, double T)
+{
+    double rhos;
+    choi_okos *co;
+
+    co = CreateChoiOkos(PASTACOMP);
+    rhos = rho(co, T);
+    DestroyChoiOkos(co);
+
+    return Xdb * (1-phi)*rhos;
+}
+
 /**
  * Dry basis moisture content when all pores are saturated
  * @param phi porosity [-]
@@ -147,5 +159,18 @@ double molefrac_vap(double wv)
     /* rhov = rhog * wv, rhov/rhog = wv
      * X = rhov/rhog * Mavg/Mv */
     return wv * Mavg/Mv;
+}
+
+double volfrac_wat(double cw, double T)
+{
+    double rhow;
+    choi_okos *co;
+
+    co = CreateChoiOkos(WATERCOMP);
+    rhow = rho(co,T);
+    DestroyChoiOkos(co);
+
+
+    return cw/rhow;
 }
 

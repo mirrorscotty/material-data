@@ -3,52 +3,8 @@
 #include "constants.h"
 #include "conversions.h"
 #include "pasta.h"
+#include "diffusivity.h"
 #include <math.h>
-
-#define OSWINDATA CreateOswinData
-#define GABDATA CreateGABAndrieu
-
-/**
- * Zhu et al. 2011
- */
-//double Diff(double X, double T)
-//{
-//    double h = 1e-10,
-//           kl,
-//           el,
-//           mu,
-//           R = GASCONST,
-//           vl,
-//           aw,
-//           DawDel,
-//           DawDX,
-//           DelDcw,
-//           cw,
-//           phi = POROSITY,
-//           D;
-//    oswin *o;
-//    choi_okos *co;
-//    o = CreateOswinData();
-//
-//    /* Calculate the molar volume of water */
-//    co = CreateChoiOkos(WATERCOMP);
-//    vl = co->MW_wat/rho(co, T);
-//    DestroyChoiOkos(co);
-//
-//    cw = conc_wat(X, phi, T);
-//    aw = OswinInverse(o, X, T);
-//    el = volfrac_wat(cw, T);
-//    mu = visc_wat(T);
-//    kl = perm_wat(cw, phi, T);
-//
-//    DawDX = OswinDawDx(o, X, T);
-//    DelDcw = (volfrac_wat(cw+h, T) - volfrac_wat(cw-h, T))/(2*h);
-//    DawDel = DawDX/DelDcw;
-//
-//    D = el*kl/mu * R*T/vl * (log(aw) + el/aw * DawDel);
-//
-//    return D;
-//}
 
 /**
  * Calculate capillary diffusivity in a porous medium. Most of the equations are
@@ -161,7 +117,8 @@ double CapDiff(double X, double T)
         kw = 0;
  
     /* Volume fraction of water */
-    e = phi*X/Xs;
+    e = volfrac_wat(conc_wat(X, POROSITY, T), T);
+    e = phi * X/Xs;
 
     /* Derivative of water activity with respect to volume fraction water */
     DawDe = OswinDawDx(o, X, T) * Xs/phi;
@@ -215,7 +172,7 @@ double DiffCh10(double X, double T)
     dat = OSWINDATA();
 
     double Deff,
-           D0 = 6.3910e-8, /* [m^2/s] Source: Xiong et al (1991) */
+           D0 = 6.3910e-8, /* [m^2/s] Source: Handbook of Food Engineering */
            //Ea = 25900, /* Source: Litchfield and Okos (1986) */
            Ea = 21760, /* [J/mol] Source: Xiong et al. (1991) */
            K = 1032.558, /* Source: Xiong et al. (1991) */
@@ -224,6 +181,30 @@ double DiffCh10(double X, double T)
 
     /* Equation 13 from Ch10 of Handbook of Food Engineering, Second Edition */
     Deff = D0 * exp(-Ea/(R*T))
+        * ( K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T))) );
+
+    return Deff;
+}
+
+/**
+ * Modification of the diffusivity equation from Xiong et al. 1991 to use
+ * the self-diffusivity of water.
+ */
+double DiffCh10Mod(double X, double T)
+{
+    oswin *dat;
+    dat = OSWINDATA();
+
+    double Deff,
+           Dself = SelfDiffWater(T),
+           phi = POROSITY,
+           tau = 7, /* Guessed value for tortuosity */
+           K = 1032.558, /* Source: Xiong et al. (1991) */
+           Eb = BindingEnergyOswin(dat, X, T),
+           R = 8.314; /* Gas Constant */
+
+    /* Equation 13 from Ch10 of Handbook of Food Engineering, Second Edition */
+    Deff = phi/tau * Dself
         * ( K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T))) );
 
     return Deff;
@@ -300,6 +281,22 @@ double VaporDiffCh10(double X, double T)
     double D0gas = 2e-5,
            D0liq = 6.3910e-8;
     return D0gas/D0liq * DiffCh10(X, T);
+}
+
+/**
+ * Temperature-dependent self diffusion coefficent for water.
+ * Valid from 0C to 100C. From Holz et al. 2000
+ * @param T Temperature [K]
+ * @returns Diffusion coefficient [m^2/s]
+ */
+double SelfDiffWater(double T)
+{
+    double D,
+           D0 = 1.635e-8,
+           Ts = 215.05,
+           gamma = 2.063;
+    D = D0*pow(T/Ts-1, gamma);
+    return D;
 }
 
 double KnudsenDiff(double T)

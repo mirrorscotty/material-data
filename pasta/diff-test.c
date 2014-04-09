@@ -193,7 +193,7 @@ void TestDCap()
 
 void CompareAllDiff(double T)
 {
-    vector *X, *D10o, *D10g, *Dz1, *Dz2, *Dvap;
+    vector *X, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dvap;
     char *filename;
     matrix *out;
     int i;
@@ -204,6 +204,7 @@ void CompareAllDiff(double T)
     X = linspaceV(0.005, 0.3, 300);
     D10o = CreateVector(300);
     D10g = CreateVector(300);
+    D10m = CreateVector(300);
     Dz1 = CreateVector(300);
     Dz2 = CreateVector(300);
     Dvap = CreateVector(300);
@@ -211,12 +212,13 @@ void CompareAllDiff(double T)
     for(i=0; i<len(X); i++) {
         setvalV(D10o, i, DiffCh10(valV(X, i), T));
         setvalV(D10g, i, DiffCh10GAB(valV(X, i), T));
+        setvalV(D10m, i, DiffCh10Mod(valV(X, i), T));
         setvalV(Dz1, i, CapillaryDiff(valV(X, i), T));
         setvalV(Dz2, i, CapDiff(valV(X, i), T));
         setvalV(Dvap, i, VaporDiffCh10(valV(X, i), T));
     }
     sprintf(filename, "Diffusivity%gK.csv", T);
-    out = CatColVector(6, X, Dvap, D10o, D10g, Dz1, Dz2);
+    out = CatColVector(7, X, Dvap, D10o, D10g, D10m, Dz1, Dz2);
     mtxprntfile(out, filename);
 }
 
@@ -269,6 +271,10 @@ int main(int argc, char *argv[])
             OswinIsotherm(o, .95, 273.15+25),
             mdb_wat_sat(phi, 273.15+25),
             phi);
+    printf("Dfit @ 0C = %g, Dfit @ 50C = %g, Dfit @ 100C = %g\n",
+            SelfDiffWater(273.15),
+            SelfDiffWater(50+273.15),
+            SelfDiffWater(373.15));
     return 0;
 }
 

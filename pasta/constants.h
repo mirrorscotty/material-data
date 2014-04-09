@@ -54,9 +54,9 @@
 
 /* Random extra values */
 /**
- * Porosity [-] (selected arbitrarily)
+ * Porosity [-] (From Xiong et al. 1991)
  */
-#define POROSITY 0.12
+#define POROSITY 0.0612
 /**
  * Intrinsic Permeability From Zhu et al. 2011
  */

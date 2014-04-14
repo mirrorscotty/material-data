@@ -198,7 +198,8 @@ double DiffCh10Mod(double X, double T)
     double Deff,
            Dself = SelfDiffWater(T),
            phi = POROSITY,
-           tau = 7, /* Guessed value for tortuosity */
+           tau = 10.5409, /* Fitted value for tortuosity based on 55 C data */
+           Sw = sat_wat(conc_wat(X, POROSITY, T), POROSITY, T),
            K = 1032.558, /* Source: Xiong et al. (1991) */
            Eb = BindingEnergyOswin(dat, X, T),
            R = 8.314; /* Gas Constant */

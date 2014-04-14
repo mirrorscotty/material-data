@@ -191,6 +191,36 @@ void TestDCap()
     mtxprntfile(data, "Dcap.csv");
 }
 
+void CompareDiffXdb(double X)
+{
+    vector *T, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dvap;
+    char *filename;
+    matrix *out;
+    int i;
+
+    filename = (char*) calloc(sizeof(char), 80);
+
+    T = linspaceV(273.15+25, 273.15+90, 300);
+    D10o = CreateVector(300);
+    D10g = CreateVector(300);
+    D10m = CreateVector(300);
+    Dz1 = CreateVector(300);
+    Dz2 = CreateVector(300);
+    Dvap = CreateVector(300);
+
+    for(i=0; i<len(T); i++) {
+        setvalV(D10o, i, DiffCh10(X, valV(T, i)));
+        setvalV(D10g, i, DiffCh10GAB(X, valV(T, i)));
+        setvalV(D10m, i, DiffCh10Mod(X, valV(T, i)));
+        setvalV(Dz1, i, CapillaryDiff(X, valV(T, i)));
+        setvalV(Dz2, i, CapDiff(X, valV(T, i)));
+        setvalV(Dvap, i, VaporDiffCh10(X, valV(T, i)));
+    }
+    sprintf(filename, "Diffusivity%g.csv", X);
+    out = CatColVector(7, T, Dvap, D10o, D10g, D10m, Dz1, Dz2);
+    mtxprntfile(out, filename);
+}
+
 void CompareAllDiff(double T)
 {
     vector *X, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dvap;
@@ -256,10 +286,12 @@ int main(int argc, char *argv[])
             0.,
             CapillaryDiff(d, data, .0285, 60+273.15)); */
 
-    CompareAllDiff(105);
-    CompareAllDiff(71);
-    CompareAllDiff(55);
-    CompareAllDiff(44);
+//    CompareAllDiff(105);
+//    CompareAllDiff(71);
+//    CompareAllDiff(55);
+//    CompareAllDiff(44);
+    CompareDiffXdb(.1);
+    CompareDiffXdb(.2);
     printf("44 = %g, 55 = %g, 71 = %g, 105 = %g\n",
             VaporDiff(44+273.15, 101325),
             VaporDiff(55+273.15, 101325),

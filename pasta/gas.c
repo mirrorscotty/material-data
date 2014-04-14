@@ -29,6 +29,23 @@ double moldens_gas(double T, double P)
 }
 
 /**
+ * Viscosity of air using Sutherland's formula.
+ * This formula is valid as long as the gas is ideal, and the temperature is
+ * between 0 and 555K. Pressure should be less than 3.45MPa.
+ * Source: http://en.wikipedia.org/wiki/Viscosity
+ * @param T Temperature [K]
+ * @returns Viscosity [Pa s]
+ */
+double visc_air(double T)
+{
+    double T0 = 291.15, /* Reference temperature [K] */
+           C = 120, /* Sutherland's constant for air */
+           mu0 = 1.827e-5; /* Reference viscosity [Pa s] */
+
+    return mu0*(T0+C)/(T+C) * pow(T/T0, 3/2);
+}
+
+/**
  * Vapor pressure of water from 1 C to 374 C (source: Wikipedia)
  * @param T Temperature [K]
  * @returns vapor pressure [Pa]

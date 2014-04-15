@@ -6,7 +6,6 @@
 
 #include "pasta.h"
 #include "isotherms.h"
-#include "sensitivity.h"
 #include "choi-okos.h"
 
 #define BUFFSIZE 80

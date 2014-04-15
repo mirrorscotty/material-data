@@ -269,11 +269,20 @@ void Dgas(double P)
     mtxprntfile(out, "GasDiff.csv");
 }
 
+matrix* DOswinVector(matrix *X, double T)
+{
+    double i;
+    matrix *D;
+    D = CreateMatrix(nRows(X), 1);
+    for(i=0; i<nRows(X); i++)
+        setval(D, DiffCh10(val(X, i, 0), T), i, 0);
+    return D;
+}
+
 int main(int argc, char *argv[])
 {
-    oswin *o;
+    matrix *data, *X, *D, *data1;
     double phi = POROSITY;
-    o = CreateOswinData();
 //    printf("Water Activity: %g\n", GABInverse(data, .5, 20));
     //diff_test();
 /*    printf("D:\n%g\n%g\n%g\n%g\n%g\n%g\n%g\n%g\n",
@@ -286,27 +295,35 @@ int main(int argc, char *argv[])
             0.,
             CapillaryDiff(d, data, .0285, 60+273.15)); */
 
-//    CompareAllDiff(105);
-//    CompareAllDiff(71);
-//    CompareAllDiff(55);
-//    CompareAllDiff(44);
-    CompareDiffXdb(.1);
-    CompareDiffXdb(.2);
-    printf("44 = %g, 55 = %g, 71 = %g, 105 = %g\n",
+    CompareAllDiff(105);
+    CompareAllDiff(71);
+    CompareAllDiff(55);
+    CompareAllDiff(44);
+//
+      CompareDiffXdb(.05);
+      CompareDiffXdb(.1);
+      CompareDiffXdb(.2);
+/*    printf("44 = %g, 55 = %g, 71 = %g, 105 = %g\n",
             VaporDiff(44+273.15, 101325),
             VaporDiff(55+273.15, 101325),
             VaporDiff(71+273.15, 101325),
-            VaporDiff(105+273.15, 101325));
+            VaporDiff(105+273.15, 101325)); */
     //Dgas(101325);
 
-    printf("XsOswin = %g, XsSat = %g, phi = %g\n",
+    /*printf("XsOswin = %g, XsSat = %g, phi = %g\n",
             OswinIsotherm(o, .95, 273.15+25),
             mdb_wat_sat(phi, 273.15+25),
-            phi);
-    printf("Dfit @ 0C = %g, Dfit @ 50C = %g, Dfit @ 100C = %g\n",
+            phi); */
+    /* printf("Dfit @ 0C = %g, Dfit @ 50C = %g, Dfit @ 100C = %g\n",
             SelfDiffWater(273.15),
             SelfDiffWater(50+273.15),
-            SelfDiffWater(373.15));
+            SelfDiffWater(373.15)); */
+
+    data = mtxloadcsv("kF.csv", 0);
+    X = ExtractColumn(data, 0);
+    D = DOswinVector(X, 60+273.15);
+    data1 = AugmentMatrix(data, D);
+    mtxprntfile(data1, "D-kF.csv");
     return 0;
 }
 

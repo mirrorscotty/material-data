@@ -21,27 +21,32 @@ choi-okos.o: choi-okos.c choi-okos.h
 
 isotherms.o: isotherms.c isotherms.h
 
+mechanical.o: mechanical.h
+
 diffusivity.o: diffusivity.c diffusivity.h isotherms.h constants.h
 
 binding.o: isotherms.h binding.c
 
 diff-test.o: isotherms.h diffusivity.h matrix.h choi-okos.h diff-test.c
 
-material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o isotherms.o diffusivity.o binding.o
-	ar -cvq $@ $?
+material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o isotherms.o diffusivity.o binding.o mechanical.o
+	ar -cvr $@ $?
 
 matrix.a:
 	$(MAKE) -C matrix
 	cp matrix/matrix.a .
 
 sens-analysis: sensitivity.o material-data.a 
-	$(CC) $(CFLAGS) -o $@ $? $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 diff: diff-test.o material-data.a matrix.a
-	$(CC) $(CFLAGS) -o $@ $? $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+doc: Doxyfile
+	doxygen Doxyfile
 
 clean:
-	rm -rf *.o *.a *.csv sensitivity sens-analysis diff
+	rm -rf *.o *.a *.csv sensitivity sens-analysis diff doc
 	$(MAKE) -C matrix clean
 
 

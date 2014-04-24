@@ -1,3 +1,8 @@
+/**
+ * @file fluid.c
+ * Functions to calculate fluid properties used in flow in porous media.
+ */
+
 #include <math.h>
 
 #include "pasta.h"

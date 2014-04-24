@@ -1,3 +1,8 @@
+/**
+ * @file thermal.c
+ * Calculate thermal properties of pasta as it's drying.
+ */
+
 #include "pasta.h"
 #include "choi-okos.h"
 

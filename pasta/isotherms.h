@@ -1,7 +1,13 @@
+/**
+ * @file isotherms.h
+ */
+
 #ifndef ISOTHERMS_H
 #define ISOTHERMS_H
 
-/* Values for the Oswin isotherm correlation */
+/**
+ * Values for the Oswin isotherm correlation.
+ */
 struct _oswin {
     double k0;
     double k1;
@@ -10,7 +16,9 @@ struct _oswin {
 };
 typedef struct _oswin oswin;
 
-/* Values for the GAB isotherm equation */
+/**
+ * Values for the GAB isotherm equation.
+ */
 struct _gab {
     double m0;
     double C0;

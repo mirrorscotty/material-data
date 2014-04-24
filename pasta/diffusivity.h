@@ -1,3 +1,7 @@
+/**
+ * @file diffusivity.h
+ */
+
 #ifndef DIFFUSIVITY_H
 #define DIFFUSIVITY_H
 

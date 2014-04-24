@@ -1,3 +1,8 @@
+/**
+ * @file choi-okos.h
+ * Define all the data structures used in the Choi-Okos equations.
+ */
+
 #ifndef CAN_H
 #define CAN_H
 

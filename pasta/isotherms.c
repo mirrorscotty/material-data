@@ -1,3 +1,10 @@
+/**
+ * @file isotherms.c
+ * Determine water activity based on moisture content (or the reverse) using
+ * either the GAB isotherm or the Oswin isotherm. Data collected from a variety
+ * of sources.
+ */
+
 #include <stdlib.h>
 #include <math.h>
 

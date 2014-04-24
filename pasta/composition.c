@@ -1,5 +1,6 @@
 /**
- * @file Equations for determining the composition pasta based on the dependent
+ * @file composition.c
+ * Equations for determining the composition pasta based on the dependent
  * variables. The independent variables are mass concentration of water, mass
  * fraction of water vapor, porosity, temperature, and pressure.
  */
@@ -40,8 +41,8 @@ double conc_vap(double cw, double wv, double phi, double T, double P)
 /**
  * Mass concentration of air in the gas phase
  * @param cw mass concentration of water [kg/m^3]
- * @param wv: mass fraction of water vapor [-]
- * @param phi: porosity [-]
+ * @param wv mass fraction of water vapor [-]
+ * @param phi porosity [-]
  * @param T temperature [K]
  * @param P pressure [Pa]
  * @returns Air concentration [kg/m^3]
@@ -79,7 +80,7 @@ double sat_wat(double cw, double phi, double T)
 /**
  * Dry basis moisture content
  * @param cw mass concentration water [kg/m^3]
- * @param phi: porosity [-]
+ * @param phi porosity [-]
  * @returns Moisture content [kg/kg db]
  */
 double mdb_wat(double cw, double phi, double T)
@@ -94,6 +95,14 @@ double mdb_wat(double cw, double phi, double T)
     return cw/((1-phi)*rhos);
 }
 
+/**
+ * Determine the concentration of water based on porosity, temperature, and
+ * moisture content.
+ * @param Xdb Moisture content [kg/kg db]
+ * @param phi Porosity [-]
+ * @param T Temperature [K]
+ * @returns Water concentration [kg/m^3]
+ */
 double conc_wat(double Xdb, double phi, double T)
 {
     double rhos;
@@ -161,6 +170,12 @@ double molefrac_vap(double wv)
     return wv * Mavg/Mv;
 }
 
+/**
+ * Calculate the volume fraction of water.
+ * @param cw Water concentration [kg/m^3]
+ * @param T Temperature [K]
+ * @returns Volume fraction [-]
+ */
 double volfrac_wat(double cw, double T)
 {
     double rhow;

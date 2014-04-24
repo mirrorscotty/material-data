@@ -1,3 +1,9 @@
+/**
+ * @file sensitivity.c
+ * Simple file to do a sensitivity analysis on each of the functions used in the
+ * pasta drying model.
+ */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>

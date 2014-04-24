@@ -1,3 +1,9 @@
+/**
+ * @file choi-okos.c
+ * Implementation of the Choi-Okos equations for calculating food properties
+ * based on composition.
+ */
+
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>

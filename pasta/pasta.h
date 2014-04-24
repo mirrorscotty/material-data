@@ -1,7 +1,15 @@
+/**
+ * @file pasta.h
+ * Include this file to include nearly everything in this directory.
+ */
+
 #ifndef PASTA_H
 #define PASTA_H
 
 #include "constants.h"
+#include "isotherms.h"
+#include "mechanical.h"
+#include "diffusivity.h"
 
 /* Composition ****************************************************************/
 double conc_gas(double, double, double, double, double);

@@ -1,4 +1,9 @@
 /**
+ * @file constants.h
+ * Set of constants for calculating pasta properties
+ */
+
+/**
  * Ideal gas constant [J/(K mol)]
  */
 #define GASCONST 8.3144621

@@ -1,3 +1,9 @@
+/**
+ * @file binding.c
+ * Calculate binding energy based on either the GAB isotherm or the Oswin
+ * isotherm. Used in diffusivity calculations.
+ */
+
 #include <math.h>
 
 #include "isotherms.h"

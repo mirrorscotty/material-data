@@ -1,8 +1,14 @@
+/**
+ * @file gas.c
+ * Calculate gas properties.
+ */
+
 #include <math.h>
 
 #include "pasta.h"
 
-/** Gas density based on the ideal gas law
+/** 
+ * Gas density based on the ideal gas law
  * @param wv Vapor mass fraction [-]
  * @param T Temperature [K]
  * @param P Pressure [Pa]

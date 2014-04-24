@@ -1,3 +1,8 @@
+/**
+ * @file conversions.h
+ * Macros to convert from one unit to another.
+ */
+
 #ifndef CONVERSIONS_H
 #define CONVERSIONS_H
 

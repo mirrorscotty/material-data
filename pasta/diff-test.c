@@ -1,3 +1,8 @@
+/**
+ * @file diff-test.c
+ * Testing file for diffusivity
+ */
+
 #include "isotherms.h"
 #include "diffusivity.h"
 #include "matrix.h"

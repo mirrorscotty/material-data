@@ -1,3 +1,8 @@
+/**
+ * @file diffusivity.c
+ * Several models for calculating diffusivity in porous media.
+ */
+
 #include "../choi-okos/choi-okos.h"
 #include "isotherms.h"
 #include "constants.h"
@@ -312,3 +317,20 @@ double KnudsenDiff(double T)
 
     return D;
 }
+
+/**
+ * Calculate diffusivity from length and the kF value determined from the Crank
+ * equation.
+ * @param kF (pi^2 D)/L^2 [1/s]
+ * @param L Sample thickness [m]
+ * @returns Diffusivity [m^2/s]
+ */
+double DiffkF(double kF, double L)
+{
+    double D;
+
+    D = kF*L*L/(M_PI*M_PI);
+    
+    return D;
+}
+

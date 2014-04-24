@@ -14,5 +14,13 @@ typedef struct {
     int n;
 } maxwell;
 
+maxwell* CreateMaxwell();
+void DestroyMaxwell(maxwell*);
+double ReducedTime(maxwell*, double, double, double);
+double MaxwellModulus(maxwell*, double, double, double);
+double MeanRelaxTime(maxwell*);
+double MaxwellStress(maxwell*, double, double (*)(double), double (*)(double),
+        double (*)(double));
+
 #endif
 

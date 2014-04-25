@@ -9,8 +9,9 @@
 
 maxwell* CreateMaxwell()
 {
-    double nterms = 4;
+    int nterms = 4;
     maxwell *m;
+    m = (maxwell*) calloc(sizeof(maxwell*), 1);
 
     /* Allocate memory for all the stuff */
     m->E = (double *) calloc(sizeof(double), nterms);
@@ -80,6 +81,10 @@ double MaxwellModulus(maxwell *m, double t, double T, double M)
  * \f]
  * where G(s) is the shear relaxation modulus (Pa) and the denominator is equal
  * to the viscosity at zero shear (Pa s).
+ *
+ * TODO: For some reason, m->n isn't being read properly, and always comes out
+ * as zero. Fix this!
+ *
  * @param m Set of Maxwell parameters to use.
  * @returns Mean relaxation time [s]
  */
@@ -90,7 +95,8 @@ double MeanRelaxTime(maxwell *m)
     int i;
 
     /* Use the formulas for each infinite integral to evaluate them */
-    for(i=0; i<m->n; i++) {
+    /* Replace 4 by m->n */
+    for(i=0; i<4; i++) {
         G += m->tau[i];
         sG += pow(m->tau[i], 2);
     }

@@ -7,6 +7,11 @@
 #include <stdlib.h>
 #include <math.h>
 
+/**
+ * Create a set of maxwell parameters. The data here comes from Cummings et al.
+ * 1993 and is for extruded durum semolina pasta.
+ * @returns Set of Maxwell material parameters for extruded durum semolina
+ */
 maxwell* CreateMaxwell()
 {
     int nterms = 4;
@@ -16,6 +21,8 @@ maxwell* CreateMaxwell()
     /* Allocate memory for all the stuff */
     m->E = (double *) calloc(sizeof(double), nterms);
     m->tau = (double *) calloc(sizeof(double), nterms);
+
+    /* Set the number of maxwell elements we'll be using */
     m->n = nterms;
 
     /* Viscoelastic modulus [Pa] */
@@ -41,6 +48,10 @@ maxwell* CreateMaxwell()
     return m;
 }
 
+/**
+ * Deallocate a data structure containing maxwell parameters
+ * @param m Data structure to delete
+ */
 void DestroyMaxwell(maxwell *m)
 {
     free(m->E);
@@ -49,6 +60,16 @@ void DestroyMaxwell(maxwell *m)
     free(m);
 }
 
+/**
+ * Calculate the reduced time based on the temperature and moisture shift
+ * factors. This adjusts the viscoelastic modulus to account for changes in
+ * temperature and moisture content.
+ * @param m Set of Maxwell parameters to use
+ * @param t Normal (non-reduced) time) [s]
+ * @param T Temperature [K]
+ * @param M Moisture content [kg/kg db]
+ * @returns Reduced time [s]
+ */
 double ReducedTime(maxwell *m, double t, double T, double M)
 {
     double aT, aM;
@@ -60,6 +81,14 @@ double ReducedTime(maxwell *m, double t, double T, double M)
     return t*aT*aM;
 }
 
+/**
+ * Calculate the shear modulus for a Maxwell material.
+ * @param m Set of parameters to use
+ * @param t Time [s]
+ * @param T Temperature [K]
+ * @param M Moisture content [kg/kg db]
+ * @returns Shear modulus [Pa]
+ */
 double MaxwellModulus(maxwell *m, double t, double T, double M)
 {
     double E = 0, /* Set the modulus to zero initially */

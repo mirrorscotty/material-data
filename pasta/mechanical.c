@@ -96,7 +96,7 @@ double MaxwellModulus(maxwell *m, double t, double T, double M)
     int i; /* Loop index */
 
     /* Add up each term in the series */
-    for(i=0; i<m->n; i++)
+    for(i=0; i<4; i++) /* Same problem as in the MeanRelaxTime function */
         E += m->E[i] * exp( -tr/m->tau[i] );
 
     return E;

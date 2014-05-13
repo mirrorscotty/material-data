@@ -19,6 +19,9 @@ void diff_test() {
     printf("T: %g Xdb: %g\t Deff = 79.2, %g\n", 105.+273, .08, DiffCh10(.08, 105+273));
     printf("T: %g Xdb: %g\t Deff = 26.7, %g\n", 71.+273, .08, DiffCh10(.08, 71+273));
     printf("T: %g Xdb: %g\t Deff = 7.35, %g\n", 44.+273, .09, DiffCh10(.09,44+273));
+    puts("");
+    printf("T: %g Xdb: %g\t Deff = %g\n", 60+273., .04, DiffCh10(0.04,60+273));
+
 }
 
 void Eb_test() {
@@ -66,9 +69,8 @@ void PlotEb()
     int i;
     double A = 2.39e-4; /* Conversion to kcal from J */
     //oswin *d;
-    //d = CreateOswinXiong();
     gab *d;
-    d = CreateGABAndrieu();
+    d = GABDATA();
 
     X = linspaceV(.01, .25, 300);
 
@@ -96,7 +98,7 @@ void PlotEbOswin()
     int i;
     double A = 2.39e-4; /* Conversion to kcal from J */
     oswin *d;
-    d = CreateOswinXiong();
+    d = OSWINDATA();
 
     X = linspaceV(.01, .25, 300);
 
@@ -123,7 +125,7 @@ void PlotXdb()
     matrix *data;
     int i;
     gab *d;
-    d = CreateGABAndrieu();
+    d = GABDATA();
 
     aw = linspaceV(.005, .94, 300);
 
@@ -148,7 +150,7 @@ void TestAw()
     matrix *data;
     int i;
 
-    d = CreateGABAndrieu();
+    d = GABDATA();
     
     X = linspaceV(0.001, 0.3, 300);
     Aw40 = CreateVector(300);
@@ -324,11 +326,12 @@ int main(int argc, char *argv[])
             SelfDiffWater(50+273.15),
             SelfDiffWater(373.15)); */
 
-    data = mtxloadcsv("kF.csv", 0);
-    X = ExtractColumn(data, 0);
-    D = DOswinVector(X, 60+273.15);
-    data1 = AugmentMatrix(data, D);
-    mtxprntfile(data1, "D-kF.csv");
+//    data = mtxloadcsv("kF.csv", 0);
+//    X = ExtractColumn(data, 0);
+//    D = DOswinVector(X, 60+273.15);
+//    data1 = AugmentMatrix(data, D);
+//    mtxprntfile(data1, "D-kF.csv");
+    diff_test();
     return 0;
 }
 

@@ -31,6 +31,7 @@ double perm_wat(double, double, double);
 double rho_gas(double, double, double);
 double pvap_wat(double);
 double visc_air(double);
+double perm_gas(double, double, double);
 
 /* Phase Change ***************************************************************/
 double evap(double, double, double, double, double);

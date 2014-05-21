@@ -77,3 +77,37 @@ double pvap_wat(double T)
     return pvap;
 }
 
+/**
+ * Permeability of water in pasta. Mostly taken from Zhu 2011 (Eq 5.35).
+ * @param cw Water concentration [kg/m^3]
+ * @param phi Porosity [-]
+ * @param T Temperature [K]
+ * @returns Permeability [m^2]
+ */
+double perm_gas(double cw, double phi, double T)
+{
+    double kg, /* Permeability of gas */
+           kwi = PERMGAS, /* Intrinsic permeability of gas */
+           fphi, /* Porosity factor */
+           Xs, /* Saturated moisture content (d.b.) */
+           Sw, /* Water saturation */
+           Sr; /* Irreducible water saturation */
+    oswin *o;
+
+    o = CreateOswinData();
+
+    fphi = 1;
+    Xs = mdb_wat_sat(phi, T); /* Xdb when pores are saturated with water */
+    Sr = 0.05/Xs; /* Completely made up number! */
+    Sw = sat_wat(cw, phi, T);
+
+    DestroyOswinData(o);
+
+    if(Sw < 1/1.1)
+        kg = (1-1.1*Sw)*fphi;
+    else
+        kg = 0;
+
+    return kg;
+}
+

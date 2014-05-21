@@ -53,9 +53,14 @@
 #define KVAPOR 0.016
 
 /**
- * Intrinsic permeability [m^2]  Source: Zhu et al. 2011
+ * Intrinsic permeability of water [m^2]  Source: Zhu et al. 2011
  */
 #define PERMWAT 1e-18
+
+/**
+ * Intrinsic permeability gas [m^2]
+ */
+#define PERMGAS 0
 
 /* Random extra values */
 /**

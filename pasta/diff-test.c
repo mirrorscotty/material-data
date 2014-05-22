@@ -119,13 +119,41 @@ void PlotEbOswin()
     mtxprntfile(data, "EbOswin.csv");
 }
 
+void PlotEbHenderson()
+{
+    vector *X, *Eb30, *Eb40, *Eb50, *Eb60, *Eb70;
+    matrix *data;
+    int i;
+    double A = 2.39e-4; /* Conversion to kcal from J */
+    henderson *d;
+    d = CreateHendersonData();
+
+    X = linspaceV(.01, .25, 300);
+
+    Eb30 = CreateVector(300);
+    Eb40 = CreateVector(300);
+    Eb50 = CreateVector(300);
+    Eb60 = CreateVector(300);
+    Eb70 = CreateVector(300);
+
+    for(i=0; i<len(X); i++) {
+        setvalV(Eb30, i, A*BindingEnergyHenderson(d, valV(X, i), 30+273.15));
+        setvalV(Eb40, i, A*BindingEnergyHenderson(d, valV(X, i), 40+273.15));
+        setvalV(Eb50, i, A*BindingEnergyHenderson(d, valV(X, i), 50+273.15));
+        setvalV(Eb60, i, A*BindingEnergyHenderson(d, valV(X, i), 60+273.15));
+        setvalV(Eb70, i, A*BindingEnergyHenderson(d, valV(X, i), 70+273.15));
+    }
+    data = CatColVector(6, X, Eb30, Eb40, Eb50, Eb60, Eb70);
+    mtxprntfile(data, "EbHenderson.csv");
+}
+
 void PlotXdb()
 {
     vector *aw, *X40, *X55, *X71;
     matrix *data;
     int i;
-    gab *d;
-    d = GABDATA();
+    henderson *d;
+    d = CreateHendersonData();
 
     aw = linspaceV(.005, .94, 300);
 
@@ -134,37 +162,37 @@ void PlotXdb()
     X71 = CreateVector(300);
 
     for(i=0; i<len(aw); i++) {
-        setvalV(X40, i, GABIsotherm(d, valV(aw, i), 40+273.15));
-        setvalV(X55, i, GABIsotherm(d, valV(aw, i), 55+273.15));
-        setvalV(X71, i, GABIsotherm(d, valV(aw, i), 71+273.15));
+        setvalV(X40, i, HendersonInverse(d, valV(aw, i), 40+273.15));
+        setvalV(X55, i, HendersonInverse(d, valV(aw, i), 55+273.15));
+        setvalV(X71, i, HendersonInverse(d, valV(aw, i), 71+273.15));
     }
     data = CatColVector(4, aw, X40, X55, X71);
-    mtxprntfile(data, "XdbGAB.csv");
+    mtxprntfile(data, "XdbHenderson.csv");
 }
 
 void TestAw()
 {
-    gab *d;
+    henderson *d;
 
     vector *X, *Aw40, *Aw55, *Aw71;
     matrix *data;
     int i;
 
-    d = GABDATA();
+    d = CreateHendersonData();
     
-    X = linspaceV(0.001, 0.3, 300);
+    X = linspaceV(0.001, 0.9, 300);
     Aw40 = CreateVector(300);
     Aw55 = CreateVector(300);
     Aw71 = CreateVector(300);
 
     for(i=0; i<len(X); i++) {
-        setvalV(Aw40, i, GABInverse(d, valV(X, i), 40+273));
-        setvalV(Aw55, i, GABInverse(d, valV(X, i), 55+273));
-        setvalV(Aw71, i, GABInverse(d, valV(X, i), 71+273));
+        setvalV(Aw40, i, HendersonIsotherm(d, valV(X, i), 40+273));
+        setvalV(Aw55, i, HendersonIsotherm(d, valV(X, i), 55+273));
+        setvalV(Aw71, i, HendersonIsotherm(d, valV(X, i), 71+273));
     }
 
     data = CatColVector(4, X, Aw40, Aw55, Aw71);
-    mtxprntfile(data, "AwGAB.csv");
+    mtxprntfile(data, "AwHenderson.csv");
 }
 
 void TestDCap()
@@ -200,7 +228,7 @@ void TestDCap()
 
 void CompareDiffXdb(double X)
 {
-    vector *T, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dvap;
+    vector *T, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dhend;
     char *filename;
     matrix *out;
     int i;
@@ -213,24 +241,24 @@ void CompareDiffXdb(double X)
     D10m = CreateVector(300);
     Dz1 = CreateVector(300);
     Dz2 = CreateVector(300);
-    Dvap = CreateVector(300);
+    Dhend = CreateVector(300);
 
     for(i=0; i<len(T); i++) {
         setvalV(D10o, i, DiffCh10(X, valV(T, i)));
         setvalV(D10g, i, DiffCh10GAB(X, valV(T, i)));
+        setvalV(Dhend, i, DiffCh10Hend(X, valV(T, i)));
         setvalV(D10m, i, DiffCh10Mod(X, valV(T, i)));
         setvalV(Dz1, i, CapillaryDiff(X, valV(T, i)));
         setvalV(Dz2, i, CapDiff(X, valV(T, i)));
-        setvalV(Dvap, i, VaporDiffCh10(X, valV(T, i)));
     }
     sprintf(filename, "Diffusivity%g.csv", X);
-    out = CatColVector(7, T, Dvap, D10o, D10g, D10m, Dz1, Dz2);
+    out = CatColVector(7, T, Dhend, D10o, D10g, D10m, Dz1, Dz2);
     mtxprntfile(out, filename);
 }
 
 void CompareAllDiff(double T)
 {
-    vector *X, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dvap;
+    vector *X, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dhend;
     char *filename;
     matrix *out;
     int i;
@@ -244,18 +272,18 @@ void CompareAllDiff(double T)
     D10m = CreateVector(300);
     Dz1 = CreateVector(300);
     Dz2 = CreateVector(300);
-    Dvap = CreateVector(300);
+    Dhend = CreateVector(300);
 
     for(i=0; i<len(X); i++) {
         setvalV(D10o, i, DiffCh10(valV(X, i), T));
         setvalV(D10g, i, DiffCh10GAB(valV(X, i), T));
+        setvalV(Dhend, i, DiffCh10Hend(valV(X, i), T));
         setvalV(D10m, i, DiffCh10Mod(valV(X, i), T));
         setvalV(Dz1, i, CapillaryDiff(valV(X, i), T));
         setvalV(Dz2, i, CapDiff(valV(X, i), T));
-        setvalV(Dvap, i, VaporDiffCh10(valV(X, i), T));
     }
     sprintf(filename, "Diffusivity%gK.csv", T);
-    out = CatColVector(7, X, Dvap, D10o, D10g, D10m, Dz1, Dz2);
+    out = CatColVector(7, X, Dhend, D10o, D10g, D10m, Dz1, Dz2);
     mtxprntfile(out, filename);
 }
 
@@ -302,14 +330,18 @@ int main(int argc, char *argv[])
             0.,
             CapillaryDiff(d, data, .0285, 60+273.15)); */
 
-    CompareAllDiff(105);
-    CompareAllDiff(71);
-    CompareAllDiff(55);
-    CompareAllDiff(44);
+//    CompareAllDiff(105);
+//    CompareAllDiff(71);
+//    CompareAllDiff(55);
+//    CompareAllDiff(44);
 //
-      CompareDiffXdb(.05);
-      CompareDiffXdb(.1);
-      CompareDiffXdb(.2);
+//      CompareDiffXdb(.05);
+//      CompareDiffXdb(.1);
+//      CompareDiffXdb(.2);
+    CompareAllDiff(40);
+    CompareAllDiff(55);
+    CompareAllDiff(85);
+
 /*    printf("44 = %g, 55 = %g, 71 = %g, 105 = %g\n",
             VaporDiff(44+273.15, 101325),
             VaporDiff(55+273.15, 101325),
@@ -332,6 +364,9 @@ int main(int argc, char *argv[])
 //    data1 = AugmentMatrix(data, D);
 //    mtxprntfile(data1, "D-kF.csv");
     diff_test();
+    PlotEbHenderson();
+    TestAw();
+    PlotXdb();
     return 0;
 }
 

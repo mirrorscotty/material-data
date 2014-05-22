@@ -247,6 +247,36 @@ double DiffCh10GAB(double X, double T)
     return Deff;
 }
 
+/* Calculate diffusivity based on the model in Chapter 10 of The Handbook of
+ * Food Engineering. The isotherm model used is the modified Henderson isotherm
+ * described in Litchfield 1992.
+ * @param X Moisture Content [kg/kg db]
+ * @param T Temperature [K]
+ * @returns Diffusivity [m^2/s]
+ *
+ * @see DiffCh10
+ */
+double DiffCh10Hend(double X, double T)
+{
+    henderson *dat;
+    dat = CreateHendersonData();
+
+    double Deff,
+           D0 = 6.3910e-8, /* Source: Xiong et al (1991) */
+           //Ea = 25900, /* Source: Litchfield and Okos (1986) */
+           Ea = 21760, /* [J/mol] Source: Xiong et al. (1991) */
+           K = 1032.6, /* Source: Xiong et al. (1991) */
+           Eb = BindingEnergyHenderson(dat, X, T),
+           R = GASCONST; /* Gas Constant */
+
+
+    /* Equation 13 from Ch10 of Handbook of Food Engineering, Second Edition */
+    Deff = D0 * exp(-Ea/(R*T))
+        * ( K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T))) );
+
+    return Deff;
+}
+
 /**
  * Calculate the diffusivity of water in a nonpolar gas.
  * Source: Transport Phenomena, Second Edition, Eq 17.2-1
@@ -282,6 +312,16 @@ double VaporDiff(double T, double P)
     return D;
 }
 
+/**
+ * Calculate vapor diffusivity based on the Oswin isotherm and the Chapter 10
+ * model. The only difference is that the D0 value is somewhat larger for vapor
+ * diffusivity than it is for liquid diffusivity.
+ * @param X Moisture content [kg/kg db]
+ * @param T Temperature [K]
+ * @returns Diffusivity [m^2/s]
+ *
+ * @see DiffCh10
+ */
 double VaporDiffCh10(double X, double T)
 {
     double D0gas = 2e-5,

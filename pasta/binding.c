@@ -9,7 +9,7 @@
 #include "isotherms.h"
 #include "constants.h"
 
-#define DX 1e-5
+#define DX 1e-7
 
 /**
  * Calculate the binding energy based on the GAB equation.

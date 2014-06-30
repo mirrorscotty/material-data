@@ -89,7 +89,7 @@ double ReducedTime(maxwell *m, double t, double T, double M)
  * @param M Moisture content [kg/kg db]
  * @returns Shear modulus [Pa]
  */
-double MaxwellModulus(maxwell *m, double t, double T, double M)
+double MaxwellRelax(maxwell *m, double t, double T, double M)
 {
     double E = 0, /* Set the modulus to zero initially */
            tr = ReducedTime(m, t, T, M); /* Reduced time */
@@ -102,6 +102,18 @@ double MaxwellModulus(maxwell *m, double t, double T, double M)
     return E;
 }
 
+double MaxwellCreep(maxwell *m, double t, double T, double M)
+{
+    double J = 0, /* Set the modulus to zero initially */
+           tr = ReducedTime(m, t, T, M); /* Reduced time */
+    int i; /* Loop index */
+
+    /* Add up each term in the series */
+    for(i=0; i<4; i++) /* Same problem as in the MeanRelaxTime function */
+        J += 1/(m->E[i]*m->tau[i])*tr + 1/m->E[i];
+
+    return J;
+}
 /**
  * Mean relaxation time defined by Vrentas, Jarzebski and Duda (1975).
  * Calculate mean relaxation time using the following formula:
@@ -153,7 +165,7 @@ double MaxwellStress(maxwell *m, double t,
         /* Derivative of strain with respect to time */
         dstrain = (strain(tau+h) - strain(tau-h))/(2*h);
         /* Calculate the stress for this time period and add it in */
-        stress += MaxwellModulus(m, t-tau, T(tau), M(tau)) * dstrain * dtau;
+        stress += MaxwellRelax(m, t-tau, T(tau), M(tau)) * dstrain * dtau;
     }
 
     return stress;

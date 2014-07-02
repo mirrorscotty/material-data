@@ -4,6 +4,8 @@
  */
 
 #include "mechanical.h"
+#include "pasta.h"
+#include "choi-okos.h"
 #include <stdlib.h>
 #include <math.h>
 
@@ -169,5 +171,25 @@ double MaxwellStress(maxwell *m, double t,
     }
 
     return stress;
+}
+
+double pore_press(double Xdb, double T)
+{
+    double rhow,
+           R = GASCONST,
+           Mw = 18,
+           aw;
+    choi_okos *co;
+    oswin *o;
+
+    co = CreateChoiOkos(WATERCOMP);
+    rhow = rho(co, T);
+    DestroyChoiOkos(co);
+
+    o = CreateOswinData();
+    aw = OswinInverse(o, Xdb, T);
+    DestroyOswinData(o);
+
+    return rhow*R*T/Mw * log(aw);
 }
 

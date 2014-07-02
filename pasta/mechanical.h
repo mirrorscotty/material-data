@@ -22,6 +22,7 @@ double MaxwellCreep(maxwell*, double, double, double);
 double MeanRelaxTime(maxwell*);
 double MaxwellStress(maxwell*, double, double (*)(double), double (*)(double),
         double (*)(double));
+double pore_press(double, double);
 
 #endif
 

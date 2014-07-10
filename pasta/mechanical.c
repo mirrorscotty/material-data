@@ -177,7 +177,7 @@ double pore_press(double Xdb, double T)
 {
     double rhow,
            R = GASCONST,
-           Mw = 18,
+           Vm = 1.802e-5 /* m^3/mol */
            aw;
     choi_okos *co;
     oswin *o;
@@ -190,6 +190,6 @@ double pore_press(double Xdb, double T)
     aw = OswinInverse(o, Xdb, T);
     DestroyOswinData(o);
 
-    return rhow*R*T/Mw * log(aw);
+    return R*T/Vm * log(aw);
 }
 

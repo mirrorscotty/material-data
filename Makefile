@@ -3,7 +3,7 @@ CC=gcc
 CFLAGS=-Ichoi-okos -Imatrix -ggdb
 LDFLAGS=-lm
 
-all: sens-analysis diff material-data.a
+all: sens-analysis diff material-data.a pc_test
 
 composition.o: composition.c constants.h pasta.h choi-okos.h
 thermal.o: thermal.c constants.h pasta.h choi-okos.h
@@ -17,6 +17,7 @@ mechanical.o: mechanical.h
 diffusivity.o: diffusivity.c diffusivity.h isotherms.h constants.h
 binding.o: isotherms.h binding.c
 diff-test.o: isotherms.h diffusivity.h matrix.h choi-okos.h diff-test.c
+pc_test.o: isotherms.h diffusivity.h matrix.h choi-okos.h pc_test.c
 
 material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o isotherms.o diffusivity.o binding.o mechanical.o
 	ar -cvr $@ $?
@@ -29,6 +30,9 @@ sens-analysis: sensitivity.o material-data.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 diff: diff-test.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+pc_test: pc_test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 doc: Doxyfile

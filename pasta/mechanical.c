@@ -177,7 +177,7 @@ double pore_press(double Xdb, double T)
 {
     double rhow,
            R = GASCONST,
-           Vm = 1.802e-5 /* m^3/mol */
+           Vm = 1.802e-5, /* m^3/mol */
            aw;
     choi_okos *co;
     oswin *o;

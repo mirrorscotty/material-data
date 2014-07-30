@@ -14,6 +14,17 @@ typedef struct {
     int n;
 } maxwell;
 
+typedef struct {
+    double J0;
+    double *J;
+
+    double *tau;
+
+    double mu0;
+
+    int n;
+} burgers;
+
 maxwell* CreateMaxwell();
 void DestroyMaxwell(maxwell*);
 double ReducedTime(maxwell*, double, double, double);
@@ -23,6 +34,12 @@ double MeanRelaxTime(maxwell*);
 double MaxwellStress(maxwell*, double, double (*)(double), double (*)(double),
         double (*)(double));
 double pore_press(double, double);
+
+burgers* CreateBurgers();
+burgers* CreateBurgers1();
+void DestroyBurgers();
+double BurgersCreep(burgers*, double, double, double);
+double DBurgersCreep(burgers*, double, double, double);
 
 #endif
 

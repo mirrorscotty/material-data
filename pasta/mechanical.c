@@ -18,7 +18,7 @@ maxwell* CreateMaxwell()
 {
     int nterms = 4;
     maxwell *m;
-    m = (maxwell*) calloc(sizeof(maxwell*), 1);
+    m = (maxwell*) calloc(sizeof(maxwell), 1);
 
     /* Allocate memory for all the stuff */
     m->E = (double *) calloc(sizeof(double), nterms);
@@ -98,7 +98,7 @@ double MaxwellRelax(maxwell *m, double t, double T, double M)
     int i; /* Loop index */
 
     /* Add up each term in the series */
-    for(i=0; i<4; i++) /* Same problem as in the MeanRelaxTime function */
+    for(i=0; i<m->n; i++) /* Same problem as in the MeanRelaxTime function */
         E += m->E[i] * exp( -tr/m->tau[i] );
 
     return E;
@@ -111,11 +111,12 @@ double MaxwellCreep(maxwell *m, double t, double T, double M)
     int i; /* Loop index */
 
     /* Add up each term in the series */
-    for(i=0; i<4; i++) /* Same problem as in the MeanRelaxTime function */
-        J += 1/(m->E[i]*m->tau[i])*tr + 1/m->E[i];
+    for(i=0; i<m->n; i++) /* Same problem as in the MeanRelaxTime function */
+        J += 1/(m->E[i]*m->tau[i])*t + 1/m->E[i];
 
     return J;
 }
+
 /**
  * Mean relaxation time defined by Vrentas, Jarzebski and Duda (1975).
  * Calculate mean relaxation time using the following formula:
@@ -139,7 +140,7 @@ double MeanRelaxTime(maxwell *m)
 
     /* Use the formulas for each infinite integral to evaluate them */
     /* Replace 4 by m->n */
-    for(i=0; i<4; i++) {
+    for(i=0; i<m->n; i++) {
         G += m->tau[i];
         sG += pow(m->tau[i], 2);
     }
@@ -173,6 +174,12 @@ double MaxwellStress(maxwell *m, double t,
     return stress;
 }
 
+/**
+ * Calculate pore pressure based on the Kelvin equation.
+ * @param Xdb Moisture content [kg/kg db]
+ * @param T Temperature [K]
+ * @returns Capillary pressure [Pa]
+ */
 double pore_press(double Xdb, double T)
 {
     double rhow,

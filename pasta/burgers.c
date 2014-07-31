@@ -40,6 +40,34 @@ burgers* CreateBurgers1()
     return b;
 }
 
+burgerse* CreateBurgersE()
+{
+    burgerse* b;
+    b = (burgerse*) calloc(sizeof(burgerse), 1);
+
+    b->n = 2;
+    b->Jb = calloc(sizeof(double), b->n);
+    b->Je = calloc(sizeof(double), b->n);
+    b->tau = calloc(sizeof(double), b->n);
+
+    b->J0b = .008856; // Fitted to f(x) = b*x^e;
+    b->J0e = -.7575;
+
+    b->Jb[0] = .5592; // Fitted to f(x) = b*x^e;
+    b->Je[0] = -1.316;
+
+    b->Jb[1] = .1171; // Fitted to f(x) = b*x^e;
+    b->Je[1] = -1.189;
+
+    b->tau[0] = 2.286; // Averaged
+    b->tau[1] = 27.29;
+
+    b->mu0b = 13150000; // Fitted to f(x) = b*x^e;
+    b->mu0e = 1.094;
+
+    return b;
+}
+
 void DestroyBurgers(burgers* b)
 {
     free(b->J);
@@ -53,7 +81,6 @@ double BurgersCreep(burgers *b, double t, double T, double M)
     int i;
 
     sum = b->J0 + t/b->mu0;
-//    sum = 0;
     for(i=0; i<b->n; i++)
         sum += b->J[i]*(1-exp(-t/b->tau[i]));
 
@@ -71,3 +98,47 @@ double DBurgersCreep(burgers *b, double t, double T, double M)
 
     return sum;
 }
+
+double BurgersECreep(burgerse *b, double t, double T, double M, double s)
+{
+    double sum = 0,
+           J0, mu0, *J;
+    int i;
+
+    J = (double*) calloc(sizeof(double), b->n);
+
+    J0 = b->J0b*pow(s, b->J0e);
+    mu0 = b->mu0b*pow(s, b->mu0e);
+    for(i=0; i<b->n; i++)
+        J[i] = b->Jb[i]*pow(s, b->Je[i]);
+
+    sum = J0 + t/mu0;
+    for(i=0; i<b->n; i++)
+        sum += J[i]*(1-exp(-t/b->tau[i]));
+
+    free(J);
+
+    return sum;
+}
+
+double DBurgersECreep(burgerse *b, double t, double T, double M, double s)
+{
+    double sum = 0,
+           mu0, *J;
+    int i;
+
+    J = (double*) calloc(sizeof(double), b->n);
+
+    mu0 = b->mu0b*pow(s, b->mu0e);
+    for(i=0; i<b->n; i++)
+        J[i] = b->Jb[i]*pow(s, b->Je[i]);
+
+    sum = 1/mu0;
+    for(i=0; i<b->n; i++)
+        sum += J[i]/b->tau[i] * exp(-t/b->tau[i]);
+
+    free(J);
+
+    return sum;
+}
+

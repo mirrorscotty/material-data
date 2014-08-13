@@ -111,8 +111,27 @@ double MaxwellCreep(maxwell *m, double t, double T, double M)
     int i; /* Loop index */
 
     /* Add up each term in the series */
-    for(i=0; i<m->n; i++) /* Same problem as in the MeanRelaxTime function */
+    for(i=0; i<m->n; i++) 
         J += 1/(m->E[i]*m->tau[i])*t + 1/m->E[i];
+
+    return J;
+}
+
+/**
+ * Derivative of Maxwell material creep compliance function. This isn't
+ * actually a function of time, temperature, or moisture; however, the
+ * parameters are left there so that it's similar to the normal Maxwell creep
+ * function.
+ * TODO: Make sure this is mathematically correct with respect to the reduced
+ * time thing. It likely isn't.
+ */
+double DMaxwellCreep(maxwell *m, double t, double T, double M)
+{
+    double J = 0;
+    double i;
+
+    for(i=0; i<m->n; i++)
+        J += 1/(m->E[i]*m->tau[i]);
 
     return J;
 }

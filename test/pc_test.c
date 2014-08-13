@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
     out = CatColVector(4, Xdb, aw, Eb, Pc);
 
-    mtxprntfile(out, "Pc.csv");
+    mtxprntfilehdr(out, "Pc.csv", "Xdb,aw,Eb,Pc\n");
 
     return 0;
 }

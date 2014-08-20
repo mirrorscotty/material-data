@@ -128,7 +128,7 @@ double MaxwellCreep(maxwell *m, double t, double T, double M)
 double DMaxwellCreep(maxwell *m, double t, double T, double M)
 {
     double J = 0;
-    double i;
+    int i;
 
     for(i=0; i<m->n; i++)
         J += 1/(m->E[i]*m->tau[i]);

@@ -12,7 +12,7 @@ extern "C" {
 
 #define MALLOC_CHECK(x) if(x == NULL){report_error("Failed to allocate memory for #x"); exit(1);}
 
-#define alpha(T) (k((T))/(rho((T))*Cp((T))))
+#define alpha(comp, T) (k((comp), (T))/(rho((comp), (T))*Cp((comp), (T))))
 
 struct _choi_okos {
     double R; /* Gas constant */

@@ -14,17 +14,22 @@ extern "C" {
 
 #define alpha(comp, T) (k((comp), (T))/(rho((comp), (T))*Cp((comp), (T))))
 
-struct _choi_okos {
-    double R; /* Gas constant */
+/**
+ * Structure to hold all of the mass fractions and other composition data for
+ * food samples. Used for calculation of heat transfer coefficient, density, and
+ * heat capacity.
+ */
+typedef struct {
+    double R; /**< Gas constant */
 
     /* Mass fractions of components */
-    double Mpro; /* Protein */
-    double Mfat; /* Fat */
-    double Mcar; /* Carbohydrates */
-    double Mfib; /* Fiber */
-    double Mash; /* Ash */
-    double Mwat; /* Water */
-    double Mice; /* Ice */
+    double Mpro; /**< Protein */
+    double Mfat; /**< Fat */
+    double Mcar; /**< Carbohydrates */
+    double Mfib; /**< Fiber */
+    double Mash; /**< Ash */
+    double Mwat; /**< Water */
+    double Mice; /**< Ice */
 
     /* Molar masses of pure components */
     double MW_pro;
@@ -35,10 +40,10 @@ struct _choi_okos {
     double MW_wat;
 
     /* Freezing parameters */
-    double Hfus; /* Heat of fusion (for water) */
-    double Tf; /* Normal freezing point (for water) */
-};
-typedef struct _choi_okos choi_okos;
+    double Hfus; /**< Heat of fusion (for water) */
+    double Hvap; /**< Heat of vaporization (for water) */
+    double Tf; /**< Normal freezing point (for water) */
+} choi_okos;
 
 /* Function prototypes */
 double alphaFZ(double);
@@ -74,3 +79,4 @@ double IceMassFrac(double);
 #endif
 
 #endif
+

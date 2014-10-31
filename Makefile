@@ -44,7 +44,7 @@ doc: Doxyfile
 	doxygen Doxyfile
 
 clean:
-	rm -rf *.o *.a *.csv sensitivity sens-analysis diff doc
+	rm -rf *.o *.a *.csv sensitivity sens-analysis diff doc pc_test
 	$(MAKE) -C matrix clean
 
 

@@ -61,6 +61,21 @@ void DestroyChoiOkos(choi_okos *co)
     free(co);
 }
 
+choi_okos* AddDryBasis(choi_okos *co, double Xdb)
+{
+    choi_okos *cowet;
+    cowet = CreateChoiOkos(0, 0, 0, 0, 0, 0, 0);
+    /* Assume that there's no water or ice initially. */
+    cowet->Mpro = co->Mpro/(1+Xdb);
+    cowet->Mfat = co->Mfat/(1+Xdb);
+    cowet->Mcar = co->Mcar/(1+Xdb);
+    cowet->Mfib = co->Mfib/(1+Xdb);
+    cowet->Mash = co->Mash/(1+Xdb);
+    cowet->Mwat = Xdb/(1+Xdb);
+
+    return cowet;
+}
+
 int report_error(const char *str)
 {
     #ifdef __linux__
@@ -194,5 +209,4 @@ double rho(choi_okos *co, double T)
     return 1/(co->Mpro/p_pro + co->Mfat/p_fat + co->Mcar/p_car + co->Mfib/p_fib
             + co->Mash/p_ash + (co->Mwat-Mi)/p_wat + Mi/p_ice);
 }
-
 

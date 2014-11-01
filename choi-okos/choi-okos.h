@@ -53,6 +53,7 @@ double rho(choi_okos*, double);
 double mu(choi_okos*, double);
 
 choi_okos *CreateChoiOkos(double, double, double, double, double, double, double);
+choi_okos* AddDryBasis(choi_okos*, double);
 void DestroyChoiOkos(choi_okos*);
 int output_data();
 int report_error(const char*);

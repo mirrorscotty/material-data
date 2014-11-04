@@ -7,7 +7,7 @@
 #define PASTA_H
 
 #include "constants.h"
-#include "isotherms/isotherms.h"
+#include "isotherms.h"
 #include "mechanical.h"
 #include "diffusivity.h"
 

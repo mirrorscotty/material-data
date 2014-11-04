@@ -3,7 +3,7 @@
  * Several models for calculating diffusivity in porous media.
  */
 
-#include "../choi-okos/choi-okos.h"
+#include "choi-okos.h"
 #include "isotherms.h"
 #include "constants.h"
 #include "conversions.h"

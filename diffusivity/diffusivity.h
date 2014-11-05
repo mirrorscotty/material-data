@@ -5,7 +5,7 @@
 #ifndef DIFFUSIVITY_H
 #define DIFFUSIVITY_H
 
-#include "isotherms.h"
+#include "../isotherms/isotherms.h"
 
 #define OSWINDATA CreateOswinXiong
 #define GABDATA CreateGABAndrieu

@@ -6,10 +6,10 @@
 #ifndef PASTA_H
 #define PASTA_H
 
-#include "constants.h"
-#include "isotherms.h"
-#include "mechanical.h"
-#include "diffusivity.h"
+#include "../constants.h"
+#include "../isotherms/isotherms.h"
+#include "../mechanical/mechanical.h"
+#include "../diffusivity/diffusivity.h"
 
 /* Composition ****************************************************************/
 double conc_gas(double, double, double, double, double);

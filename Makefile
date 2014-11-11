@@ -15,7 +15,9 @@ sensitivity.o: sensitivity.c pasta.h isotherms.h constants.h isotherms.h
 mechanical.o: mechanical.h
 burgers.o: mechanical.h
 
-diffusivity.o: diffusivity.c diffusivity.h isotherms.h constants.h
+diffusivity.o: diffusivity.h isotherms.h constants.h
+gas-diff.o: diffusivity.h isotherms.h constants.h
+capillary.o: diffusivity.h isotherms.h constants.h
 binding.o: isotherms.h binding.c
 
 oswin.o: isotherms.h
@@ -27,7 +29,7 @@ choi-okos.o: choi-okos.h
 diff-test.o: isotherms.h diffusivity.h matrix.a choi-okos.h diff-test.c
 pc_test.o: isotherms.h diffusivity.h matrix.a choi-okos.h pc_test.c
 
-material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o binding.o mechanical.o burgers.o
+material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o mechanical.o burgers.o
 	ar -cvr $@ $?
 
 matrix.a:

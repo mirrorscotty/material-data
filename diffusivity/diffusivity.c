@@ -11,156 +11,6 @@
 #include "diffusivity.h"
 #include <math.h>
 
-/**
- * Calculate capillary diffusivity in a porous medium. Most of the equations are
- * taken from Zhu 2011.
- * @param d Diffusivity data structure
- * @param o Set of Oswin parameters
- * @param X Moisture content [kg/kg, db]
- * @param T Temperature [K]
- * @returns Diffusivity [m^2/s]
- */
-double CapillaryDiff(double X, double T)
-{
-    double Dcap,
-           DPcDSw, 
-           DawDX,
-           aw, /* Water activity */
-           Xs, /* Saturated moisture content */
-           kw,
-           kwi = KWINTR, /* Intrinsic permeability for water */
-           Sw,
-           Sr = SR, /* Irreducible water saturation */
-           R = GASCONST, /* Gas constant */
-           muw = visc_wat(T), /* Water viscosity */
-           phi = POROSITY, /* Constant porosity */
-           fphi;
-    oswin *o;
-    choi_okos *co;
-    
-    o = OSWINDATA();
-
-    /* Water activity from the Oswin isotherm model */
-    aw = OswinInverse(o, X, T);
-
-    /* Derivative of water activity with respect to d.b. moisture content */
-    DawDX = OswinDawDx(o, X, T);
-
-    /* Estimate Xs by pretending that the material is saturated at aw=.95 */
-    Xs = OswinIsotherm(o, .95, T); /* TODO: Fix this */
-    //Xs = mdb_wat_sat(phi, T);
-
-    /* Porosity factor */
-    fphi = 1;
-
-    /* Water permeability */
-    Sw = X/Xs;
-    if(Sw>Sr)
-        kw = kwi * pow((Sw-Sr)/(1-Sr), 3)*fphi;
-    else
-        kw = 0;
-    
-    /* Derivative of capillary pressure with respect to water saturation.
-     * Equation from Miranda and Silva 2005 */
-    co = CreateChoiOkos(0, 0, 0, 0, 0, 1, 0);
-    DPcDSw = -rho(co,T)*R*T/co->MW_wat * 1/aw * Xs * DawDX;
-    DestroyChoiOkos(co);
-
-    /* Capillary diffusivity from p104 of Zhu thesis */
-    Dcap = -kw/(muw*phi) * DPcDSw;
-
-    return Dcap; 
-}
-
-/**
- * Calculate capillary diffusivity in a porous medium. The key equation is taken
- * from Zhu et al. 2011.
- * @param d Diffusivity data structure
- * @param o Set of Oswin parameters
- * @param X Moisture content [kg/kg, db]
- * @param T Temperature [K]
- * @returns Diffusivity [m^2/s]
- */
-double CapDiff(double X, double T)
-{
-    double D, /* Diffusivity */
-           DawDe, /* Derivative of water activity with respect to volume frac */
-           aw, /* Water activity */
-           vl, /* Molar volume of water */
-           e, /* Volume fraction of water */
-           Xs, /* Maximum dry-basis moisture content */
-           Sw, /* Saturation of water */
-           Sr = SR, /* Irreducible water saturation */
-           kw, /* Permeability of water (kwi*kwr) */
-           kwi = KWINTR, /* Intrinsic permeability of water */
-           fphi, /* Porosity factor */
-           phi = POROSITY, /* Assume constant porosity */
-           muw = visc_wat(T), /* Viscosity of water */
-           R = GASCONST; /* Gas constant */
-    oswin *o;
-    choi_okos *co;
-
-    o = OSWINDATA();
-
-    /* Calculate the molar volume of water */
-    co = CreateChoiOkos(0, 0, 0, 0, 0, 1, 0);
-    vl = co->MW_wat/rho(co, T);
-    DestroyChoiOkos(co);
-
-    /* Estimate Xs by pretending that the material is saturated at aw=.95 */
-    Xs = OswinIsotherm(o, .95, T);
-    //Xs = mdb_wat_sat(phi, T);
-
-    /* Porosity factor */
-    fphi = 1;
-
-    /* Water permeability */
-    Sw = X/Xs;
-    if(Sw>Sr)
-        kw = kwi*pow((Sw-Sr)/(1-Sr), 3)*fphi;
-    else
-        kw = 0;
- 
-    /* Volume fraction of water */
-    e = volfrac_wat(conc_wat(X, POROSITY, T), T);
-    e = phi * X/Xs;
-
-    /* Derivative of water activity with respect to volume fraction water */
-    DawDe = OswinDawDx(o, X, T) * Xs/phi;
-    
-    /* Water activity from the Oswin isotherm model */
-    aw = OswinInverse(o, X, T);
-
-    /* Equation 3.45 from Zhu et al. 2011 */
-    D = e*kw/muw * R*T/vl * (log(aw) + e/aw * DawDe);
-
-    DestroyOswinData(o);
-
-    return D;
-}
-
-/**
- * Determine the capillary pressure based on dry basis moisture content and
- * temperature. The equation is from Miranda and Silva 2005
- * @param o set of Oswin isotherm parameters
- * @param X Moisture content [kg/kg, db]
- * @param T Temperature [K]
- * @returns Pressure [Pa]
- */
-double CapillaryPressure(oswin *o, double X, double T)
-{
-    double aw, Pc, R = GASCONST;
-    choi_okos *co;
-    co = CreateChoiOkos(WATERCOMP);
-    /* Calculate water activity from the Oswin isotherm */
-    aw = OswinInverse(o, X, T);
-
-    /* Calculate capillary pressure based on water activity */
-    Pc = -rho(co,T)*R*T/co->MW_wat * log(aw);
-    DestroyChoiOkos(co);
-    return Pc;
-}
-
 /** 
  * Calculate diffusivity in pasta based on the model outlined in chapter 10 of
  * the Handbook of Food Engineering, Second Edition. This function uses the
@@ -278,41 +128,6 @@ double DiffCh10Hend(double X, double T)
 }
 
 /**
- * Calculate the diffusivity of water in a nonpolar gas.
- * Source: Transport Phenomena, Second Edition, Eq 17.2-1
- *
- * Calculates the diffusivity at low pressures, and results in approximately a
- * 6-8% error at atmospheric pressure.
- *
- * @param T Temperature [K]
- * @param P Pressure [Pa]
- * @returns Diffusivity [m^2/s]
- */
-double VaporDiff(double T, double P)
-{
-    double D, /* Binary diffusivity [cm^2/s] */
-           Tca = 647.14, /* Critical temperature (Water) [K] */
-           Tcb = 126.21, /* Critical temperature (Nitrogen) [K] */
-           Pca = 217.8, /* Critical pressure (Water) [atm] */
-           Pcb = 33.46, /* Critical pressure (Nitrogen) [atm] */
-           Ma = 18.0153, /* Molar mass (Water) [g/mol] */
-           Mb = 28.0134, /* Molar mass (Nitrogen) [g/mol] */
-           a = 3.64e-4, /* Dimensionless parameter for H2O with a nonpolar gas*/
-           b = 2.334; /* Dimensionless parameter for H2O with a nonpolar gas */
-
-    P = PA_TO_ATM(P); /* Convert from Pa to atm */
-
-    /* The temperatures for this equation must be in Kelvin, and the pressures
-     * should be in Pascals. The diffusivity is calculated in cm^2/s */
-    D = a*pow(T/sqrt(Tca*Tcb), b);
-    D *= (pow(Pca*Pcb, 1/3.) * pow(Tca*Tcb, 5/12.) * sqrt(1/Ma+1/Mb))/P;
-
-    D *= 1e-4; /* Convert to m^2/s */
-
-    return D;
-}
-
-/**
  * Calculate vapor diffusivity based on the Oswin isotherm and the Chapter 10
  * model. The only difference is that the D0 value is somewhat larger for vapor
  * diffusivity than it is for liquid diffusivity.
@@ -327,6 +142,32 @@ double VaporDiffCh10(double X, double T)
     double D0gas = 2e-5,
            D0liq = 6.3910e-8;
     return D0gas/D0liq * DiffCh10(X, T);
+}
+
+/**
+ * Calculate the diffusivity for unsaturated porous materials using the model
+ * found in Xiong et. al.
+ * @param X Moisture content [kg/kg db]
+ * @param T Temperature [K]
+ * @param phi Porosity [-]
+ * @returns Effective diffusion coefficient [m^2/s]
+ */
+double PorousDiffCh10(double X, double T, double phi)
+{
+    double D0gas = 2e-5,
+           D0liq = 6.3910e-8,
+           D;
+    D = DiffCh10(X, T);
+    return (phi * D0gas/D0liq + (1-phi)) * D;
+}
+
+double PorousDiff(double X, double T, double phi)
+{
+    double P = 101300, /* [Pa] */
+           Dliq, Dgas;
+    Dliq = DiffCh10(X, T);
+    Dgas = VaporDiff(T, P);
+    return phi*Dgas + (1-phi)*Dliq;
 }
 
 /**

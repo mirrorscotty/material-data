@@ -1,9 +1,9 @@
-VPATH=composition diffusivity isotherms mechanical pasta test
+VPATH=composition diffusivity isotherms mechanical pasta test glass-transition
 CC=gcc
-CFLAGS=-I. -Icomposition -Idiffusivity -Iisotherms -Imatrix -Imechanical -Ipasta -ggdb -O0
+CFLAGS=-I. -Icomposition -Idiffusivity -Iisotherms -Iglass-transition -Imatrix -Imechanical -Ipasta -ggdb -O0
 LDFLAGS=-lm
 
-all: sens-analysis diff material-data.a pc_test
+all: sens-analysis diff material-data.a pc_test tg-test
 
 composition.o: composition.c constants.h pasta.h choi-okos.h
 thermal.o: thermal.c constants.h pasta.h choi-okos.h
@@ -24,12 +24,15 @@ oswin.o: isotherms.h
 gab.o: isotherms.h
 henderson.o: isotherms.h
 
+gordon-taylor.o: glass-transition.h
+
 choi-okos.o: choi-okos.h
 
 diff-test.o: isotherms.h diffusivity.h matrix.a choi-okos.h diff-test.c
 pc_test.o: isotherms.h diffusivity.h matrix.a choi-okos.h pc_test.c
+tg-test.o: isotherms.h glass-transition.h matrix.a
 
-material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o mechanical.o burgers.o
+material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o mechanical.o burgers.o gordon-taylor.o
 	ar -cvr $@ $?
 
 matrix.a:
@@ -45,11 +48,14 @@ diff: diff-test.o material-data.a matrix.a
 pc_test: pc_test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+tg-test: tg-test.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 doc: Doxyfile
 	doxygen Doxyfile
 
 clean:
-	rm -rf *.o *.a *.csv sensitivity sens-analysis diff doc pc_test
+	rm -rf *.o *.a *.csv sensitivity sens-analysis diff doc pc_test tg-test
 	$(MAKE) -C matrix clean
 
 

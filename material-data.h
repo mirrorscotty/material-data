@@ -6,6 +6,7 @@
 #include "conversions.h"
 #include "diffusivity/diffusivity.h"
 #include "isotherms/isotherms.h"
+#include "glass-transition/glass-transition.h"
 #include "mechanical/mechanical.h"
 #include "pasta/pasta.h"
 

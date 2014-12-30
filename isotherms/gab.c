@@ -156,4 +156,3 @@ double GABInverse(gab *dat, double Xdb, double T)
     return aw;
 }
 
-

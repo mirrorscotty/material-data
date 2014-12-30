@@ -1,6 +1,9 @@
 /**
  * @file oswin.c
  * Implementation of the Oswin isotherm equation
+ * \f[
+ * X_{db} = (k_0 + k_1 T)\left(\frac{a_w}{1-a_w}\right)^{n_0+n_1 T}
+ * \f]
  */
 #include <stdlib.h>
 #include <math.h>
@@ -37,6 +40,43 @@ oswin* CreateOswinXiong()
     d->k1 = -1.748e-3;
     d->n0 = 0.182;
     d->n1 = 6.946e-3;
+
+    return d;
+}
+
+/**
+ * Oswin parameters for soy from Aviara et al. 2004 (from Handbook of Food
+ * Engineering). These parameters were fitted and converted from the modified
+ * Oswin equation to fit the format of Eq 23.
+ * Valid for T: 40 C to 70 C, aw: 0.07 to 0.98
+ */
+oswin* CreateOswinSoy()
+{
+    oswin *d;
+    d = (oswin*) calloc(sizeof(oswin), 1);
+
+    d->k0 = -0.151;
+    d->k1 = 61.8386;
+    d->n0 = -3.7202;
+    d->n1 = 0;
+
+    return d;
+}
+
+/**
+ * Oswin parameters for onion (unknown source) (from Handbook of Food
+ * Engineering).
+ * Valid from T: 17 C to 27 C, aw: 0.10 to 0.70
+ */
+oswin* CreateOswinOnion()
+{
+    oswin *d;
+    d = (oswin*) calloc(sizeof(oswin), 1);
+
+    d->k0 = 94.3947;
+    d->k1 = -0.2695;
+    d->n0 = -1.768;
+    d->n1 = 8.53e-3;
 
     return d;
 }

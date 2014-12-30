@@ -60,5 +60,7 @@ double DBurgersCreep(burgers*, double, double, double);
 double BurgersECreep(burgerse*, double, double, double, double);
 double DBurgersECreep(burgerse*, double, double, double, double);
 
+double poisson(double, double);
+
 #endif
 

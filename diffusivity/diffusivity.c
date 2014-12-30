@@ -41,6 +41,23 @@ double DiffCh10(double X, double T)
     return Deff;
 }
 
+double DiffCh10new(oswin *dat, double X, double T)
+{
+    double Deff,
+           D0 = 6.3910e-8, /* [m^2/s] Source: Handbook of Food Engineering */
+           //Ea = 25900, /* Source: Litchfield and Okos (1986) */
+           Ea = 21760, /* [J/mol] Source: Xiong et al. (1991) */
+           K = 1032.558, /* Source: Xiong et al. (1991) */
+           Eb = BindingEnergyOswin(dat, X, T),
+           R = 8.314; /* Gas Constant */
+
+    /* Equation 13 from Ch10 of Handbook of Food Engineering, Second Edition */
+    Deff = D0 * exp(-Ea/(R*T))
+        * ( K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T))) );
+
+    return Deff;
+}
+
 /**
  * Modification of the diffusivity equation from Xiong et al. 1991 to use
  * the self-diffusivity of water.

@@ -104,6 +104,66 @@ double MaxwellRelax(maxwell *m, double t, double T, double M)
     return E;
 }
 
+/**
+ * Use stress relaxation data to create a creep compliance function. This was
+ * solved for using Maple for a two-element Maxwell solid. The values for the
+ * viscoelastic parameters are calculated using the equations from Laura's
+ * thesis.
+ */
+double MaxwellCreepConverted(double t, double T, double M)
+{
+    double Ea, E1, E2, l1, l2, cg;
+
+    Ea = 68.18*(1/(1+exp((M-250.92*exp(-0.0091*T))/2.19))+0.078);
+    E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
+    E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
+    l1 = 7;
+    l2 = 110;
+
+    /* Solved using Maple */
+    cg = (-l2 * E1 * E2 + l2 * E1 * Ea - E1 * l1 * (E1 + E2 + Ea) - l2 * E2 *
+            E2 + l1 * E2 * Ea - l2 * E2 * Ea) * exp(-(E1 * l1 + E2 * l2 + l1 *
+                    Ea + l2 * Ea) / l1 / l2 / (E1 + E2 + Ea) * t / 0.2e1) *
+            sinh(t / l1 / l2 / (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1
+                        * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1
+                        * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 *
+                        Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1
+                        * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2) /
+                    0.2e1) / (E1 + E2 + Ea) * pow(E1 * E1 * l1 * l1 + 0.2e1 *
+                        E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 *
+                        E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea
+                        * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 *
+                        l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2,
+                        -0.1e1 / 0.2e1) / Ea + (-(E1 + E2) * cosh(t / l1 / l2 /
+                                (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1
+                                    * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1
+                                    * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2
+                                    * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 +
+                                    0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 *
+                                    l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea *
+                                    l2 * l2) / 0.2e1) * exp(-(E1 * l1 + E2 * l2
+                                        + l1 * Ea + l2 * Ea) / l1 / l2 / (E1 +
+                                            E2 + Ea) * t / 0.2e1) + E1 + E2 +
+                            Ea) / (E1 + E2 + Ea) / Ea;
+
+    return cg;
+}
+
+double DMaxwellCreepConverted(double t, double T, double M)
+{
+    double Ea, E1, E2, l1, l2, cg;
+
+    Ea = 68.18*(1/(1+exp((M-250.92*exp(-0.0091*T))/2.19))+0.078);
+    E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
+    E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
+    l1 = 7;
+    l2 = 110;
+
+    cg = -(-E1 * l2 * E2 + E1 * l2 * Ea - E1 * l1 * (E1 + E2 + Ea) - l2 * E2 * E2 + l1 * E2 * Ea - l2 * E2 * Ea) * (E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 * pow(E1 + E2 + Ea, -0.2e1) * exp(-(E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 / (E1 + E2 + Ea) * t / 0.2e1) * sinh(t / l1 / l2 / (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2) / 0.2e1) * pow(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2, -0.1e1 / 0.2e1) / Ea / 0.2e1 + (-E1 * l2 * E2 + E1 * l2 * Ea - E1 * l1 * (E1 + E2 + Ea) - l2 * E2 * E2 + l1 * E2 * Ea - l2 * E2 * Ea) * exp(-(E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 / (E1 + E2 + Ea) * t / 0.2e1) * cosh(t / l1 / l2 / (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2) / 0.2e1) / l1 / l2 * pow(E1 + E2 + Ea, -0.2e1) / Ea / 0.2e1 + (-(E1 + E2) * sinh(t / l1 / l2 / (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2) / 0.2e1) / l1 / l2 / (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2) * exp(-(E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 / (E1 + E2 + Ea) * t / 0.2e1) / 0.2e1 + (E1 + E2) * cosh(t / l1 / l2 / (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2) / 0.2e1) * (E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 / (E1 + E2 + Ea) * exp(-(E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 / (E1 + E2 + Ea) * t / 0.2e1) / 0.2e1) / (E1 + E2 + Ea) / Ea;
+
+    return cg;
+}
+
 double MaxwellCreep(maxwell *m, double t, double T, double M)
 {
     double J = 0, /* Set the modulus to zero initially */

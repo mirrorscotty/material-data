@@ -15,6 +15,7 @@ sensitivity.o: sensitivity.c pasta.h isotherms.h constants.h isotherms.h
 mechanical.o: mechanical.h
 burgers.o: mechanical.h
 poisson.o: mechanical.h
+porosity.o: mechanical.h
 
 diffusivity.o: diffusivity.h isotherms.h constants.h
 gas-diff.o: diffusivity.h isotherms.h constants.h
@@ -34,7 +35,7 @@ pc_test.o: isotherms.h diffusivity.h matrix.a choi-okos.h pc_test.c
 tg-test.o: isotherms.h glass-transition.h matrix.a
 tg-test.o: mechanical.h matrix.a
 
-material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o mechanical.o burgers.o gordon-taylor.o poisson.o
+material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o mechanical.o burgers.o gordon-taylor.o poisson.o porosity.o
 	ar -cvr $@ $?
 
 matrix.a:

@@ -65,6 +65,7 @@ double BurgersECreep(burgerse*, double, double, double, double);
 double DBurgersECreep(burgerse*, double, double, double, double);
 
 double poisson(double, double);
+double porosity(double, double, double);
 
 #endif
 

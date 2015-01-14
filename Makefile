@@ -34,6 +34,8 @@ diff-test.o: isotherms.h diffusivity.h matrix.a choi-okos.h diff-test.c
 pc_test.o: isotherms.h diffusivity.h matrix.a choi-okos.h pc_test.c
 tg-test.o: isotherms.h glass-transition.h matrix.a
 tg-test.o: mechanical.h matrix.a
+creep-test.o: material-data.h matrix.a
+relax-test.o: material-data.h matrix.a
 
 material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o mechanical.o burgers.o gordon-taylor.o poisson.o porosity.o
 	ar -cvr $@ $?
@@ -52,6 +54,12 @@ pc_test: pc_test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 tg-test: tg-test.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+creep-test: creep-test.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+relax-test: relax-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 poisson-test: poisson-test.o material-data.a matrix.a

@@ -104,6 +104,19 @@ double MaxwellRelax(maxwell *m, double t, double T, double M)
     return E;
 }
 
+double MaxwellRelaxLaura(double t, double T, double M)
+{
+    double Ea, E1, E2, l1, l2, cg;
+
+    Ea = 68.18*(1/(1+exp((M-250.92*exp(-0.0091*T))/2.19))+0.078);
+    E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
+    E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
+    l1 = 7;
+    l2 = 110;
+
+    return Ea+E1*exp(-t/l1)+E2*exp(-t/l2);
+}
+
 /**
  * Use stress relaxation data to create a creep compliance function. This was
  * solved for using Maple for a two-element Maxwell solid. The values for the
@@ -253,6 +266,7 @@ double MaxwellStress(maxwell *m, double t,
     return stress;
 }
 
+#define SSP .5
 /**
  * Calculate pore pressure based on the Kelvin equation.
  * @param Xdb Moisture content [kg/kg db]
@@ -276,6 +290,9 @@ double pore_press(double Xdb, double T)
     aw = OswinInverse(o, Xdb, T);
     DestroyOswinData(o);
 
-    return R*T/Vm * log(aw);
+    if(aw > SSP)
+        return R*T/Vm * log(aw);
+    else
+        return 0;
 }
 

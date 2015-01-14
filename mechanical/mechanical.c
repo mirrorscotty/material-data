@@ -113,6 +113,9 @@ double MaxwellRelaxLaura(double t, double T, double M)
     E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
     l1 = 7;
     l2 = 110;
+    Ea *= 1e6;
+    E1 *= 1e6;
+    E2 *= 1e6;
 
     return Ea+E1*exp(-t/l1)+E2*exp(-t/l2);
 }
@@ -132,6 +135,9 @@ double MaxwellCreepConverted(double t, double T, double M)
     E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
     l1 = 7;
     l2 = 110;
+    Ea *= 1e6;
+    E1 *= 1e6;
+    E2 *= 1e6;
 
     /* Solved using Maple */
     cg = (-l2 * E1 * E2 + l2 * E1 * Ea - E1 * l1 * (E1 + E2 + Ea) - l2 * E2 *
@@ -171,6 +177,10 @@ double DMaxwellCreepConverted(double t, double T, double M)
     E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
     l1 = 7;
     l2 = 110;
+    Ea *= 1e6;
+    E1 *= 1e6;
+    E2 *= 1e6;
+
 
     cg = -(-E1 * l2 * E2 + E1 * l2 * Ea - E1 * l1 * (E1 + E2 + Ea) - l2 * E2 * E2 + l1 * E2 * Ea - l2 * E2 * Ea) * (E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 * pow(E1 + E2 + Ea, -0.2e1) * exp(-(E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 / (E1 + E2 + Ea) * t / 0.2e1) * sinh(t / l1 / l2 / (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2) / 0.2e1) * pow(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2, -0.1e1 / 0.2e1) / Ea / 0.2e1 + (-E1 * l2 * E2 + E1 * l2 * Ea - E1 * l1 * (E1 + E2 + Ea) - l2 * E2 * E2 + l1 * E2 * Ea - l2 * E2 * Ea) * exp(-(E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 / (E1 + E2 + Ea) * t / 0.2e1) * cosh(t / l1 / l2 / (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2) / 0.2e1) / l1 / l2 * pow(E1 + E2 + Ea, -0.2e1) / Ea / 0.2e1 + (-(E1 + E2) * sinh(t / l1 / l2 / (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2) / 0.2e1) / l1 / l2 / (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2) * exp(-(E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 / (E1 + E2 + Ea) * t / 0.2e1) / 0.2e1 + (E1 + E2) * cosh(t / l1 / l2 / (E1 + E2 + Ea) * sqrt(E1 * E1 * l1 * l1 + 0.2e1 * E1 * E2 * l1 * l2 + 0.2e1 * E1 * Ea * l1 * l1 - 0.2e1 * E1 * Ea * l1 * l2 + l2 * l2 * E2 * E2 - 0.2e1 * E2 * Ea * l1 * l2 + 0.2e1 * E2 * Ea * l2 * l2 + Ea * Ea * l1 * l1 - 0.2e1 * Ea * Ea * l1 * l2 + Ea * Ea * l2 * l2) / 0.2e1) * (E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 / (E1 + E2 + Ea) * exp(-(E1 * l1 + E2 * l2 + l1 * Ea + l2 * Ea) / l1 / l2 / (E1 + E2 + Ea) * t / 0.2e1) / 0.2e1) / (E1 + E2 + Ea) / Ea;
 

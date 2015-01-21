@@ -1,3 +1,5 @@
+#include <math.h>
+
 /**
  * Calculate the Poisson ratio for an elastic, porous material as a function
  * of porosity and pore-free poisson ratio.

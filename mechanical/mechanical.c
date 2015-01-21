@@ -300,9 +300,9 @@ double pore_press(double Xdb, double T)
     aw = OswinInverse(o, Xdb, T);
     DestroyOswinData(o);
 
-    if(aw > SSP)
+    //if(aw > SSP)
         return R*T/Vm * log(aw);
-    else
-        return 0;
+    //else
+    //    return 0;
 }
 

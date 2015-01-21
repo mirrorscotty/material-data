@@ -17,6 +17,7 @@ typedef struct {
 gordontaylor* GTSemolina();
 void DestroyGT(gordontaylor*);
 double GordonTaylor(gordontaylor*, double);
+double GordonTaylorInv(gordontaylor*, double);
 
 #endif
 

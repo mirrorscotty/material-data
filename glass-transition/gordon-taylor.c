@@ -29,3 +29,10 @@ double GordonTaylor(gordontaylor *gt, double Xdb)
     return Tg;
 }
 
+double GordonTaylorInv(gordontaylor *gt, double T)
+{
+    double Xwb;
+    Xwb = (gt->Tg1-T)/(gt->Tg1-gt->Tg2*gt->kGT+(gt->kGT-1)*T);
+    return Xwb/(1-Xwb);
+}
+

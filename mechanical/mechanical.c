@@ -300,9 +300,11 @@ double pore_press(double Xdb, double T)
     aw = OswinInverse(o, Xdb, T);
     DestroyOswinData(o);
 
-    //if(aw > SSP)
+    /* If there isn't enough water to form a meniscus, then there is no
+     * capillary pressure. The cutoff here is completely made up. */
+    if(aw > SSP)
         return R*T/Vm * log(aw);
-    //else
-    //    return 0;
+    else
+        return 0;
 }
 

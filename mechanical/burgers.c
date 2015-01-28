@@ -40,6 +40,12 @@ burgers* CreateBurgers1()
     return b;
 }
 
+/**
+ * This is a set of data fitted from the parameters in Gina's thesis. Since all
+ * of her viscoelasticity parameters are functions of stress, here, they've been
+ * fitted to an exponential function.
+ * @returns Viscoelasticity parameters
+ */
 burgerse* CreateBurgersE()
 {
     burgerse* b;
@@ -99,11 +105,27 @@ double DBurgersCreep(burgers *b, double t, double T, double M)
     return sum;
 }
 
+/**
+ * Creep function for a set of Burgers viscoelasticity parameters. Here, each
+ * parameter is a function of applied stress. For stress values less than a
+ * somewhat arbitrary value of 10kPa, the pressure is assumed to be equal to
+ * 10kPa for purposes of calculating the parameters. This ensures that the
+ * function actually returns a reasonable value.
+ * @param b Creep function parameters
+ * @param t Time [s]
+ * @param T Temperature [K]
+ * @param M Moisture content [kg/kg db]
+ * @param s Applied stress [Pa]
+ * @returns Creep function value
+ */
 double BurgersECreep(burgerse *b, double t, double T, double M, double s)
 {
     double sum = 0,
            J0, mu0, *J;
     int i;
+
+    if(s<10000)
+        s=10000;
 
     J = (double*) calloc(sizeof(double), b->n);
 
@@ -121,11 +143,23 @@ double BurgersECreep(burgerse *b, double t, double T, double M, double s)
     return sum;
 }
 
+/**
+ * This is the derivative of the creep function above with respect to time.
+ * @param b Creep function parameters
+ * @param t Time [s]
+ * @param T Temperature [K]
+ * @param M Moisture content [kg/kg db]
+ * @param s Applied stress [Pa]
+ * @returns dJ/dt
+ */
 double DBurgersECreep(burgerse *b, double t, double T, double M, double s)
 {
     double sum = 0,
            mu0, *J;
     int i;
+
+    if(s<10000)
+        s=10000;
 
     J = (double*) calloc(sizeof(double), b->n);
 

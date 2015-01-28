@@ -1,5 +1,6 @@
 #include "material-data.h"
 #include "matrix.h"
+#include <stdio.h>
 
 int main(int argc, char *argv[])
 {

@@ -41,11 +41,54 @@ maxwell* CreateMaxwell()
 
     /* Temperature shift */
     m->aT0 = -0.013; /* [s/K] */
-    m->T0 = 298; /* [kg/kg db] */
+    m->T0 = 298; /* [K] */
 
     /* Moisture shift */
     m->aM0 = -73; /* [s] */
     m->M0 = .14; /* [kg/kg db] */
+
+    return m;
+}
+
+/**
+ * @returns Set of Maxwell material parameters for extruded durum semolina
+ */
+maxwell* CreateMaxwellZhu()
+{
+    int nterms = 6;
+    maxwell *m;
+    m = (maxwell*) calloc(sizeof(maxwell), 1);
+
+    /* Allocate memory for all the stuff */
+    m->E = (double *) calloc(sizeof(double), nterms);
+    m->tau = (double *) calloc(sizeof(double), nterms);
+
+    /* Set the number of maxwell elements we'll be using */
+    m->n = nterms;
+
+    /* Viscoelastic modulus [Pa] */
+    m->E[0] = 0.6709e6;
+    m->E[1] = 0.5312e6;
+    m->E[2] = 0.3694e6;
+    m->E[3] = 0.3216e6;
+    m->E[4] = 0.2613e6;
+    m->E[5] = 1.1322e6;
+
+    /* Relaxation time constant [s] */
+    m->tau[0] = 0.03;
+    m->tau[1] = 0.422;
+    m->tau[2] = 3.9;
+    m->tau[3] = 98;
+    m->tau[4] = 2000;
+    m->tau[5] = 299990;
+
+    /* Temperature shift */
+    m->aT0 = 0; /* [s/K] */
+    m->T0 = 298; /* [K] */
+
+    /* Moisture shift */
+    m->aM0 = 9.7577; /* [s] */
+    m->M0 = -1.8638; /* [kg/kg db] */
 
     return m;
 }

@@ -41,6 +41,7 @@ typedef struct {
 } burgerse;
 
 maxwell* CreateMaxwell();
+maxwell* CreateMaxwellZhu();
 void DestroyMaxwell(maxwell*);
 double ReducedTime(maxwell*, double, double, double);
 double MaxwellRelax(maxwell*, double, double, double);

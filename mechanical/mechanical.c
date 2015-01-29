@@ -6,6 +6,7 @@
 #include "mechanical.h"
 #include "pasta.h"
 #include "choi-okos.h"
+#include "glass-transition.h"
 #include <stdlib.h>
 #include <math.h>
 
@@ -319,7 +320,7 @@ double MaxwellStress(maxwell *m, double t,
     return stress;
 }
 
-#define SSP .5
+#define SSP .1
 /**
  * Calculate pore pressure based on the Kelvin equation.
  * @param Xdb Moisture content [kg/kg db]
@@ -334,6 +335,8 @@ double pore_press(double Xdb, double T)
            aw;
     choi_okos *co;
     oswin *o;
+    gordontaylor *gt;
+    gt = GTSemolina();
 
     co = CreateChoiOkos(WATERCOMP);
     rhow = rho(co, T);
@@ -345,7 +348,8 @@ double pore_press(double Xdb, double T)
 
     /* If there isn't enough water to form a meniscus, then there is no
      * capillary pressure. The cutoff here is completely made up. */
-    if(aw > SSP)
+    if(Xdb > GordonTaylorInv(gt,T))
+    //if(aw > .7)
         return R*T/Vm * log(aw);
     else
         return 0;

@@ -61,6 +61,13 @@ void DestroyChoiOkos(choi_okos *co)
     free(co);
 }
 
+/**
+ * Take a set of composition data for dry solids and recalculate the mass
+ * fractions of each component to account for water.
+ * @param co Dry composition
+ * @param Xdb Dry basis moisture content [kg/kg db]
+ * @return Wet composition
+ */
 choi_okos* AddDryBasis(choi_okos *co, double Xdb)
 {
     choi_okos *cowet;

@@ -81,6 +81,14 @@ void DestroyBurgers(burgers* b)
     free(b);
 }
 
+void DestroyBurgersE(burgerse* b)
+{
+    free(b->Jb);
+    free(b->Je);
+    free(b->tau);
+    free(b);
+}
+
 double BurgersCreep(burgers *b, double t, double T, double M)
 {
     double sum = 0;

@@ -61,6 +61,7 @@ burgers* CreateBurgers();
 burgerse* CreateBurgersE();
 burgers* CreateBurgers1();
 void DestroyBurgers();
+void DestroyBurgersE();
 double BurgersCreep(burgers*, double, double, double);
 double DBurgersCreep(burgers*, double, double, double);
 double BurgersECreep(burgerse*, double, double, double, double);

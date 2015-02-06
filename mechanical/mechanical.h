@@ -45,7 +45,9 @@ maxwell* CreateMaxwellZhu();
 void DestroyMaxwell(maxwell*);
 double ReducedTime(maxwell*, double, double, double);
 double MaxwellRelax(maxwell*, double, double, double);
+double DMaxwellRelax(maxwell*, double, double, double);
 double MaxwellRelaxLaura(double, double, double);
+double DMaxwellRelaxLaura(double, double, double);
 double MaxwellCreep(maxwell*, double, double, double);
 double DMaxwellCreep(maxwell*, double, double, double);
 

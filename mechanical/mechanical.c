@@ -376,10 +376,10 @@ double pore_press(double Xdb, double T)
 
     /* If there isn't enough water to form a meniscus, then there is no
      * capillary pressure. The cutoff here is completely made up. */
-    if(Xdb > GordonTaylorInv(gt,T))
+    //if(Xdb > GordonTaylorInv(gt,T))
     //if(aw > .7)
         return R*T/Vm * log(aw);
-    else
-        return 0;
+    //else
+    //    return 0;
 }
 

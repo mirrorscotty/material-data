@@ -192,6 +192,38 @@ double DMaxwellRelaxLaura(double t, double T, double M)
     return -E1/l1*exp(-t/l1)-E2/l2*exp(-t/l2);
 }
 
+double MaxwellCreepLaura(double t, double T, double M)
+{
+    double Ea, E1, E2, l1, l2, cg, A;
+
+    E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
+    E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
+    l1 = 7;
+    l2 = 110;
+    Ea *= 1e6;
+    E1 *= 1e6;
+    E2 *= 1e6;
+
+    A = (E1+Ea)*l1+(E2+Ea)*l2;
+    return 1/Ea * (1-exp(-Ea*t/A));
+}
+
+double DMaxwellCreepLaura(double t, double T, double M)
+{
+    double Ea, E1, E2, l1, l2, cg, A;
+
+    E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
+    E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
+    l1 = 7;
+    l2 = 110;
+    Ea *= 1e6;
+    E1 *= 1e6;
+    E2 *= 1e6;
+
+    A = (E1+Ea)*l1+(E2+Ea)*l2;
+    return 1/A * exp(-Ea*t/A);
+}
+
 /**
  * Use stress relaxation data to create a creep compliance function. This was
  * solved for using Maple for a two-element Maxwell solid. The values for the

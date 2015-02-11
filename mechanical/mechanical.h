@@ -50,6 +50,8 @@ double MaxwellRelaxLaura(double, double, double);
 double DMaxwellRelaxLaura(double, double, double);
 double MaxwellCreep(maxwell*, double, double, double);
 double DMaxwellCreep(maxwell*, double, double, double);
+double MaxwellCreepLaura(double, double, double);
+double DMaxwellCreepLaura(double, double, double);
 
 double MaxwellCreepConverted(double, double, double);
 double DMaxwellCreepConverted(double, double, double);

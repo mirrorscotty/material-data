@@ -121,8 +121,8 @@ double ReducedTime(maxwell *m, double t, double T, double M)
     double aT, aM;
 
     /* Calculate temperature and moisture shift factors */
-    aT = m->aT0*(T - m->T0);
-    aM = m->aM0*(M - m->M0);
+    aT = exp(m->aT0*(T - m->T0));
+    aM = exp(m->aM0*(M - m->M0));
 
     return t*aT*aM;
 }

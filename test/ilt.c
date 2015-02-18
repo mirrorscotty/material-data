@@ -1,10 +1,15 @@
-#include "material-data.h"
 #include "matrix.h"
+#include "material-data.h"
 #include <complex.h>
 #include <math.h>
 #include <stdlib.h>
 
 vector* ilt_euler(double complex (*)(double complex), vector*, int);
+
+double complex f(double complex s)
+{
+    return 1/cpow(s, 2);
+}
 
 double complex LBurgersECreep(burgerse *b,
                               double complex s,
@@ -36,9 +41,9 @@ double complex LBurgersECreep(burgerse *b,
 double complex LGinaRelax(double complex s)
 {
     burgerse  *b;
-    double T = 273+40,
-           M = .08,
-           P = 200000; //pore_press(M, T);
+    double T = 298,
+           M = .2,
+           P = 10000;
     b = CreateBurgersE();
 
     return 1/(s*s*LBurgersECreep(b, s, T, M, P));
@@ -46,34 +51,17 @@ double complex LGinaRelax(double complex s)
 
 int main(int argc, char *argv[])
 {
-    vector *t, *Gcummings, *Glaura, *Ggina;
-    matrix *out;
-    maxwell *m;
-    double ti, Gcummingsi, Glaurai;
-    int i, n=1000;
-    double T=298, M=.1;
+    vector *t, *result;
+    t = CreateVector(5);
+    setvalV(t, 0, 1);
+    setvalV(t, 1, 10);
+    setvalV(t, 2, 100);
+    setvalV(t, 3, 1000);
+    setvalV(t, 4, 10000);
 
-    m = CreateMaxwell();
+    result = ilt_euler(&LGinaRelax, t, 32);
+    PrintVector(result);
 
-    t = linspaceV(0, 1e8, n);
-    Gcummings = CreateVector(n);
-    Glaura = CreateVector(n);
-
-    for(i=0; i<n; i++) {
-        ti = valV(t, i);
-        Gcummingsi = MaxwellRelax(m, ti, T, M);
-        Glaurai = MaxwellRelaxLaura(ti, T, M);
-
-        setvalV(Gcummings, i, Gcummingsi);
-        setvalV(Glaura, i, Glaurai);
-    }
-
-    Ggina = ilt_euler(&LGinaRelax, t, 32);
-
-    out = CatColVector(4, t, Gcummings, Glaura, Ggina);
-
-    mtxprntfilehdr(out, "output.csv", "Time,Cummings,Rozzi,Bressani\n"); 
-    return;
+    return 0;
 }
-
 

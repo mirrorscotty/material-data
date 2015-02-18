@@ -13,6 +13,9 @@ gas.o: gas.c constants.h pasta.h
 sensitivity.o: sensitivity.c pasta.h isotherms.h constants.h isotherms.h
 
 mechanical.o: mechanical.h
+maxwell-creep: mechanical.h
+maxwell-relax: mechanical.h
+maxwell: mechanical.h
 burgers.o: mechanical.h
 poisson.o: mechanical.h
 porosity.o: mechanical.h
@@ -37,7 +40,7 @@ tg-test.o: mechanical.h matrix.a
 creep-test.o: material-data.h matrix.a
 relax-test.o: material-data.h matrix.a
 
-material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o mechanical.o burgers.o gordon-taylor.o poisson.o porosity.o
+material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o maxwell.o maxwell-creep.o maxwell-relax.o burgers.o gordon-taylor.o poisson.o porosity.o
 	ar -cvr $@ $?
 
 matrix.a:
@@ -56,10 +59,10 @@ pc_test: pc_test.o material-data.a matrix.a
 tg-test: tg-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-creep-test: creep-test.o material-data.a matrix.a
+creep-test: creep-test.o inv-laplace.c material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-relax-test: relax-test.o material-data.a matrix.a
+relax-test: relax-test.o inv-laplace.c material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 poisson-test: poisson-test.o material-data.a matrix.a
@@ -69,7 +72,7 @@ doc: Doxyfile
 	doxygen Doxyfile
 
 clean:
-	rm -rf *.o *.a *.csv sensitivity sens-analysis diff doc pc_test tg-test poisson-test
+	rm -rf *.o *.a *.csv sensitivity sens-analysis diff doc pc_test tg-test poisson-test relax-test creep-test
 	$(MAKE) -C matrix clean
 
 

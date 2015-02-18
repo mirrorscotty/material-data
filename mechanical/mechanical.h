@@ -43,6 +43,7 @@ typedef struct {
 maxwell* CreateMaxwell();
 maxwell* CreateMaxwellZhu();
 void DestroyMaxwell(maxwell*);
+double TimeShift(maxwell*, double, double);
 double ReducedTime(maxwell*, double, double, double);
 double MaxwellRelax(maxwell*, double, double, double);
 double DMaxwellRelax(maxwell*, double, double, double);

@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
     out = CatColVector(3, aw, Xdb, Tg);
 
-    mtxprntfile(out, "output.csv");
+    mtxprntfilehdr(out, "output.csv", "aw,Xdb,Tg\n");
     printf("X60 = %g\nX70 = %g\nX80 = %g\n", GordonTaylorInv(gt, 60+273), GordonTaylorInv(gt, 70+273), GordonTaylorInv(gt, 80+273));
 
     return;

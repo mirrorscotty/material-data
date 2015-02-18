@@ -15,8 +15,8 @@ int main(int argc, char *argv[])
         i;
 
     double Xmin = .0001, /* Minimum moisture content [kg/kg db] */
-           Xmax = .3, /* Maximum moisture content [kg/kg db] */
-           T = 273+60; /* Drying temperature [K] */
+           Xmax = .5, /* Maximum moisture content [kg/kg db] */
+           T = 273+80; /* Drying temperature [K] */
 
     /* Create vectors */
     Xdb = CreateVector(L);

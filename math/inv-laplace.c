@@ -19,7 +19,7 @@ double bnml(double n, double z)
 /**
  * Source: http://www.mathworks.com/matlabcentral/fileexchange/39035-numerical-inverse-laplace-transform/content//euler_inversion.m
  */
-vector* ilt_euler(double complex (*f_s)(double complex), vector *t, int M)
+vector* ilt_euler(double complex (*f_s)(double complex, void*), vector *t, int M, void *param)
 {
     int i, j;
     double tmp, ilt;
@@ -76,7 +76,8 @@ vector* ilt_euler(double complex (*f_s)(double complex), vector *t, int M)
         for(j=0; j<nCols(t_mesh); j++) {
             tmp += val(eta_mesh, i, j)
                 *creal(f_s((val(rebeta_mesh, i, j)
-                            + I*val(imbeta_mesh, i, j))/val(t_mesh, i, j)));
+                            + I*val(imbeta_mesh, i, j))/val(t_mesh, i, j),
+                            param));
         }
         ilt *= tmp;
         setvalV(result, i, ilt);

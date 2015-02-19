@@ -1,6 +1,6 @@
-VPATH=composition diffusivity isotherms mechanical pasta test glass-transition
+VPATH=composition diffusivity isotherms mechanical pasta test glass-transition math
 CC=gcc
-CFLAGS=-I. -Icomposition -Idiffusivity -Iisotherms -Iglass-transition -Imatrix -Imechanical -Ipasta -ggdb -O0
+CFLAGS=-I. -Icomposition -Idiffusivity -Iisotherms -Iglass-transition -Imath -Imatrix -Imechanical -Ipasta -ggdb -O0
 LDFLAGS=-lm
 
 all: sens-analysis diff material-data.a pc_test tg-test poisson-test
@@ -13,6 +13,9 @@ gas.o: gas.c constants.h pasta.h
 sensitivity.o: sensitivity.c pasta.h isotherms.h constants.h isotherms.h
 
 mechanical.o: mechanical.h
+mechdat.o: mechanical.h
+ilt-creep.o: mechanical.h
+ilt-relax.o: mechanical.h
 maxwell-creep: mechanical.h
 maxwell-relax: mechanical.h
 maxwell: mechanical.h
@@ -33,6 +36,8 @@ gordon-taylor.o: glass-transition.h
 
 choi-okos.o: choi-okos.h
 
+inv-laplace.o: inv-laplace.h
+
 diff-test.o: isotherms.h diffusivity.h matrix.a choi-okos.h diff-test.c
 pc_test.o: isotherms.h diffusivity.h matrix.a choi-okos.h pc_test.c
 tg-test.o: isotherms.h glass-transition.h matrix.a
@@ -40,7 +45,7 @@ tg-test.o: mechanical.h matrix.a
 creep-test.o: material-data.h matrix.a
 relax-test.o: material-data.h matrix.a
 
-material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o maxwell.o maxwell-creep.o maxwell-relax.o burgers.o gordon-taylor.o poisson.o porosity.o
+material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o maxwell.o ilt-creep.o ilt-relax.o inv-laplace.o maxwell-creep.o maxwell-relax.o burgers.o gordon-taylor.o poisson.o porosity.o mechdat.o
 	ar -cvr $@ $?
 
 matrix.a:
@@ -59,10 +64,10 @@ pc_test: pc_test.o material-data.a matrix.a
 tg-test: tg-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-creep-test: creep-test.o inv-laplace.c material-data.a matrix.a
+creep-test: creep-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-relax-test: relax-test.o inv-laplace.c material-data.a matrix.a
+relax-test: relax-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 poisson-test: poisson-test.o material-data.a matrix.a

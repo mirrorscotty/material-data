@@ -40,6 +40,12 @@ typedef struct {
     int n;
 } burgerse;
 
+typedef struct {
+    double T;
+    double M;
+    double P;
+} mechdat;
+
 maxwell* CreateMaxwell();
 maxwell* CreateMaxwellZhu();
 void DestroyMaxwell(maxwell*);
@@ -53,6 +59,10 @@ double MaxwellCreep(maxwell*, double, double, double);
 double DMaxwellCreep(maxwell*, double, double, double);
 double MaxwellCreepLaura(double, double, double);
 double DMaxwellCreepLaura(double, double, double);
+
+double LCummingsCreep(double, double, double, double);
+double LLauraCreep(double, double, double, double);
+double LGinaRelax(double, double, double, double);
 
 double MaxwellCreepConverted(double, double, double);
 double DMaxwellCreepConverted(double, double, double);
@@ -74,6 +84,9 @@ double DBurgersECreep(burgerse*, double, double, double, double);
 
 double poisson(double, double);
 double porosity(double, double, double);
+
+mechdat* CreateMechDat(double, double, double);
+void DestroyMechDat(mechdat*);
 
 #endif
 

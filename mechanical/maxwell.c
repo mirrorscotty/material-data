@@ -178,8 +178,8 @@ double pore_press(double Xdb, double T)
            aw;
     choi_okos *co;
     oswin *o;
-    gordontaylor *gt;
-    gt = GTSemolina();
+//    gordontaylor *gt;
+//    gt = GTSemolina();
 
     co = CreateChoiOkos(WATERCOMP);
     rhow = rho(co, T);

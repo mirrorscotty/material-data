@@ -34,6 +34,13 @@ int main(int argc, char *argv[])
     out = CatColVector(4, t, Gcummings, Glaura, Ggina);
 
     mtxprntfilehdr(out, "output.csv", "Time,Cummings,Rozzi,Bressani\n"); 
+
+    DestroyMaxwell(m);
+    DestroyVector(t);
+    DestroyVector(Gcummings);
+    DestroyVector(Glaura);
+    DestroyVector(Ggina);
+    DestroyMatrix(out);
     return;
 }
 

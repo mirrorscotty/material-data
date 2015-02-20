@@ -61,8 +61,11 @@ double MaxwellCreepLaura(double, double, double);
 double DMaxwellCreepLaura(double, double, double);
 
 double LCummingsCreep(double, double, double, double);
+double DLCummingsCreep(double, double, double, double);
 double LLauraCreep(double, double, double, double);
+double DLLauraCreep(double, double, double, double);
 double LGinaRelax(double, double, double, double);
+double DLGinaRelax(double, double, double, double);
 
 double MaxwellCreepConverted(double, double, double);
 double DMaxwellCreepConverted(double, double, double);

@@ -6,17 +6,19 @@
 
 int main(int argc, char *argv[])
 {
-    vector *t, *Jcummings, *Jlaura, *Jlaura_ilt, *Jgina;
+    vector *t, *Jcummings, *DJcummings, *Jlaura, *DJlaura, *Jlaura_ilt, *Jgina;
     matrix *out;
     burgerse *b;
-    double ti, Jlaurai, Jginai, Jcummingsi;
+    double ti, Jlaurai, Jginai, Jcummingsi, DJcummingsi, DJlaurai;
     int i, n=1000;
     double T=298, M=.1, P=200000;
 
     t = linspaceV(0, 1e8, n);
     Jgina = CreateVector(n);
     Jlaura = CreateVector(n);
+    DJlaura = CreateVector(n);
     Jcummings = CreateVector(n);
+    DJcummings = CreateVector(n);
 
     b = CreateBurgersE();
 
@@ -24,18 +26,22 @@ int main(int argc, char *argv[])
         ti = valV(t, i);
         Jginai = BurgersECreep(b, ti, T, M, P);
         Jlaurai = LLauraCreep(ti, T, M, P);
+        DJlaurai = DLLauraCreep(ti, T, M, P);
         Jcummingsi = LCummingsCreep(ti, T, M, P);
+        DJcummingsi = DLCummingsCreep(ti, T, M, P);
 
         setvalV(Jgina, i, Jginai);
         setvalV(Jlaura, i, Jlaurai);
+        setvalV(DJlaura, i, DJlaurai);
         setvalV(Jcummings, i, Jcummingsi);
+        setvalV(DJcummings, i, DJcummingsi);
     }
 
     //Jlaura_ilt = ilt_euler(&LLauraCreep, t, 32);
 
-    out = CatColVector(4, t, Jcummings, Jlaura, Jgina);
+    out = CatColVector(6, t, Jcummings, DJcummings, Jlaura, DJlaura, Jgina);
 
-    mtxprntfilehdr(out, "output.csv", "Time,Cummings,Rozzi,Bressani\n"); 
+    mtxprntfilehdr(out, "output.csv", "Time,Cummings,DCummings,Rozzi,DRozzi,Bressani\n"); 
 
     DestroyBurgersE(b);
     DestroyVector(t);

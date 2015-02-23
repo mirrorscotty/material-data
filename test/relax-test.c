@@ -6,10 +6,10 @@
 
 int main(int argc, char *argv[])
 {
-    vector *t, *Gcummings, *Glaura, *Ggina;
+    vector *t, *Gcummings, *Glaura, *Ggina, *DGgina;
     matrix *out;
     maxwell *m;
-    double ti, Gcummingsi, Glaurai, Gginai;
+    double ti, Gcummingsi, Glaurai, Gginai, DGginai;
     int i, n=1000;
     double T=298, M=.1, P=200000;
 
@@ -19,21 +19,24 @@ int main(int argc, char *argv[])
     Gcummings = CreateVector(n);
     Glaura = CreateVector(n);
     Ggina = CreateVector(n);
+    DGgina = CreateVector(n);
 
     for(i=0; i<n; i++) {
         ti = valV(t, i);
         Gcummingsi = MaxwellRelax(m, ti, T, M);
         Glaurai = MaxwellRelaxLaura(ti, T, M);
         Gginai = LGinaRelax(ti, T, M, P);
+        DGginai = DLGinaRelax(ti, T, M, P);
 
         setvalV(Gcummings, i, Gcummingsi);
         setvalV(Glaura, i, Glaurai);
         setvalV(Ggina, i, Gginai);
+        setvalV(DGgina, i, DGginai);
     }
 
-    out = CatColVector(4, t, Gcummings, Glaura, Ggina);
+    out = CatColVector(5, t, Gcummings, Glaura, Ggina, DGgina);
 
-    mtxprntfilehdr(out, "output.csv", "Time,Cummings,Rozzi,Bressani\n"); 
+    mtxprntfilehdr(out, "output.csv", "Time,Cummings,Rozzi,Bressani,DBressani\n"); 
 
     DestroyMaxwell(m);
     DestroyVector(t);

@@ -4,6 +4,10 @@
 #include <complex.h>
 #include <math.h>
 
+/* Since these functions are all infinite at zero, approximate zero with .001
+ * when taking the derivative. */
+#define ZERO .001
+
 double complex LMaxwellCreep(maxwell *m,
                              double complex s,
                              double T,
@@ -15,21 +19,6 @@ double complex LMaxwellCreep(maxwell *m,
 
     for(i=0; i<m->n; i++)
         sum += m->E[i]/(s+A/m->tau[i]);
-
-    return sum;
-}
-
-double complex DLMaxwellCreep(maxwell *m,
-                             double complex s,
-                             double T,
-                             double M)
-{
-    double complex sum = 0;
-    int i;
-    double A = TimeShift (m, T, M);
-
-    for(i=0; i<m->n; i++)
-        sum += -1*m->E[i]*A/m->tau[i] * 1/(s+A/m->tau[i]);
 
     return sum;
 }
@@ -50,22 +39,6 @@ double complex LMaxwellLauraCreep(double complex s,
     E2 *= 1e6;
  
     return Ea/s + E1/(s+1/l1) + E2/(s+1/l2);
-}
-
-double complex DLMaxwellLauraCreep(double complex s,
-                                   double T,
-                                   double M)
-{
-    double E1, E2, l1, l2;
-
-    E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
-    E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
-    l1 = 7;
-    l2 = 110;
-    E1 *= 1e6;
-    E2 *= 1e6;
- 
-    return -1*(E1/l1 * 1/(s+1/l1) + E2/l2 * 1/(s+1/l2));
 }
 
 double complex _LCummingsCreep(double complex s, void *params)
@@ -106,7 +79,7 @@ double complex _DLCummingsCreep(double complex s, void *params)
            M = d->M;
     m = CreateMaxwell();
 
-    return 1/(s*s*LMaxwellCreep(m, s, T, M));
+    return  1/(s*LMaxwellCreep(m, s, T, M)) - LCummingsCreep(ZERO, T, M, 0);
 }
 
 double complex _DLLauraCreep(double complex s, void *params)
@@ -116,8 +89,9 @@ double complex _DLLauraCreep(double complex s, void *params)
     double T = d->T,
            M = d->M;
 
-    return 1/(s*s*LMaxwellLauraCreep(s, T, M));
+    return 1/(s*LMaxwellLauraCreep(s, T, M)) - LLauraCreep(ZERO, T, M, 0);
 }
+
 double LCummingsCreep(double t, double T, double M, double P)
 {
     vector *tv, *Gv;

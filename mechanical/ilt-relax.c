@@ -5,6 +5,9 @@
 #include <math.h>
 #include <stdlib.h>
 
+/* Approximate 0 as .001 for derivatives */
+#define ZERO 0.001
+
 double complex LBurgersECreep(burgerse *b,
                               double complex s,
                               double T,
@@ -34,35 +37,6 @@ double complex LBurgersECreep(burgerse *b,
     return sum;
 }
 
-double complex DLBurgersECreep(burgerse *b,
-                               double complex s,
-                               double T,
-                               double M,
-                               double P)
-{
-    double complex sum;
-    double J0, mu0, *J;
-    int i;
-
-    if(P<10000)
-        P=10000;
-
-    J = (double*) calloc(sizeof(double), b->n);
-
-    J0 = b->J0b*pow(P, b->J0e);
-    mu0 = b->mu0b*pow(P, b->mu0e);
-    for(i=0; i<b->n; i++)
-        J[i] = b->Jb[i]*pow(P, b->Je[i]);
-
-    sum = 1/(mu0*s);
-    for(i=0; i<b->n; i++)
-        sum += J[i]/b->tau[i]*(1/(s+1/b->tau[i]));
-
-    free(J);
-
-    return sum;
-}
-
 double complex _LGinaRelax(double complex s, void *params)
 {
     burgerse *b;
@@ -82,6 +56,7 @@ double complex _LGinaRelax(double complex s, void *params)
 
     return result;
 }
+
 double complex _DLGinaRelax(double complex s, void *params)
 {
     burgerse *b;
@@ -95,7 +70,7 @@ double complex _DLGinaRelax(double complex s, void *params)
     M = d->M;
     P = d->P;
 
-    result = 1/(s*s*DLBurgersECreep(b, s, T, M, P));
+    result = 1/(s*LBurgersECreep(b, s, T, M, P)) - LGinaRelax(ZERO, T, M, P);
 
     DestroyBurgersE(b);
 

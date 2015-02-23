@@ -38,6 +38,8 @@ double DiffCh10(double X, double T)
     Deff = D0 * exp(-Ea/(R*T))
         * ( K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T))) );
 
+    DestroyOswinData(dat);
+
     return Deff;
 }
 

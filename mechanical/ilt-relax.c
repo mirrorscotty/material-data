@@ -58,6 +58,8 @@ double complex DLBurgersECreep(burgerse *b,
     for(i=0; i<b->n; i++)
         sum += J[i]/b->tau[i]*(1/(s+1/b->tau[i]));
 
+    free(J);
+
     return sum;
 }
 

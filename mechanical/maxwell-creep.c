@@ -14,6 +14,7 @@ double MaxwellCreepLaura(double t, double T, double M)
 {
     double Ea, E1, E2, l1, l2, A;
 
+    Ea = 68.18*(1/(1+exp((M-250.92*exp(-0.0091*T))/2.19))+0.078);
     E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
     E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
     l1 = 7;
@@ -30,6 +31,7 @@ double DMaxwellCreepLaura(double t, double T, double M)
 {
     double Ea, E1, E2, l1, l2, A;
 
+    Ea = 68.18*(1/(1+exp((M-250.92*exp(-0.0091*T))/2.19))+0.078);
     E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
     E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
     l1 = 7;

@@ -73,6 +73,9 @@ relax-test: relax-test.o material-data.a matrix.a
 poisson-test: poisson-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+aw-calc: aw-calc.o material-data.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 doc: Doxyfile
 	doxygen Doxyfile
 

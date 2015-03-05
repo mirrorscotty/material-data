@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     burgerse *b;
     double ti, Jlaurai, Jginai, Jcummingsi, DJcummingsi, DJlaurai;
     int i, n=1000;
-    double T=298, M=.1, P=200000;
+    double T=298, M=.1, P=2e6;
 
     t = linspaceV(0, 1e8, n);
     Jgina = CreateVector(n);
@@ -37,11 +37,9 @@ int main(int argc, char *argv[])
         setvalV(DJcummings, i, DJcummingsi);
     }
 
-    //Jlaura_ilt = ilt_euler(&LLauraCreep, t, 32);
+    out = CatColVector(3, t, Jcummings, Jlaura, Jgina);
 
-    out = CatColVector(6, t, Jcummings, DJcummings, Jlaura, DJlaura, Jgina);
-
-    mtxprntfilehdr(out, "output.csv", "Time,Cummings,DCummings,Rozzi,DRozzi,Bressani\n"); 
+    mtxprntfilehdr(out, "output.csv", "Time,Cummings,Rozzi,Bressani\n"); 
 
     DestroyBurgersE(b);
     DestroyVector(t);

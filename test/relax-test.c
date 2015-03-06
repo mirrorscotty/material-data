@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     maxwell *m;
     double ti, Gcummingsi, Glaurai, Gginai, DGginai;
     int i, n=1000;
-    double T=298, M=.1, P=200000;
+    double T=298, M=.3, P=.2e6;
 
     m = CreateMaxwell();
 
@@ -34,9 +34,9 @@ int main(int argc, char *argv[])
         setvalV(DGgina, i, DGginai);
     }
 
-    out = CatColVector(5, t, Gcummings, Glaura, Ggina, DGgina);
+    out = CatColVector(4, t, Gcummings, Glaura, Ggina);
 
-    mtxprntfilehdr(out, "output.csv", "Time,Cummings,Rozzi,Bressani,DBressani\n"); 
+    mtxprntfilehdr(out, "output.csv", "Time,Cummings,Rozzi,Bressani\n"); 
 
     DestroyMaxwell(m);
     DestroyVector(t);

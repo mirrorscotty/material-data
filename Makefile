@@ -46,7 +46,7 @@ tg-test.o: mechanical.h matrix.a
 creep-test.o: material-data.h matrix.a
 relax-test.o: material-data.h matrix.a
 
-material-data.a: composition.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o maxwell.o ilt-creep.o ilt-relax.o inv-laplace.o maxwell-creep.o maxwell-relax.o burgers.o gordon-taylor.o poisson.o porosity.o mechdat.o
+material-data.a: composition.o empirical.o thermal.o fluid.o phase-change.o gas.o choi-okos.o oswin.o gab.o henderson.o diffusivity.o capillary.o gas-diff.o binding.o maxwell.o ilt-creep.o ilt-relax.o inv-laplace.o maxwell-creep.o maxwell-relax.o burgers.o gordon-taylor.o poisson.o porosity.o mechdat.o
 	ar -cvr $@ $?
 
 matrix.a:
@@ -56,7 +56,7 @@ matrix.a:
 sens-analysis: sensitivity.o material-data.a 
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-diff: diff-test.o empirical.o material-data.a matrix.a
+diff: diff-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 pc_test: pc_test.o material-data.a matrix.a

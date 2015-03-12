@@ -286,7 +286,7 @@ void CompareAllDiff(double T)
     }
     sprintf(filename, "Diffusivity%gK.csv", T);
     out = CatColVector(8, X, Dhend, D10o, D10g, D10m, Dz1, Dz2, Dlitchfield);
-    mtxprntfile(out, filename);
+    mtxprntfilehdr(out, filename, "Xdb,Henderson,Oswin,GAB,Modified,Zhu1,Zhu2,Litchfield\n");
 }
 
 void Dgas(double P)

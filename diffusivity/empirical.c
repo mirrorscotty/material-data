@@ -24,8 +24,10 @@ double DiffLitchfield(double X, double T)
            B = 3.1563e3, /* Activation energy divided by gas constant */
            C = 7.9082e14,
            D = 1.5706e1,
-           E = 6.8589e-1;
-    //T=T-273.15; /* Convert from Kelvin to Celcius */
-    return A*exp(-B/T)*(1-exp(-C*pow(X, D))+pow(X, E));
+           E = 6.8589e-1,
+           diff;
+    diff = A*exp(-B/T)*(1-exp(-C*pow(X, D))+pow(X, E));
+    return 1e-12*diff; /* Multiply the result by 1e-12 because apparently
+                        * Litchfield forgot to. */
 }
 

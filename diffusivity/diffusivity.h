@@ -21,5 +21,7 @@ double VaporDiff(double, double);
 double VaporDiffCh10(double, double);
 double SelfDiffWater(double);
 
+double DiffLitchfield(double, double);
+
 #endif
 

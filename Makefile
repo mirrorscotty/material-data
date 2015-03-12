@@ -24,6 +24,7 @@ poisson.o: mechanical.h
 porosity.o: mechanical.h
 
 diffusivity.o: diffusivity.h isotherms.h constants.h
+empirical.o:
 gas-diff.o: diffusivity.h isotherms.h constants.h
 capillary.o: diffusivity.h isotherms.h constants.h
 binding.o: isotherms.h binding.c
@@ -55,7 +56,7 @@ matrix.a:
 sens-analysis: sensitivity.o material-data.a 
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-diff: diff-test.o material-data.a matrix.a
+diff: diff-test.o empirical.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 pc_test: pc_test.o material-data.a matrix.a

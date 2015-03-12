@@ -258,7 +258,7 @@ void CompareDiffXdb(double X)
 
 void CompareAllDiff(double T)
 {
-    vector *X, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dhend;
+    vector *X, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dhend, *Dlitchfield;
     char *filename;
     matrix *out;
     int i;
@@ -273,6 +273,7 @@ void CompareAllDiff(double T)
     Dz1 = CreateVector(300);
     Dz2 = CreateVector(300);
     Dhend = CreateVector(300);
+    Dlitchfield = CreateVector(300);
 
     for(i=0; i<len(X); i++) {
         setvalV(D10o, i, DiffCh10(valV(X, i), T));
@@ -281,9 +282,10 @@ void CompareAllDiff(double T)
         setvalV(D10m, i, DiffCh10Mod(valV(X, i), T));
         setvalV(Dz1, i, CapillaryDiff(valV(X, i), T));
         setvalV(Dz2, i, CapDiff(valV(X, i), T));
+        setvalV(Dlitchfield, i, DiffLitchfield(valV(X, i), T));
     }
     sprintf(filename, "Diffusivity%gK.csv", T);
-    out = CatColVector(7, X, Dhend, D10o, D10g, D10m, Dz1, Dz2);
+    out = CatColVector(8, X, Dhend, D10o, D10g, D10m, Dz1, Dz2, Dlitchfield);
     mtxprntfile(out, filename);
 }
 
@@ -363,10 +365,10 @@ int main(int argc, char *argv[])
 //    D = DOswinVector(X, 60+273.15);
 //    data1 = AugmentMatrix(data, D);
 //    mtxprntfile(data1, "D-kF.csv");
-    diff_test();
-    PlotEbHenderson();
-    TestAw();
-    PlotXdb();
+    //diff_test();
+    //PlotEbHenderson();
+    //TestAw();
+    //PlotXdb();
     return 0;
 }
 

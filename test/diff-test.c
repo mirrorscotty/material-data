@@ -289,6 +289,42 @@ void CompareAllDiff(double T)
     mtxprntfilehdr(out, filename, "Xdb,Henderson,Oswin,GAB,Modified,Zhu1,Zhu2,Litchfield\n");
 }
 
+void CompareAllIsotherm(double T)
+{
+    vector *aw, *Singh, *Xiong;
+    vector *Che, *Kir;
+    char *filename;
+    matrix *out;
+    int i;
+    gab *dsingh;
+    oswin *dxiong;
+    gab *dkir, *dche;
+
+    dxiong = CreateOswinXiong();
+    dsingh = CreateGABSingh();
+    dkir = CreateGABPotatoKir();
+    dche = CreateGABPotatoChemkhi();
+
+    filename = (char*) calloc(sizeof(char), 80);
+    T = T+273.15;
+
+    aw = linspaceV(0.005, .99, 300);
+    Xiong = CreateVector(300);
+    Singh = CreateVector(300);
+    Kir = CreateVector(300);
+    Che = CreateVector(300);
+
+    for(i=0; i<len(aw); i++) {
+        setvalV(Xiong, i, OswinIsotherm(dxiong, valV(aw, i), T));
+        setvalV(Singh, i, GABIsotherm(dsingh, valV(aw, i), T));
+        setvalV(Kir, i, GABIsotherm(dkir, valV(aw, i), T));
+        setvalV(Che, i, GABIsotherm(dche, valV(aw, i), T));
+    }
+    sprintf(filename, "Isotherm%gK.csv", T);
+    out = CatColVector(5, aw, Xiong, Singh, Kir, Che);
+    mtxprntfilehdr(out, filename, "aw,Xiong,Singh\n");
+}
+
 void Dgas(double P)
 {
     vector *T, *D;
@@ -343,6 +379,9 @@ int main(int argc, char *argv[])
     CompareAllDiff(40);
     CompareAllDiff(55);
     CompareAllDiff(85);
+    CompareAllIsotherm(30);
+    CompareAllIsotherm(35);
+    CompareAllIsotherm(40);
 
 /*    printf("44 = %g, 55 = %g, 71 = %g, 105 = %g\n",
             VaporDiff(44+273.15, 101325),

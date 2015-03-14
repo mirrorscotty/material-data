@@ -41,10 +41,14 @@ oswin* CreateOswinData();
 oswin* CreateOswinXiong();
 void DestroyOswinData(oswin*);
 gab* CreateGABData();
+gab* CreateGABSingh();
 gab* CreateGABErbas();
 gab* CreateGABAndrieu();
 henderson* CreateHendersonData();
 void DestroyHendersonData(henderson*);
+
+gab* CreateGABPotatoChemkhi();
+gab* CreateGABPotatoKir();
 
 double OswinIsotherm(oswin*, double, double);
 double OswinInverse(oswin*, double, double);

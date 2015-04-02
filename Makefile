@@ -39,7 +39,7 @@ choi-okos.o: choi-okos.h
 
 inv-laplace.o: inv-laplace.h
 
-diff-test.o: isotherms.h diffusivity.h matrix.a choi-okos.h diff-test.c
+diff-test.o: isotherms.h diffusivity.h choi-okos.h diff-test.c
 pc_test.o: isotherms.h diffusivity.h matrix.a choi-okos.h pc_test.c
 tg-test.o: isotherms.h glass-transition.h matrix.a
 tg-test.o: mechanical.h matrix.a

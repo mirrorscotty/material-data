@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     burgerse *b;
     double ti, Jlaurai, Jginai, Jcummingsi, DJcummingsi, DJlaurai;
     int i, n=1000;
-    double T=273+60, M=.1, P=.2e6;
+    double T=273+40, M=.1, P=.2e6;
 
     t = linspaceV(0, 1e8, n);
     Jgina = CreateVector(n);

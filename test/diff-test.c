@@ -291,16 +291,17 @@ void CompareAllDiff(double T)
 
 void CompareAllIsotherm(double T)
 {
-    vector *aw, *Singh, *Xiong;
+    vector *aw, *Singh, *Xiong, *XiongR;
     vector *Che, *Kir;
     char *filename;
     matrix *out;
     int i;
     gab *dsingh;
-    oswin *dxiong;
+    oswin *dxiong, *dxiongr;
     gab *dkir, *dche;
 
     dxiong = CreateOswinXiong();
+    dxiongr = CreateOswinXiongR();
     dsingh = CreateGABSingh();
     dkir = CreateGABPotatoKir();
     dche = CreateGABPotatoChemkhi();
@@ -310,19 +311,21 @@ void CompareAllIsotherm(double T)
 
     aw = linspaceV(0.005, .99, 300);
     Xiong = CreateVector(300);
+    XiongR = CreateVector(300);
     Singh = CreateVector(300);
     Kir = CreateVector(300);
     Che = CreateVector(300);
 
     for(i=0; i<len(aw); i++) {
         setvalV(Xiong, i, OswinIsotherm(dxiong, valV(aw, i), T));
+        setvalV(XiongR, i, OswinIsotherm(dxiongr, valV(aw, i), T));
         setvalV(Singh, i, GABIsotherm(dsingh, valV(aw, i), T));
         setvalV(Kir, i, GABIsotherm(dkir, valV(aw, i), T));
         setvalV(Che, i, GABIsotherm(dche, valV(aw, i), T));
     }
     sprintf(filename, "Isotherm%gK.csv", T);
-    out = CatColVector(5, aw, Xiong, Singh, Kir, Che);
-    mtxprntfilehdr(out, filename, "aw,Xiong,Singh\n");
+    out = CatColVector(6, aw, Xiong,XiongR, Singh, Kir, Che);
+    mtxprntfilehdr(out, filename, "aw,Xiong,XiongR,Singh\n");
 }
 
 void Dgas(double P)

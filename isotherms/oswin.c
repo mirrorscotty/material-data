@@ -45,6 +45,22 @@ oswin* CreateOswinXiong()
 }
 
 /**
+ * Re-fitted Oswin parameters using isotherm data from Xiong 1989
+ */
+oswin* CreateOswinXiongR()
+{
+    oswin *d;
+    d = (oswin*) calloc(sizeof(oswin), 1);
+
+    d->k0 = 0.171154;
+    d->k1 = -0.00160756;
+    d->n0 = 0.0881907;
+    d->n1 = 0.00848871;
+
+    return d;
+}
+
+/**
  * Oswin parameters for soy from Aviara et al. 2004 (from Handbook of Food
  * Engineering). These parameters were fitted and converted from the modified
  * Oswin equation to fit the format of Eq 23.

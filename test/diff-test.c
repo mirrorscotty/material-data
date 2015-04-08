@@ -40,7 +40,7 @@ void Eb_test() {
 
 void PlotDeff()
 {
-    vector *X, *D40, *D55, *D71;
+    vector *X, *D40, *D80;
     //double D0 = 6.3910e-8;
     double D0 = 1;
     matrix *data;
@@ -49,17 +49,15 @@ void PlotDeff()
     X = linspaceV(.005, .18, 300);
 
     D40 = CreateVector(300);
-    D55 = CreateVector(300);
-    D71 = CreateVector(300);
+    D80 = CreateVector(300);
 
     for(i=0; i<len(X); i++) {
         setvalV(D40, i, DiffCh10GAB(valV(X, i), 40+273.15)/D0);
-        setvalV(D55, i, DiffCh10GAB(valV(X, i), 55+273.15)/D0);
-        setvalV(D71, i, DiffCh10GAB(valV(X, i), 71+273.15)/D0);
+        setvalV(D80, i, DiffCh10GAB(valV(X, i), 80+273.15)/D0);
     }
 
-    data = CatColVector(4, X, D40, D55, D71);
-    mtxprntfile(data, "Deff.csv");
+    data = CatColVector(3, X, D40, D80);
+    mtxprntfilehdr(data, "output.csv", "Xdb,D(40),D(80)\n");
 }
 
 void PlotEb()
@@ -385,6 +383,7 @@ int main(int argc, char *argv[])
     CompareAllIsotherm(30);
     CompareAllIsotherm(35);
     CompareAllIsotherm(40);
+    PlotDeff();
 
 /*    printf("44 = %g, 55 = %g, 71 = %g, 105 = %g\n",
             VaporDiff(44+273.15, 101325),

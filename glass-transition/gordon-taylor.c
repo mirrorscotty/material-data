@@ -7,6 +7,12 @@
 #include "glass-transition.h"
 #include <stdlib.h>
 
+/**
+ * Model parameters for the Gordon-Taylor model for durum semolina flour. The
+ * values are taken from the Handbook of Food Engineering (Second Edition),
+ * which sourced the values from Cuq and Icard-Verniere (2001). These values
+ * are for cooling predicting glass transition temperature during cooling.
+ */
 gordontaylor* GTSemolina()
 {
     gordontaylor *gt;

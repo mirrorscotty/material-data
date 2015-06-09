@@ -71,6 +71,9 @@ creep-test: creep-test.o material-data.a matrix.a
 relax-test: relax-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+relax-exper: relax-exper.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 poisson-test: poisson-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 

@@ -86,6 +86,12 @@ aw-comp: aw-comp.o material-data.a matrix.a
 aw-test: aw-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+plot-rozzi-t: plot-rozzi-t.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+plot-rozzi-xdb: plot-rozzi-xdb.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 doc: Doxyfile
 	doxygen Doxyfile
 

@@ -32,7 +32,7 @@ void DestroyGABData(gab *d)
 double GABIsotherm(gab *dat, double aw, double T)
 {
     double Xdb, Xm, C, k;
-    
+
     /* Calculate the constant values based on temperature. Here, temperature
      * should be measured in Kelvins */
     Xm = dat->m0*exp(dat->dHm/T); /* Monolayer moisture content */

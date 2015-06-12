@@ -35,7 +35,7 @@
 /* Heat capacities of random stuff */
 /**
  * Vapor heat capacity at 100C [J/(kg K)]
- */ 
+ */
 #define CPVAPOR 2080
 /**
  * Heat capacity of air at 23C, 760 mmHg [J/(kg K)]

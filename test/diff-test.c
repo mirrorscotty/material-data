@@ -181,7 +181,7 @@ void TestAw()
     int i;
 
     d = CreateHendersonData();
-    
+
     X = linspaceV(0.001, 0.9, 300);
     Aw40 = CreateVector(300);
     Aw55 = CreateVector(300);
@@ -206,7 +206,7 @@ void TestDCap()
     int i;
 
     co = CreateChoiOkos(WATERCOMP);
-    
+
     X = linspaceV(0.005, 0.5, 300);
     D401 = CreateVector(300);
     D551 = CreateVector(300);

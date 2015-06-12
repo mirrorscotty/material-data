@@ -40,7 +40,7 @@ double complex LMaxwellLauraCreep(double complex s,
     Ea *= 1e6;
     E1 *= 1e6;
     E2 *= 1e6;
- 
+
     return Ea/s + E1/(s+1/l1) + E2/(s+1/l2);
 }
 
@@ -49,7 +49,7 @@ double complex _LCummingsCreep(double complex s, void *params)
     maxwell *m;
     mechdat *d;
     double result, T, M;
-           
+
     d = (mechdat*) params;
     m = CreateMaxwell();
 
@@ -114,7 +114,7 @@ double LCummingsCreep(double t, double T, double M, double P)
 
     return G;
 }
- 
+
 double LLauraCreep(double t, double T, double M, double P)
 {
     vector *tv, *Gv;
@@ -156,7 +156,7 @@ double DLCummingsCreep(double t, double T, double M, double P)
 
     return G;
 }
- 
+
 double DLLauraCreep(double t, double T, double M, double P)
 {
     vector *tv, *Gv;

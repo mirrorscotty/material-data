@@ -36,7 +36,7 @@ double rho_eff(double cw, double wv, double phi, double T, double P)
     rhog = rho_gas(wv, T, P);
     Sw = sat_wat(cw, phi, T);
     Sg = sat_gas(cw, phi, T);
-    
+
     rho_eff = (1-phi)*rhos + phi*(Sw*rhow + Sg*rhog);
     return rho_eff;
 }
@@ -80,7 +80,7 @@ double Cp_eff(double cw, double wv, double phi, double T, double P)
     Mg = cg/(cg+cw+cs); /* Mass fraction gas */
     Mw = cw/(cg+cw+cs); /* Mass fraction water */
     Ms = cs/(cg+cw+cs); /* Mass fraction solid */
-    
+
     Cp_eff = Mg*(wv*Cpv + wa*Cpa) + Mw*Cpw + Ms*Cps;
     return Cp_eff;
 }

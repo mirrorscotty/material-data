@@ -5,7 +5,7 @@
  *
  * Other potato drying papers:
  * Rahman 2003
- * 
+ *
  */
 double DiffChemkhi(double X, double T)
 {

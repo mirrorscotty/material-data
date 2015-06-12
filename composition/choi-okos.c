@@ -121,7 +121,7 @@ double Cp(choi_okos *co, double T)
     Cp_car = 1.5488 + 1.9625e-3*T - 5.9399e-6*pow(T, 2);
     Cp_ash = 1.0926 + 1.8896e-3*T - 3.6817e-6*pow(T, 2);
     Cp_fib = 1.8459 + 1.8306e-3*T - 4.6509e-6*pow(T, 2);
- 
+
     return co->Mpro*Cp_pro + co->Mfat*Cp_fat + co->Mcar*Cp_car
         + co->Mfib*Cp_fib + co->Mash*Cp_ash + co->Mwat*Cp_wat + co->Mice*Cp_ice;
 }
@@ -164,10 +164,10 @@ double k(choi_okos *co, double T)
     p_ice = 916.89 - 1.3071e-1*T;
 
     /* Determine the volume fraction of each component */
-    Xv_pro = (co->Mpro/p_pro) / 
+    Xv_pro = (co->Mpro/p_pro) /
         ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
          + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
-    Xv_fat = (co->Mfat/p_fat) / 
+    Xv_fat = (co->Mfat/p_fat) /
         ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
          + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
     Xv_car = (co->Mcar/p_car) /

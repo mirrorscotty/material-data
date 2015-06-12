@@ -16,7 +16,7 @@ gab* CreateGABData()
     /* Parameters for monolayer moisture content */
     d->m0 = 3.8004e-4; //0.0251;
     d->dHm = 1.6074e3; //33.1177;
-    
+
     /* C values */
     d->C0 = 4.1929e-4; //3.4334;
     d->dHC = 3.5155e3; //80.0229;
@@ -40,7 +40,7 @@ gab* CreateGABErbas()
     /* Parameters for monolayer moisture content */
     d->m0 = 1.3841e-5; //0.0259;
     d->dHm = 2.6428e3; //30.9639;
-    
+
     /* C values */
     d->C0 = 1.2762e12; //170.7282;
     d->dHC = -7.8642e3; //-81.1285;

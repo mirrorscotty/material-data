@@ -80,6 +80,9 @@ poisson-test: poisson-test.o material-data.a matrix.a
 aw-calc: aw-calc.o material-data.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+xdb-calc: xdb-calc.o material-data.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 aw-comp: aw-comp.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 

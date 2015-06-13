@@ -55,7 +55,8 @@ gab* CreateGABErbas()
 /**
  * Parameters fitted from data in Singh et al. 1996
  * Note: This is the same data as from Xiong 1992, but refitted to the GAB
- * isotherm instead of the Oswin isotherm.
+ * isotherm instead of the Oswin isotherm. In reality, it doesn't match up well
+ * with the Oswin isotherm presented in Xiong's paper.
  */
 gab* CreateGABSingh()
 {
@@ -101,3 +102,4 @@ gab* CreateGABAndrieu()
 
     return d;
 }
+

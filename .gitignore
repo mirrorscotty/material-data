@@ -8,6 +8,7 @@
 *.so
 *.obj
 *.a
+*.d
 a.out
 
 # Packages #

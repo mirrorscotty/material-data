@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
     out = CatColVector(4, t, Jcummings, Jlaura, Jgina);
 
-    mtxprntfilehdr(out, "output.csv", "Time,Cummings,Rozzi,Bressani\n"); 
+    mtxprntfilehdr(out, "output.csv", "Time,Cummings,Rozzi,Bressani\n");
 
     DestroyBurgersE(b);
     DestroyVector(t);

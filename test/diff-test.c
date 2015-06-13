@@ -62,7 +62,7 @@ void PlotDeff()
 
 void PlotEb()
 {
-    vector *X, *Eb30, *Eb40, *Eb50, *Eb60, *Eb70;
+    vector *X, *Eb30, *Eb40, *Eb50, *Eb60, *Eb70, *Eb80;
     matrix *data;
     int i;
     double A = 2.39e-4; /* Conversion to kcal from J */
@@ -77,6 +77,7 @@ void PlotEb()
     Eb50 = CreateVector(300);
     Eb60 = CreateVector(300);
     Eb70 = CreateVector(300);
+    Eb80 = CreateVector(300);
 
     for(i=0; i<len(X); i++) {
         setvalV(Eb30, i, A*BindingEnergyGAB(d, valV(X, i), 30+273.15));
@@ -84,14 +85,15 @@ void PlotEb()
         setvalV(Eb50, i, A*BindingEnergyGAB(d, valV(X, i), 50+273.15));
         setvalV(Eb60, i, A*BindingEnergyGAB(d, valV(X, i), 60+273.15));
         setvalV(Eb70, i, A*BindingEnergyGAB(d, valV(X, i), 70+273.15));
+        setvalV(Eb80, i, A*BindingEnergyGAB(d, valV(X, i), 80+273.15));
     }
-    data = CatColVector(6, X, Eb30, Eb40, Eb50, Eb60, Eb70);
-    mtxprntfile(data, "EbGAB.csv");
+    data = CatColVector(7, X, Eb30, Eb40, Eb50, Eb60, Eb70, Eb80);
+    mtxprntfilehdr(data, "EbGAB.csv", "Xdb,30C,40C,50C,60C,70C,80C\n");
 }
 
 void PlotEbOswin()
 {
-    vector *X, *Eb30, *Eb40, *Eb50, *Eb60, *Eb70;
+    vector *X, *Eb30, *Eb40, *Eb50, *Eb60, *Eb70, *Eb80;
     matrix *data;
     int i;
     double A = 2.39e-4; /* Conversion to kcal from J */
@@ -105,6 +107,7 @@ void PlotEbOswin()
     Eb50 = CreateVector(300);
     Eb60 = CreateVector(300);
     Eb70 = CreateVector(300);
+    Eb80 = CreateVector(300);
 
     for(i=0; i<len(X); i++) {
         setvalV(Eb30, i, A*BindingEnergyOswin(d, valV(X, i), 30+273.15));
@@ -112,9 +115,10 @@ void PlotEbOswin()
         setvalV(Eb50, i, A*BindingEnergyOswin(d, valV(X, i), 50+273.15));
         setvalV(Eb60, i, A*BindingEnergyOswin(d, valV(X, i), 60+273.15));
         setvalV(Eb70, i, A*BindingEnergyOswin(d, valV(X, i), 70+273.15));
+        setvalV(Eb80, i, A*BindingEnergyOswin(d, valV(X, i), 80+273.15));
     }
-    data = CatColVector(6, X, Eb30, Eb40, Eb50, Eb60, Eb70);
-    mtxprntfile(data, "EbOswin.csv");
+    data = CatColVector(7, X, Eb30, Eb40, Eb50, Eb60, Eb70, Eb80);
+    mtxprntfilehdr(data, "EbOswin.csv", "Xdb,30C,40C,50C,60C,70C,80C\n");
 }
 
 void PlotEbHenderson()
@@ -177,7 +181,7 @@ void TestAw()
     int i;
 
     d = CreateHendersonData();
-    
+
     X = linspaceV(0.001, 0.9, 300);
     Aw40 = CreateVector(300);
     Aw55 = CreateVector(300);
@@ -202,7 +206,7 @@ void TestDCap()
     int i;
 
     co = CreateChoiOkos(WATERCOMP);
-    
+
     X = linspaceV(0.005, 0.5, 300);
     D401 = CreateVector(300);
     D551 = CreateVector(300);
@@ -289,18 +293,22 @@ void CompareAllDiff(double T)
 
 void CompareAllIsotherm(double T)
 {
-    vector *aw, *Singh, *Xiong, *XiongR;
+    vector *aw, *Singh, *Xiong, *XiongR, *Erbas, *Andrieu, *Bressani;
     vector *Che, *Kir;
     char *filename;
     matrix *out;
     int i;
-    gab *dsingh;
+    gab *dsingh, *derbas, *dandrieu, *dbressani;
     oswin *dxiong, *dxiongr;
     gab *dkir, *dche;
 
     dxiong = CreateOswinXiong();
     dxiongr = CreateOswinXiongR();
     dsingh = CreateGABSingh();
+    derbas = CreateGABErbas();
+    dandrieu = CreateGABAndrieu();
+    dbressani = CreateGABData();
+
     dkir = CreateGABPotatoKir();
     dche = CreateGABPotatoChemkhi();
 
@@ -311,6 +319,9 @@ void CompareAllIsotherm(double T)
     Xiong = CreateVector(300);
     XiongR = CreateVector(300);
     Singh = CreateVector(300);
+    Erbas = CreateVector(300);
+    Andrieu = CreateVector(300);
+    Bressani = CreateVector(300);
     Kir = CreateVector(300);
     Che = CreateVector(300);
 
@@ -318,12 +329,15 @@ void CompareAllIsotherm(double T)
         setvalV(Xiong, i, OswinIsotherm(dxiong, valV(aw, i), T));
         setvalV(XiongR, i, OswinIsotherm(dxiongr, valV(aw, i), T));
         setvalV(Singh, i, GABIsotherm(dsingh, valV(aw, i), T));
+        setvalV(Erbas, i, GABIsotherm(derbas, valV(aw, i), T));
+        setvalV(Andrieu, i, GABIsotherm(dandrieu, valV(aw, i), T));
+        setvalV(Bressani, i, GABIsotherm(dbressani, valV(aw, i), T));
         setvalV(Kir, i, GABIsotherm(dkir, valV(aw, i), T));
         setvalV(Che, i, GABIsotherm(dche, valV(aw, i), T));
     }
     sprintf(filename, "Isotherm%gK.csv", T);
-    out = CatColVector(6, aw, Xiong,XiongR, Singh, Kir, Che);
-    mtxprntfilehdr(out, filename, "aw,Xiong,XiongR,Singh\n");
+    out = CatColVector(7, aw, Xiong,XiongR, Singh, Erbas, Andrieu, Bressani);
+    mtxprntfilehdr(out, filename, "aw,Xiong,XiongR,Singh,Erbas,Andrieu,Bressani\n");
 }
 
 void Dgas(double P)
@@ -379,10 +393,14 @@ int main(int argc, char *argv[])
 //      CompareDiffXdb(.2);
     CompareAllDiff(40);
     CompareAllDiff(55);
+    CompareAllDiff(80);
     CompareAllDiff(85);
+    PlotEb();
+    PlotEbOswin();
     CompareAllIsotherm(30);
     CompareAllIsotherm(35);
     CompareAllIsotherm(40);
+    CompareAllIsotherm(80);
     PlotDeff();
 
 /*    printf("44 = %g, 55 = %g, 71 = %g, 105 = %g\n",

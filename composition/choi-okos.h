@@ -49,7 +49,7 @@ typedef struct {
 double alphaFZ(double);
 double Cp(choi_okos*, double);
 double k(choi_okos*, double);
-double rho(choi_okos*, double); 
+double rho(choi_okos*, double);
 double mu(choi_okos*, double);
 
 choi_okos *CreateChoiOkos(double, double, double, double, double, double, double);

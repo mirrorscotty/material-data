@@ -47,6 +47,8 @@ double DMaxwellRelax(maxwell *m, double t, double T, double M)
 double MaxwellRelaxLaura(double t, double T, double M)
 {
     double Ea, E1, E2, l1, l2, cg;
+    M = M/(1+M); /* Convert from dry basis to wet basis */
+    M *= 100; /* The moisture content should be converted to a percentage */
 
     Ea = 68.18*(1/(1+exp((M-250.92*exp(-0.0091*T))/2.19))+0.078);
     E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
@@ -63,6 +65,8 @@ double MaxwellRelaxLaura(double t, double T, double M)
 double DMaxwellRelaxLaura(double t, double T, double M)
 {
     double Ea, E1, E2, l1, l2, cg;
+    M = M/(1+M); /* Convert from dry basis to wet basis */
+    M *= 100; /* The moisture content should be converted to a percentage */
 
     E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
     E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));

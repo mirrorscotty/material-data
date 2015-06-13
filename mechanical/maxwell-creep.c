@@ -118,7 +118,7 @@ double MaxwellCreep(maxwell *m, double t, double T, double M)
     int i; /* Loop index */
 
     /* Add up each term in the series */
-    for(i=0; i<m->n; i++) 
+    for(i=0; i<m->n; i++)
         J += 1/(m->E[i]*m->tau[i])*t + 1/m->E[i];
 
     return J;

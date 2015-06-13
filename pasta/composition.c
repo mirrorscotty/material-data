@@ -87,7 +87,7 @@ double mdb_wat(double cw, double phi, double T)
 {
     double rhos; /* Solid denstiy */
     choi_okos *co;
-    
+
     co = CreateChoiOkos(PASTACOMP);
     rhos = rho(co, T);
     DestroyChoiOkos(co);
@@ -133,7 +133,7 @@ double mdb_wat_sat(double phi, double T)
     DestroyChoiOkos(co);
 
     /* Solid density */
-    co = CreateChoiOkos(PASTACOMP); 
+    co = CreateChoiOkos(PASTACOMP);
     rhos = rho(co, T);
     DestroyChoiOkos(co);
 

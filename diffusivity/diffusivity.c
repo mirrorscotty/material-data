@@ -11,7 +11,7 @@
 #include "diffusivity.h"
 #include <math.h>
 
-/** 
+/**
  * Calculate diffusivity in pasta based on the model outlined in chapter 10 of
  * the Handbook of Food Engineering, Second Edition. This function uses the
  * Oswin isotherm to determine binding energy.
@@ -85,7 +85,7 @@ double DiffCh10Mod(double X, double T)
     return Deff;
 }
 
-/** 
+/**
  * Calculate diffusivity in pasta based on the model outlined in chapter 10 of
  * the Handbook of Food Engineering, Second Edition. This function uses the
  * GAB isotherm to determine binding energy.
@@ -230,7 +230,7 @@ double DiffkF(double kF, double L)
     double D;
 
     D = kF*L*L/(M_PI*M_PI);
-    
+
     return D;
 }
 

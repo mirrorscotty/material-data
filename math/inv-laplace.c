@@ -56,7 +56,7 @@ vector* ilt_euler(double complex (*f_s)(double complex, void*), vector *t, int M
     imbeta = CreateVector(len(k));
     for(i=0; i<len(k); i++)
         setvalV(imbeta, i, M_PI*valV(k, i));
-    
+
     /* Create the eta vector */
     eta = CreateVector(len(k));
     for(i=0; i<len(eta); i++)
@@ -71,7 +71,7 @@ vector* ilt_euler(double complex (*f_s)(double complex, void*), vector *t, int M
     result = CreateVector(len(t));
     for(i=0; i<len(t); i++) {
         ilt = pow(10, M/3.) / valV(t, i);
-            
+
         tmp = 0;
         for(j=0; j<nCols(t_mesh); j++) {
             tmp += val(eta_mesh, i, j)

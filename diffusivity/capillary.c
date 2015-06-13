@@ -40,7 +40,7 @@ double CapillaryPressure(oswin *o, double X, double T)
 double CapillaryDiff(double X, double T)
 {
     double Dcap,
-           DPcDSw, 
+           DPcDSw,
            DawDX,
            aw, /* Water activity */
            Xs, /* Saturated moisture content */
@@ -54,7 +54,7 @@ double CapillaryDiff(double X, double T)
            fphi;
     oswin *o;
     choi_okos *co;
-    
+
     o = OSWINDATA();
 
     /* Water activity from the Oswin isotherm model */
@@ -76,7 +76,7 @@ double CapillaryDiff(double X, double T)
         kw = kwi * pow((Sw-Sr)/(1-Sr), 3)*fphi;
     else
         kw = 0;
-    
+
     /* Derivative of capillary pressure with respect to water saturation.
      * Equation from Miranda and Silva 2005 */
     co = CreateChoiOkos(0, 0, 0, 0, 0, 1, 0);
@@ -86,7 +86,7 @@ double CapillaryDiff(double X, double T)
     /* Capillary diffusivity from p104 of Zhu thesis */
     Dcap = -kw/(muw*phi) * DPcDSw;
 
-    return Dcap; 
+    return Dcap;
 }
 
 /**
@@ -137,14 +137,14 @@ double CapDiff(double X, double T)
         kw = kwi*pow((Sw-Sr)/(1-Sr), 3)*fphi;
     else
         kw = 0;
- 
+
     /* Volume fraction of water */
     e = volfrac_wat(conc_wat(X, POROSITY, T), T);
     e = phi * X/Xs;
 
     /* Derivative of water activity with respect to volume fraction water */
     DawDe = OswinDawDx(o, X, T) * Xs/phi;
-    
+
     /* Water activity from the Oswin isotherm model */
     aw = OswinInverse(o, X, T);
 

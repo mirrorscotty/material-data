@@ -15,7 +15,7 @@ gab* CreateGABPotatoKir()
     /* Parameters for monolayer moisture content */
     d->m0 = 5.60e-2;
     d->dHm = 1.39/R;
-    
+
     /* C values */
     d->C0 = 0.017;
     d->dHC = 20/R;
@@ -39,7 +39,7 @@ gab* CreateGABPotatoChemkhi()
     /* Parameters for monolayer moisture content */
     d->m0 = 0.209;
     d->dHm = 0.0;
-    
+
     /* C values */
     d->C0 = 4.416;
     d->dHC = 0.0;

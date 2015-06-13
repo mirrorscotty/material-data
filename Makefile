@@ -38,16 +38,28 @@ creep-test: test/creep-test.o material-data.a matrix.a
 relax-test: test/relax-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+relax-exper: test/relax-exper.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 poisson-test: test/poisson-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 aw-calc: test/aw-calc.o material-data.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+xdb-calc: test/xdb-calc.o material-data.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 aw-comp: test/aw-comp.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 aw-test: test/aw-test.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+plot-rozzi-t: plot-rozzi-t.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+plot-rozzi-xdb: plot-rozzi-xdb.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 doc: Doxyfile

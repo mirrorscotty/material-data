@@ -31,6 +31,14 @@ double MaxwellRelax(maxwell *m, double t, double T, double M)
     return E;
 }
 
+/**
+ * The time derivative of the shear modulus for a Maxwell material.
+ * @param m Set of parameters
+ * @param t Time [s]
+ * @param T Temperature [K]
+ * @param M Moisture content [kg/kg db]
+ * @returns Shear modulus [Pa]
+ */
 double DMaxwellRelax(maxwell *m, double t, double T, double M)
 {
     double E = 0, /* Set the modulus to zero initially */
@@ -44,6 +52,15 @@ double DMaxwellRelax(maxwell *m, double t, double T, double M)
     return E;
 }
 
+/**
+ * Shear modulus from Rozzi 2002. This version considers the spring constants
+ * to be functions of temperature and moisture content. The relaxation times are
+ * constant.
+ * @param t Time [s]
+ * @param T Temperature [K]
+ * @param M Moisture content [kg/kg db]
+ * @returns Shear modulus [Pa]
+ */
 double MaxwellRelaxLaura(double t, double T, double M)
 {
     double Ea, E1, E2, l1, l2, cg;
@@ -77,5 +94,22 @@ double DMaxwellRelaxLaura(double t, double T, double M)
     E2 *= 1e6;
 
     return -E1/l1*exp(-t/l1)-E2/l2*exp(-t/l2);
+}
+
+/**
+ * Shear modulus from Rozzi 2002. Here, the model is a master curve with both
+ * temperature and moisture shift factors.@
+ * @param t Time [s]
+ * @param T Temperature [K]
+ * @param M Moisture content [kg/kg db]
+ * @returns Shear modulus [Pa]
+ */
+double MaxwellRelaxLauraShift(double t, double T, double M)
+{
+    double aM = exp(104.36*(M+(0.0005*T+0.1569))-10.811),
+           aT = exp(0.0806*T-23.849),
+           E;
+    E = -0.9361+2.51/(1+exp((log(t*aT*aM)-21.01)/5.29));
+    return exp(E);
 }
 

@@ -35,6 +35,9 @@ tg-test: test/tg-test.o material-data.a matrix.a
 creep-test: test/creep-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+creep-testv2: test/creep-testv2.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 relax-test: test/relax-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 

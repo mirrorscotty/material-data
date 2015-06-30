@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     int i, n=1000;
     double T=273+40, M=.1, P=.2e6;
 
-    t = linspaceV(0, 1e8, n);
+    t = linspaceV(0, 1e2, n);
     Jgina = CreateVector(n);
     Jlaura = CreateVector(n);
     DJlaura = CreateVector(n);
@@ -37,9 +37,9 @@ int main(int argc, char *argv[])
         setvalV(DJcummings, i, DJcummingsi);
     }
 
-    out = CatColVector(4, t, Jcummings, Jlaura, Jgina);
+    out = CatColVector(2, t, Jlaura, Jcummings, Jgina);
 
-    mtxprntfilehdr(out, "output.csv", "Time,Cummings,Rozzi,Bressani\n");
+    mtxprntfilehdr(out, "output.csv", "Time,Rozzi,Cummings,Bressani\n");
 
     DestroyBurgersE(b);
     DestroyVector(t);

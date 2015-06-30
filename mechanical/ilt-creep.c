@@ -27,7 +27,7 @@ double complex LMaxwellLauraCreep(double complex s,
                                   double T,
                                   double M)
 {
-    double Ea, E1, E2, l1, l2, cg;
+    double Ea, E1, E2, l1, l2;
 
     M = M/(1+M); /* Convert from dry basis to wet basis */
     M *= 100; /* The moisture content should be converted to a percentage */
@@ -123,8 +123,6 @@ double LLauraCreep(double t, double T, double M, double P)
     tv = CreateVector(1);
     setvalV(tv, 0, t);
 
-    M = M/(1+M); /* Convert from dry basis to wet basis */
-    M *= 100; /* The moisture content should be converted to a percentage */
     param = CreateMechDat(T, M, P);
 
     Gv = ilt_euler(&_LLauraCreep, tv, 32, (void*)param);

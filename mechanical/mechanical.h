@@ -91,5 +91,11 @@ double porosity(double, double, double);
 mechdat* CreateMechDat(double, double, double);
 void DestroyMechDat(mechdat*);
 
+double CreepLookupJ0(char*, double, double);
+double CreepLookupJ1(char*, double, double);
+double CreepLookupJ2(char*, double, double);
+double CreepLookupTau1(char*, double, double);
+double CreepLookupTau2(char*, double, double);
+
 #endif
 

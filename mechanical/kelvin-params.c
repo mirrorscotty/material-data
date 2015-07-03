@@ -10,13 +10,19 @@ enum datacols {
     _TAU2 = 6
 };
 
+matrix *data;
+int IsGo = 0;
+
 double CreepLookup(char *file, double T, double M, int param)
 {
     int i = 0;
     double M0, M1, y0, y1;
-    matrix *data;
+    //matrix *data;
 
-    data = mtxloadcsv(file, 1);
+    if(!IsGo) {
+        data = mtxloadcsv(file, 1);
+        IsGo = 1;
+    }
 
     while(val(data, i, _M) < M)
         i++;
@@ -26,7 +32,7 @@ double CreepLookup(char *file, double T, double M, int param)
     y0 = val(data, i-1, param);
     y1 = val(data, i, param);
 
-    DestroyMatrix(data);
+    //DestroyMatrix(data);
     return y0 + (y1 - y0) * (M-M0)/(M1-M0);
 } 
 

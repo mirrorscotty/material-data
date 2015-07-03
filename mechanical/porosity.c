@@ -24,7 +24,7 @@
  */
 double porosity(double Xdb, double T, double strain)
 {
-    double rhow, rhos, vs;
+    double rhow, rhos, vs, vw, vo, phi;
     choi_okos *co;
 
     co = CreateChoiOkos(WATERCOMP);
@@ -35,8 +35,13 @@ double porosity(double Xdb, double T, double strain)
     rhos = rho(co, T);
     DestroyChoiOkos(co);
 
-    vs = 1/(1+(rhos*Xdb/rhow));
+    vs = 1/rhos;
+    vw = Xdb/rhow;
+    vo = vs + vw;
 
-    return (strain - vs)/strain;
+    phi = strain - (vs-vo)/vo;
+    if(phi < 0)
+        phi = 0;
+    return phi;
 }
 

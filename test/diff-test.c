@@ -392,14 +392,13 @@ int main(int argc, char *argv[])
 //      CompareDiffXdb(.1);
 //      CompareDiffXdb(.2);
     CompareAllDiff(40);
-    CompareAllDiff(55);
+    CompareAllDiff(60);
     CompareAllDiff(80);
     CompareAllDiff(85);
     PlotEb();
     PlotEbOswin();
-    CompareAllIsotherm(30);
-    CompareAllIsotherm(35);
     CompareAllIsotherm(40);
+    CompareAllIsotherm(60);
     CompareAllIsotherm(80);
     PlotDeff();
 

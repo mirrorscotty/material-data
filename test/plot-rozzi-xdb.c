@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 {
     vector *Ga, *G1, *G2, *Xdb;
     matrix *out;
-    double Xdbi, T=313, Gi;
+    double Xdbi, T=353, Gi;
     int i, n=100;
 
     Xdb = linspaceV(0.05, .5, n);

@@ -59,10 +59,13 @@ aw-comp: test/aw-comp.o material-data.a matrix.a
 aw-test: test/aw-test.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+aw-test-t: test/aw-test-t.o material-data.a matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 plot-rozzi-t: plot-rozzi-t.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-plot-rozzi-xdb: plot-rozzi-xdb.o material-data.a matrix.a
+plot-rozzi-xdb: test/plot-rozzi-xdb.o material-data.a matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 doc: Doxyfile

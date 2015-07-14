@@ -16,35 +16,34 @@ all: sens-analysis diff material-data.a pc_test tg-test poisson-test
 material-data.a: $(LIBSRC:.c=.o)
 	ar -cvr $@ $?
 
-matrix.a:
+matrix/matrix.a:
 	$(MAKE) -C matrix
-	cp matrix/matrix.a .
 
 sens-analysis: test/pasta-sens.o material-data.a 
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-diff: test/diff-test.o material-data.a matrix.a
+diff: test/diff-test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-pc_test: test/pc_test.o material-data.a matrix.a
+pc_test: test/pc_test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-tg-test: test/tg-test.o material-data.a matrix.a
+tg-test: test/tg-test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-creep-test: test/creep-test.o material-data.a matrix.a
+creep-test: test/creep-test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-creep-testv2: test/creep-testv2.o material-data.a matrix.a
+creep-testv2: test/creep-testv2.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-relax-test: test/relax-test.o material-data.a matrix.a
+relax-test: test/relax-test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-relax-exper: test/relax-exper.o material-data.a matrix.a
+relax-exper: test/relax-exper.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-poisson-test: test/poisson-test.o material-data.a matrix.a
+poisson-test: test/poisson-test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 aw-calc: test/aw-calc.o material-data.a
@@ -53,19 +52,22 @@ aw-calc: test/aw-calc.o material-data.a
 xdb-calc: test/xdb-calc.o material-data.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-aw-comp: test/aw-comp.o material-data.a matrix.a
+aw-comp: test/aw-comp.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-aw-test: test/aw-test.o material-data.a matrix.a
+aw-test: test/aw-test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-aw-test-t: test/aw-test-t.o material-data.a matrix.a
+aw-test-t: test/aw-test-t.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-plot-rozzi-t: plot-rozzi-t.o material-data.a matrix.a
+plot-rozzi-t: plot-rozzi-t.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-plot-rozzi-xdb: test/plot-rozzi-xdb.o material-data.a matrix.a
+plot-rozzi-xdb: test/plot-rozzi-xdb.o material-data.a matrix/matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+isotherm-sensitivity: test/isotherm-sensitivity.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 doc: Doxyfile

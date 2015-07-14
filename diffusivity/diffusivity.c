@@ -11,38 +11,6 @@
 #include "diffusivity.h"
 #include <math.h>
 
-/**
- * Calculate diffusivity in pasta based on the model outlined in chapter 10 of
- * the Handbook of Food Engineering, Second Edition. This function uses the
- * Oswin isotherm to determine binding energy.
- * @param X Moisture Content [kg/kg db]
- * @param T Temperature [K]
- * @returns Diffusivity [m^2/s]
- *
- * @see DiffCh10GAB
- */
-double DiffCh10(double X, double T)
-{
-    oswin *dat;
-    dat = OSWINDATA();
-
-    double Deff,
-           D0 = 6.3910e-8, /* [m^2/s] Source: Handbook of Food Engineering */
-           //Ea = 25900, /* Source: Litchfield and Okos (1986) */
-           Ea = 21760, /* [J/mol] Source: Xiong et al. (1991) */
-           K = 1032.558, /* Source: Xiong et al. (1991) */
-           Eb = BindingEnergyOswin(dat, X, T),
-           R = 8.314; /* Gas Constant */
-
-    /* Equation 13 from Ch10 of Handbook of Food Engineering, Second Edition */
-    Deff = D0 * exp(-Ea/(R*T))
-        * ( K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T))) );
-
-    DestroyOswinData(dat);
-
-    return Deff;
-}
-
 double DiffCh10new(oswin *dat, double X, double T)
 {
     double Deff,
@@ -56,6 +24,28 @@ double DiffCh10new(oswin *dat, double X, double T)
     /* Equation 13 from Ch10 of Handbook of Food Engineering, Second Edition */
     Deff = D0 * exp(-Ea/(R*T))
         * ( K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T))) );
+
+    return Deff;
+}
+
+/**
+ * Calculate diffusivity in pasta based on the model outlined in chapter 10 of
+ * the Handbook of Food Engineering, Second Edition. This function uses the
+ * Oswin isotherm to determine binding energy.
+ * @param X Moisture Content [kg/kg db]
+ * @param T Temperature [K]
+ * @returns Diffusivity [m^2/s]
+ *
+ * @see DiffCh10GAB
+ */
+double DiffCh10(double X, double T)
+{
+    double Deff;
+    oswin *dat;
+
+    dat = OSWINDATA();
+    Deff = DiffCh10new(dat, X, T);
+    DestroyOswinData(dat);
 
     return Deff;
 }

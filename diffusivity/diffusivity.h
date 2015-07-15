@@ -10,9 +10,20 @@
 #define OSWINDATA CreateOswinXiong
 #define GABDATA CreateGABAndrieu
 
+typedef struct{
+    double D0;
+    double Ea;
+    double K;
+    double Ebf;
+} DiffXiongData;
+
+DiffXiongData* CreateDefaultXiongData();
+void DestroyXiongData(DiffXiongData *d);
+
 double CapillaryDiff(double, double);
 double CapDiff(double, double);
 double CapillaryPressure(oswin*, double, double);
+double DiffCh10new(DiffXiongData*, oswin*, double, double);
 double DiffCh10(double, double);
 double DiffCh10GAB(double, double);
 double DiffCh10Hend(double, double);

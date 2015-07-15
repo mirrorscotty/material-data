@@ -70,6 +70,9 @@ plot-rozzi-xdb: test/plot-rozzi-xdb.o material-data.a matrix/matrix.a
 isotherm-sensitivity: test/isotherm-sensitivity.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+diffusivity-sensitivity: test/diffusivity-sensitivity.o material-data.a matrix/matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 doc: Doxyfile
 	doxygen Doxyfile
 

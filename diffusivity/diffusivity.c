@@ -10,15 +10,34 @@
 #include "pasta.h"
 #include "diffusivity.h"
 #include <math.h>
+#include <stdlib.h>
 
-double DiffCh10new(oswin *dat, double X, double T)
+DiffXiongData* CreateDefaultXiongData()
+{
+    DiffXiongData *d;
+    d = (DiffXiongData*) calloc(sizeof(DiffXiongData), 1);
+    d->D0 = 6.3910e-8; /* [m^2/s] Source: Handbook of Food Engineering */
+    //d->Ea = 25900, /* Source: Litchfield and Okos (1986) */
+    d->Ea = 21760; /* [J/mol] Source: Xiong et al. (1991) */
+    d->K = 1032.558; /* Source: Xiong et al. (1991) */
+    d->Ebf = 10; /* Multiply binding energy by this */
+
+    return d;
+}
+
+void DestroyXiongData(DiffXiongData *d)
+{
+    free(d);
+    return;
+}
+
+double DiffCh10new(DiffXiongData *d, oswin *dat, double X, double T)
 {
     double Deff,
-           D0 = 6.3910e-8, /* [m^2/s] Source: Handbook of Food Engineering */
-           //Ea = 25900, /* Source: Litchfield and Okos (1986) */
-           Ea = 21760, /* [J/mol] Source: Xiong et al. (1991) */
-           K = 1032.558, /* Source: Xiong et al. (1991) */
-           Eb = BindingEnergyOswin(dat, X, T),
+           D0 = d->D0,
+           Ea = d->Ea,
+           K = d->K,
+           Eb = BindingEnergyOswin(dat, X, T) * d->Ebf,
            R = 8.314; /* Gas Constant */
 
     /* Equation 13 from Ch10 of Handbook of Food Engineering, Second Edition */
@@ -42,10 +61,15 @@ double DiffCh10(double X, double T)
 {
     double Deff;
     oswin *dat;
+    DiffXiongData *d;
 
+    d = CreateDefaultXiongData();
     dat = OSWINDATA();
-    Deff = DiffCh10new(dat, X, T);
+
+    Deff = DiffCh10new(d, dat, X, T);
+
     DestroyOswinData(dat);
+    DestroyXiongData(d);
 
     return Deff;
 }

@@ -20,7 +20,7 @@ DiffXiongData* CreateDefaultXiongData()
     //d->Ea = 25900, /* Source: Litchfield and Okos (1986) */
     d->Ea = 21760; /* [J/mol] Source: Xiong et al. (1991) */
     d->K = 1032.558; /* Source: Xiong et al. (1991) */
-    d->Ebf = 10; /* Multiply binding energy by this */
+    d->Ebf = 1; /* Multiply binding energy by this */
 
     return d;
 }

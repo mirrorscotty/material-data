@@ -6,8 +6,10 @@ int main(int argc, char *argv[])
 {
     oswin *o;
     double T, aw;
+    gordontaylor *gt;
 
     o = CreateOswinData();
+    gt = GTSemolina();
 
     if(argc != 3) {
         puts("Usage: aw-calc <aw> <T>");
@@ -22,6 +24,7 @@ int main(int argc, char *argv[])
     printf("aw = %g, T = %g\n", aw, T);
 
     printf("Xdb = %g\n", OswinIsotherm(o, aw, T));
+    printf("Tg occurs at Xdb = %g, T = %g\n", GordonTaylorInv(gt, T), T);
 
     return 0;
 }

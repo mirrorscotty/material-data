@@ -23,27 +23,6 @@ double complex LMaxwellCreep(maxwell *m,
     return sum;
 }
 
-double complex LMaxwellLauraCreep(double complex s,
-                                  double T,
-                                  double M)
-{
-    double Ea, E1, E2, l1, l2;
-
-    M = M/(1+M); /* Convert from dry basis to wet basis */
-    M *= 100; /* The moisture content should be converted to a percentage */
-
-    Ea = 68.18*(1/(1+exp((M-250.92*exp(-0.0091*T))/2.19))+0.078);
-    E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
-    E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
-    l1 = 7;
-    l2 = 110;
-    Ea *= 1e6;
-    E1 *= 1e6;
-    E2 *= 1e6;
-
-    return Ea/s + E1/(s+1/l1) + E2/(s+1/l2);
-}
-
 double complex _LCummingsCreep(double complex s, void *params)
 {
     maxwell *m;
@@ -68,9 +47,28 @@ double complex _LLauraCreep(double complex s, void *params)
     mechdat *d;
     d = (mechdat*) params;
     double T = d->T,
-           M = d->M;
+           M = d->M,
+           Ea, E1, E2, l1, l2;
+    double complex Gs;
 
-    return 1/(s*s*LMaxwellLauraCreep(s, T, M));
+    M = M/(1+M); /* Convert from dry basis to wet basis */
+    M *= 100; /* The moisture content should be converted to a percentage */
+
+    /* Relaxation parameters */
+    Ea = 68.18*(1/(1+exp((M-250.92*exp(-0.0091*T))/2.19))+0.078);
+    E1 = 20.26*exp(-0.0802*(M+0.0474*T-14.238));
+    E2 = 2.484 + 6.576/(1+exp((M-19.36)/0.848));
+    l1 = 7;
+    l2 = 110;
+    Ea *= 1e6;
+    E1 *= 1e6;
+    E2 *= 1e6;
+
+    /* Laplace transform of the relaxation function */
+    Gs = Ea/s + E1/(s+1/l1) + E2/(s+1/l2);
+
+    /* G(s)*J(s) = 1/s^2 */
+    return 1/(s*s*Gs);
 }
 
 double complex _DLCummingsCreep(double complex s, void *params)

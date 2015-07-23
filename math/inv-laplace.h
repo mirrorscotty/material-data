@@ -4,5 +4,7 @@
 #include <complex.h>
 
 vector* ilt_euler(double complex (*)(double complex, void*), vector*, int, void*);
+double complex laplace(double complex (*)(double complex, void*),
+                       double complex, void *);
 
 #endif

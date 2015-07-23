@@ -73,6 +73,9 @@ isotherm-sensitivity: test/isotherm-sensitivity.o material-data.a matrix/matrix.
 diffusivity-sensitivity: test/diffusivity-sensitivity.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+ilt-test: test/ilt-test.o matrix/matrix.a material-data.a 
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 doc: Doxyfile
 	doxygen Doxyfile
 

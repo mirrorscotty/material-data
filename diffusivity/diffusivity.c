@@ -130,6 +130,26 @@ double DiffCh10GAB(double X, double T)
     return Deff;
 }
 
+double DiffWaananen(double X, double T)
+{
+    gab *dat;
+    dat = CreateGABWaananen();
+
+    double Deff,
+           D0 = 1.158e-5, /* Source: Waananen (1989) Typo? Original: 1.158e5 */
+           Ea = 22.7e3, /* J Source: Waananen (1989) Original: 22.7 kJ */
+           K = 266, /* Source: Waananen (1989)  */
+           Eb = BindingEnergyGAB(dat, X, T),
+           R = 8.314; /* Gas Constant */
+
+
+    /* Equation 13 from Ch10 of Handbook of Food Engineering, Second Edition */
+    Deff = D0 * exp(-Ea/(R*T))
+        * ( K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T))) );
+
+    return Deff;
+}
+
 /* Calculate diffusivity based on the model in Chapter 10 of The Handbook of
  * Food Engineering. The isotherm model used is the modified Henderson isotherm
  * described in Litchfield 1992.

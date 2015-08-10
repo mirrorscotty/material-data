@@ -45,6 +45,7 @@ gab* CreateGABData();
 gab* CreateGABSingh();
 gab* CreateGABErbas();
 gab* CreateGABAndrieu();
+gab* CreateGABWaananen();
 henderson* CreateHendersonData();
 void DestroyHendersonData(henderson*);
 

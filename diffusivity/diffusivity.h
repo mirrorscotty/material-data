@@ -33,6 +33,7 @@ double VaporDiffCh10(double, double);
 double SelfDiffWater(double);
 
 double DiffLitchfield(double, double);
+double DiffWaananen(double, double);
 double DiffChemkhi(double, double);
 
 #endif

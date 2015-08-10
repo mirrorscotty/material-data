@@ -103,3 +103,28 @@ gab* CreateGABAndrieu()
     return d;
 }
 
+/**
+ * Range: T = 40-90 C; aw = ~.025-.9
+ * Source: Waananen 1989 - Analysis of Mass Transfer Mechanisms During Drying of Extruded Pasta
+ */
+gab* CreateGABWaananen()
+{
+    gab *d;
+    double R = 8.314e-3;
+    d = (gab*) calloc(sizeof(gab), 1);
+
+    /* Parameters for monolayer moisture content */
+    d->m0 = 4.40e-3;
+    d->dHm = 6.84/R;
+
+    /* C values */
+    d->C0 = 2.86e-9;
+    d->dHC = 60.0/R;
+
+    /* k values */
+    d->k0 = 0.1313;
+    d->dHk = 4.92/R;
+
+    return d;
+}
+

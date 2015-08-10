@@ -295,12 +295,12 @@ void CompareAllDiff(double T)
 
 void CompareAllIsotherm(double T)
 {
-    vector *aw, *Singh, *Xiong, *XiongR, *Erbas, *Andrieu, *Bressani;
+    vector *aw, *Singh, *Xiong, *XiongR, *Erbas, *Andrieu, *Bressani, *Waananen;
     vector *Che, *Kir;
     char *filename;
     matrix *out;
     int i;
-    gab *dsingh, *derbas, *dandrieu, *dbressani;
+    gab *dsingh, *derbas, *dandrieu, *dbressani, *dwaananen;
     oswin *dxiong, *dxiongr;
     gab *dkir, *dche;
 
@@ -310,6 +310,7 @@ void CompareAllIsotherm(double T)
     derbas = CreateGABErbas();
     dandrieu = CreateGABAndrieu();
     dbressani = CreateGABData();
+    dwaananen = CreateGABWaananen();
 
     dkir = CreateGABPotatoKir();
     dche = CreateGABPotatoChemkhi();
@@ -324,6 +325,7 @@ void CompareAllIsotherm(double T)
     Erbas = CreateVector(300);
     Andrieu = CreateVector(300);
     Bressani = CreateVector(300);
+    Waananen = CreateVector(300);
     Kir = CreateVector(300);
     Che = CreateVector(300);
 
@@ -334,12 +336,13 @@ void CompareAllIsotherm(double T)
         setvalV(Erbas, i, GABIsotherm(derbas, valV(aw, i), T));
         setvalV(Andrieu, i, GABIsotherm(dandrieu, valV(aw, i), T));
         setvalV(Bressani, i, GABIsotherm(dbressani, valV(aw, i), T));
+        setvalV(Waananen, i, GABIsotherm(dwaananen, valV(aw, i), T));
         setvalV(Kir, i, GABIsotherm(dkir, valV(aw, i), T));
         setvalV(Che, i, GABIsotherm(dche, valV(aw, i), T));
     }
     sprintf(filename, "Isotherm%gK.csv", T);
-    out = CatColVector(7, aw, Xiong,XiongR, Singh, Erbas, Andrieu, Bressani);
-    mtxprntfilehdr(out, filename, "aw,Xiong,XiongR,Singh,Erbas,Andrieu,Bressani\n");
+    out = CatColVector(8, aw, Xiong,XiongR, Singh, Erbas, Andrieu, Bressani, Waananen);
+    mtxprntfilehdr(out, filename, "aw,Xiong,XiongR,Singh,Erbas,Andrieu,Bressani,Waananen\n");
 }
 
 void Dgas(double P)

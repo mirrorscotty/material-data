@@ -90,7 +90,7 @@ double complex _DLLauraCreep(double complex s, void *params)
     double T = d->T,
            M = d->M;
 
-    return 1/(s*LMaxwellLauraCreep(s, T, M)) - LLauraCreep(ZERO, T, M, 0);
+    return 1/(s*_LLauraCreep(s, params)) - LLauraCreep(ZERO, T, M, 0);
 }
 
 double LCummingsCreep(double t, double T, double M, double P)

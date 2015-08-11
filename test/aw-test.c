@@ -1,3 +1,8 @@
+/**
+ * aw-test.c
+ * Print a table of isotherm data to "output.csv"
+ */
+
 #include "material-data.h"
 #include "matrix.h"
 #include <stdio.h>

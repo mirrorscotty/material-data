@@ -1,3 +1,9 @@
+/**
+ * aw-comp.c
+ * Compares the Oswin isotherm parameters from Xiong (1992) to the refitted
+ * parameters based on her original data.
+ */
+
 #include "material-data.h"
 #include "matrix.h"
 #include <stdio.h>

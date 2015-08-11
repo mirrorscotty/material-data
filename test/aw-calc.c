@@ -1,3 +1,9 @@
+/**
+ * @file aw-calc.c
+ * Output moisture content and glass transition temperature for a given water
+ * activity and temperature.
+ */
+
 #include "material-data.h"
 #include <stdio.h>
 #include <stdlib.h>

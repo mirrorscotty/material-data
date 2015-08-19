@@ -110,7 +110,7 @@ gab* CreateGABAndrieu()
 gab* CreateGABWaananen()
 {
     gab *d;
-    double R = 8.314e-3;
+    double R = 8.314e-3; /* kJ/(g-mol K) */
     d = (gab*) calloc(sizeof(gab), 1);
 
     /* Parameters for monolayer moisture content */

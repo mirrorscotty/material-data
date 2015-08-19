@@ -55,6 +55,7 @@ gab* CreateGABPotatoKir();
 double OswinIsotherm(oswin*, double, double);
 double OswinInverse(oswin*, double, double);
 double OswinDawDx(oswin*, double, double);
+double OswinDlnawDx(oswin*, double, double);
 
 double GABIsotherm(gab*, double, double);
 double GABInverse(gab*, double, double);

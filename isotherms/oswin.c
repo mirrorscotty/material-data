@@ -173,3 +173,13 @@ double OswinDawDx(oswin *dat, double X, double T)
     return D;
 }
 
+double OswinDlnawDx(oswin *dat, double X, double T)
+{
+    double K, N;
+    T = T-273.15; /* Convert from K to C */
+    K = dat->k0 + dat->k1*T;
+    N = dat->n0 + dat->n1*T;
+
+    return 1/(N*X*(pow(X/K, 1/N) + 1));
+}
+

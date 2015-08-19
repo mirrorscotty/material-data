@@ -36,5 +36,7 @@ double DiffLitchfield(double, double);
 double DiffWaananen(double, double);
 double DiffChemkhi(double, double);
 
+double DiffAchanta(double, double);
+
 #endif
 

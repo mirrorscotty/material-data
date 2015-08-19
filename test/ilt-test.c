@@ -102,12 +102,22 @@ double Gt(double t, double T, double M, double P)
 
 int main(int argc, char *argv[])
 {
-    int n = 500,
+    int n = 100,
         i;
-    double T=333, M=.15;
+    double T, M;
     vector *Gnorm, *Gilt, *t;
     matrix *out;
     mechdat *param;
+
+    if(argc != 3) {
+        printf("Usage:\n"
+               "ilt-test <T> <M>\n"
+               "<T>\tTemperature (K)\n"
+               "<M>\tMoisture content (kg/kg db)\n");
+        exit(0);
+    }
+    T = atof(argv[1]);
+    M = atof(argv[2]);
 
     param = CreateMechDat(T, M, 0);
 

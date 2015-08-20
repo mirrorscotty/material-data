@@ -6,7 +6,7 @@
 #include "material-data.h"
 #include <math.h>
 
-#define R_CONST 8314.5 /* J/(kg-mol K) */
+#define R_CONST 8.3145 /* J/(kg-mol K) */
 
 /** 
  * Viscosity as a function of temperature
@@ -55,7 +55,6 @@ double rho_v_w(oswin *d, double X, double T)
            result; 
     /* Eq. 3.41 */
     result = vapor_pressure(T)*OswinInverse(d, X, T)/(Rw*T);
-    printf("Pv = %g, aw = %g, Rw = %g, T = %g\n", vapor_pressure(T), OswinInverse(d, X, T), Rw, T);
 
     return result;
 }
@@ -95,7 +94,6 @@ double DrhovwDx(oswin *d, double X, double T, double P)
     /* d/dx[ <rhow>/<rhov> ], solved using Maxima */
     result = (353400000. * Pv * DawDx * P * Rw)
        /(124891560000.*P*P*Rw*Rw - 431854800.*Pv*aw*P*Rw + 373321.*Pv*Pv*aw*aw);
-    printf("result = %g\n", result);
     return result;
 }
 
@@ -103,7 +101,8 @@ double permeability(oswin *d, double X, double T)
 {
     double eta_w = viscosity(T), /* water viscosity */
            rho_w, /* water density */
-           R = R_CONST/1000, /* Gas constant (J/mol-K) */
+           R = R_CONST, /* Gas constant (J/mol-K) */
+           Rw = 461.52, /* (J/kg-K Gas Constant)/(Molar mass of water) */
            D0 = 1.78e-5, /* m^2/s */
            Ea = 8.81 * 4184., /* kcal/mol to J/mol */
            Dlfree = D0*exp(-Ea/(R*T)), /* Diffusivity of free water */
@@ -116,7 +115,8 @@ double permeability(oswin *d, double X, double T)
     DestroyChoiOkos(co);
 
     /* Eq. 3.53 */
-    return Dlfree*exp(-Eb/(n*R*T)) * eta_w/(rho_w*R*1000*T);
+    //return SelfDiffWater(T)*exp(-Eb/(n*R*T)) * eta_w/(rho_w*R*T);
+    return Dlfree*exp(-Eb/(n*R*T)) * eta_w/(rho_w*R*T);
 }
 
 /**
@@ -140,8 +140,10 @@ double DiffAchanta(double X, double T)
            DlnawDX, /* d/dx [ln a_w] */
            eta_w = viscosity(T), /* Water viscosity */
            R = R_CONST, /* Gas constant kg/mol-K */
+           Rw = 461.52, /* (J/kg-K Gas Constant)/(Molar mass of water) */
            //Dvap = VaporDiff(T, P), /* Vapor diffusivity from BSL */
            Dvap = 1e-7,
+           //Dvap = 5e-8,
            Deff, term1, term2;
     oswin *d;
 
@@ -155,21 +157,26 @@ double DiffAchanta(double X, double T)
     rho_w = rho(co, T);
     DestroyChoiOkos(co);
     //rho_w = 1000;
-    rho_s = 1.47*rho_w;
+    //rho_s = 1.47*rho_w;
 
-    //K = 1e-6 * exp(-BindingEnergyOswin(d, X, T)/(8.314*T)),
+    //K = 1.78e-5 * exp(-BindingEnergyOswin(d, X, T)/(8.314*T)),
     K = permeability(d, X, T);
+    //K = perm_wat(X*rho_s, epsilon, T);
     rhoV = rho_v(d,X,T,P),
     rhoVW = rho_v_w(d,X,T),
-    printf("rhoV = %g, rhoVW = %g\n", rhoV, rhoVW);
     DrhovwDX = DrhovwDx(d, X, T, P);
+    DlnawDX = OswinDlnawDx(d, X, T);
 
 
     /* Eq. 3.39 */
-    term1 = K*rho_w/(eta_w*(1-epsilon)*rho_s) * (rho_w*R*T) * DlnawDX;
+    term1 = K*rho_w/(eta_w*(1-epsilon)*rho_s) * (rho_w*Rw*T) * DlnawDX;
     term2 = rhoV*Dvap*DrhovwDX/(rho_w*(1+rhoVW/rhoV));
 
-    printf("term1 = %g, term2 = %g\n", term1, term2);
+    printf("P=%g, K=%g,\nrhow=%g, rhos = %g,\nrhoV=%g, rhoVW=%g, DrhovwDX=%g,\n"
+           "epsilon=%g, DlnawDx=%g, etaw=%g,\nR=%g, Dvap=%g,\n"
+           "term1 = %g, term2 = %g\n\n",
+           P,K,rho_w,rho_s,rhoV,rhoVW,DrhovwDX,epsilon,
+           DlnawDX,eta_w,R,Dvap,term1, term2);
     Deff = term1 + term2;
 
     DestroyOswinData(d);

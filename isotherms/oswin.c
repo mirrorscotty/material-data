@@ -173,13 +173,25 @@ double OswinDawDx(oswin *dat, double X, double T)
     return D;
 }
 
+/**
+ * Determine the value of
+ * \f[
+ * \frac{\partial\ln a_w}{\partial X_{db}}
+ * \f]
+ * where \f$a_w\f$ is calculated using the Oswin isotherm.
+ * @param dat Oswin parameters
+ * @param X Moisture content [kg/kg db]
+ * @param T Temperature [K]
+ * @returns Value of the derivative
+ */
 double OswinDlnawDx(oswin *dat, double X, double T)
 {
-    double K, N;
+    double K, N, result;
     T = T-273.15; /* Convert from K to C */
     K = dat->k0 + dat->k1*T;
     N = dat->n0 + dat->n1*T;
 
-    return 1/(N*X*(pow(X/K, 1/N) + 1));
+    result = 1/(N*X*(pow(X/K, 1/N) + 1));
+    return result;
 }
 

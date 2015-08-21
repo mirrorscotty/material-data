@@ -59,6 +59,8 @@ double OswinDlnawDx(oswin*, double, double);
 
 double GABIsotherm(gab*, double, double);
 double GABInverse(gab*, double, double);
+double GABDawDx(gab*, double, double);
+double GABDlnawDx(gab*, double, double);
 
 double HendersonIsotherm(henderson*, double, double);
 double HendersonInverse(henderson*, double, double);

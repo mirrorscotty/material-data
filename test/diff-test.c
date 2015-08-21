@@ -260,7 +260,7 @@ void CompareDiffXdb(double X)
 
 void CompareAllDiff(double T)
 {
-    vector *X, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dhend, *Dlitchfield, *Dwaananen, *Dachanta;
+    vector *X, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dhend, *Dlitchfield, *Dwaananen, *Dachanta, *Dachanta2;
     char *filename;
     matrix *out;
     int i;
@@ -278,6 +278,7 @@ void CompareAllDiff(double T)
     Dlitchfield = CreateVector(300);
     Dwaananen = CreateVector(300);
     Dachanta = CreateVector(300);
+    Dachanta2 = CreateVector(300);
 
     for(i=0; i<len(X); i++) {
         setvalV(D10o, i, DiffCh10(valV(X, i), T));
@@ -289,20 +290,21 @@ void CompareAllDiff(double T)
         setvalV(Dlitchfield, i, DiffLitchfield(valV(X, i), T));
         setvalV(Dwaananen, i, DiffWaananen(valV(X, i), T));
         setvalV(Dachanta, i, DiffAchanta(valV(X, i), T));
+        setvalV(Dachanta2, i, AchantaOrigDeff(valV(X, i), T));
     }
     sprintf(filename, "Diffusivity%gK.csv", T);
-    out = CatColVector(10, X, Dhend, D10o, D10g, D10m, Dz1, Dz2, Dlitchfield, Dwaananen, Dachanta);
-    mtxprntfilehdr(out, filename, "Xdb,Henderson,Oswin,GAB,Modified,Zhu1,Zhu2,Litchfield,Waananen,Achanta\n");
+    out = CatColVector(11, X, Dhend, D10o, D10g, D10m, Dz1, Dz2, Dlitchfield, Dwaananen, Dachanta, Dachanta2);
+    mtxprntfilehdr(out, filename, "Xdb,Henderson,Oswin,GAB,Modified,Zhu1,Zhu2,Litchfield,Waananen,Achanta,Achanta2\n");
 }
 
 void CompareAllIsotherm(double T)
 {
-    vector *aw, *Singh, *Xiong, *XiongR, *Erbas, *Andrieu, *Bressani, *Waananen;
+    vector *aw, *Singh, *Xiong, *XiongR, *Erbas, *Andrieu, *Bressani, *Waananen, *Achanta;
     vector *Che, *Kir;
     char *filename;
     matrix *out;
     int i;
-    gab *dsingh, *derbas, *dandrieu, *dbressani, *dwaananen;
+    gab *dsingh, *derbas, *dandrieu, *dbressani, *dwaananen, *dachanta;
     oswin *dxiong, *dxiongr;
     gab *dkir, *dche;
 
@@ -313,6 +315,7 @@ void CompareAllIsotherm(double T)
     dandrieu = CreateGABAndrieu();
     dbressani = CreateGABData();
     dwaananen = CreateGABWaananen();
+    dachanta = CreateGABAchanta();
 
     dkir = CreateGABPotatoKir();
     dche = CreateGABPotatoChemkhi();
@@ -328,6 +331,7 @@ void CompareAllIsotherm(double T)
     Andrieu = CreateVector(300);
     Bressani = CreateVector(300);
     Waananen = CreateVector(300);
+    Achanta = CreateVector(300);
     Kir = CreateVector(300);
     Che = CreateVector(300);
 
@@ -339,12 +343,13 @@ void CompareAllIsotherm(double T)
         setvalV(Andrieu, i, GABIsotherm(dandrieu, valV(aw, i), T));
         setvalV(Bressani, i, GABIsotherm(dbressani, valV(aw, i), T));
         setvalV(Waananen, i, GABIsotherm(dwaananen, valV(aw, i), T));
+        setvalV(Achanta, i, GABIsotherm(dachanta, valV(aw, i), T));
         setvalV(Kir, i, GABIsotherm(dkir, valV(aw, i), T));
         setvalV(Che, i, GABIsotherm(dche, valV(aw, i), T));
     }
     sprintf(filename, "Isotherm%gK.csv", T);
-    out = CatColVector(8, aw, Xiong,XiongR, Singh, Erbas, Andrieu, Bressani, Waananen);
-    mtxprntfilehdr(out, filename, "aw,Xiong,XiongR,Singh,Erbas,Andrieu,Bressani,Waananen\n");
+    out = CatColVector(9, aw, Xiong,XiongR, Singh, Erbas, Andrieu, Bressani, Waananen,Achanta);
+    mtxprntfilehdr(out, filename, "aw,Xiong,XiongR,Singh,Erbas,Andrieu,Bressani,Waananen,Achanta\n");
 }
 
 void Dgas(double P)

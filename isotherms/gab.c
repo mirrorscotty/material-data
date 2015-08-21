@@ -82,3 +82,55 @@ double GABInverse(gab *dat, double Xdb, double T)
     return aw;
 }
 
+double GABDawDx(gab *dat, double Xdb, double T)
+{
+    double xm, c, k, A, B, C, y, DawDx;
+
+    /* Calculate the constant values based on temperature. */
+    xm = dat->m0*exp(dat->dHm/T);
+    c = dat->C0*exp(dat->dHC/T);
+    k = dat->k0*exp(dat->dHk/T);
+
+    /* Since it's easiest to calculate water activity when the equation is in
+     * a quadratic form, determine the constants in front of each power of aw.
+     */
+    A = k*(1-c)/(xm*c);
+    B = (c-2)/(xm*c);
+    C = 1/(xm*c*k);
+
+    /* This is really aw/Xdb, but since it's just going to be subtracted from
+     * B*aw anyway, the water activity is factored out. */
+    y = 1/Xdb;
+
+    /* Solve aw/Xdb = A*aw^2 + B*aw + C using the quadratic equation */
+    DawDx = (1/pow(Xdb,2)
+                - (B-1/Xdb)/(pow(Xdb,2)*sqrt(pow(B-1/Xdb,2)-4*A*C)))
+            /(2*A);
+
+    return -1*DawDx;
+}
+
+double GABDlnawDx(gab *dat, double Xdb, double T)
+{
+    double xm, c, k, A, B, C, y;
+
+    /* Calculate the constant values based on temperature. */
+    xm = dat->m0*exp(dat->dHm/T);
+    c = dat->C0*exp(dat->dHC/T);
+    k = dat->k0*exp(dat->dHk/T);
+
+    /* Since it's easiest to calculate water activity when the equation is in
+     * a quadratic form, determine the constants in front of each power of aw.
+     */
+    A = k*(1-c)/(xm*c);
+    B = (c-2)/(xm*c);
+    C = 1/(xm*c*k);
+
+    /* This is really aw/Xdb, but since it's just going to be subtracted from
+     * B*aw anyway, the water activity is factored out. */
+    y = 1/Xdb;
+
+    /* Solve aw/Xdb = A*aw^2 + B*aw + C using the quadratic equation */
+    return -1*(1/pow(Xdb,2)-(B-1/Xdb)/(sqrt(-4*A*C+pow(B-1/Xdb,2))*pow(Xdb,2)))/(-B-sqrt(-4*A*C+pow(B-1/Xdb,2))-1/Xdb);
+}
+

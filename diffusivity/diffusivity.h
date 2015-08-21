@@ -37,6 +37,7 @@ double DiffWaananen(double, double);
 double DiffChemkhi(double, double);
 
 double DiffAchanta(double, double);
+double AchantaOrigDeff(double, double);
 
 #endif
 

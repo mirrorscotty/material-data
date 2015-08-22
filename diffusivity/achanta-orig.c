@@ -32,11 +32,6 @@ double AchantaOrigDeff(double X, double Tk)
            par5 = H*par4/rhorat,
            Deff = Dl + par5;
 
-    printf("Dv=%g, Pv0=%g, Eb=%g, Dl=%g\n"
-           "par1=%g, par2=%g, par4=%g, par5=%g\n"
-           "Deff=%g, H=%g\n\n",
-           Dv, Pv0, Eb, Dl, par1, par2, par4, par5, Deff, H);
-
     return Deff;
 }
 

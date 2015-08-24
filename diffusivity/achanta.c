@@ -35,8 +35,9 @@ double vapor_pressure(double T)
 {
     double result;
     /* Eq. 3.42 */
-    result = 1./760. * log(7.967 - 1668.0/(T-45.15));
-    //result = 1./760. * pow(10, 7.967 - 1668.0/(T-45.15));
+    result = 1./760. * pow(10, 7.967 - 1668.0/(T-45.15));
+    //result = 1./760. * log(7.967 - 1668.0/(T-45.15));
+    result = 1./760. * pow(10, 7.967 - 1668.0/(T-45.15));
     result *= 101325; /* Convert from atm to Pa */
     
     return result;
@@ -100,29 +101,29 @@ double DrhovwDx(oswin *d, double X, double T, double P)
     return result;
 }
 
-double permeability(oswin *d, double X, double T)
-{
-    double eta_w = viscosity(T), /* water viscosity */
-           rho_w, /* water density */
-           R = GASCONST, /* Gas constant (J/mol-K) */
-           Rw = 461.52, /* (J/kg-K Gas Constant)/(Molar mass of water) */
-           //D0 = 149.7e-12,
-           D0 = 1.78e-5, /* m^2/s */
-           Ea = 8.81 * 4184., /* kcal/mol to J/mol */
-           Dlfree = D0*exp(-Ea/(R*T)), /* Diffusivity of free water */
-           Eb = BindingEnergyOswin(d, X, T), /* Binding energy */
-           //n = 2.1; /* Empirical parameter for normal pasta */
-           n = 10;
-    choi_okos *co;
-
-    co = CreateChoiOkos(WATERCOMP);
-    rho_w = rho(co, T);
-    DestroyChoiOkos(co);
-
-    /* Eq. 3.53 */
-    //return SelfDiffWater(T)*exp(-Eb/(n*R*T)) * eta_w/(rho_w*R*T);
-    return Dlfree*exp(-Eb/(n*R*T));// * eta_w/(rho_w*R*T);
-}
+//double permeability(oswin *d, double X, double T)
+//{
+//    double eta_w = viscosity(T), /* water viscosity */
+//           rho_w, /* water density */
+//           R = GASCONST, /* Gas constant (J/mol-K) */
+//           Rw = 461.52, /* (J/kg-K Gas Constant)/(Molar mass of water) */
+//           //D0 = 149.7e-12,
+//           D0 = 1.78e-5, /* m^2/s */
+//           Ea = 8.81 * 4184., /* kcal/mol to J/mol */
+//           Dlfree = D0*exp(-Ea/(R*T)), /* Diffusivity of free water */
+//           Eb = BindingEnergyOswin(d, X, T), /* Binding energy */
+//           //n = 2.1; /* Empirical parameter for normal pasta */
+//           n = 10;
+//    choi_okos *co;
+//
+//    co = CreateChoiOkos(WATERCOMP);
+//    rho_w = rho(co, T);
+//    DestroyChoiOkos(co);
+//
+//    /* Eq. 3.53 */
+//    //return SelfDiffWater(T)*exp(-Eb/(n*R*T)) * eta_w/(rho_w*R*T);
+//    return Dlfree*exp(-Eb/(n*R*T));// * eta_w/(rho_w*R*T);
+//}
 
 /**
  * Achanta's model for effective diffusivity. The diffusivity is a function of
@@ -140,13 +141,13 @@ double DiffAchanta(double X, double T)
            rhoV, /* <rho^v>^v */
            rhoVW, /* <rho^v_w>^v */
            DrhovwDX, /* d/dx [ <rho^v_w>^v/<rho^v>^v ] */
-           epsilon = 0.27, /* Porosity(?) */
+           epsilon = 0.07, /* Porosity(?) */
            R = GASCONST, /* Gas constant kg/mol-K */
            Rw = 461.52, /* (J/kg-K Gas Constant)/(Molar mass of water) */
            D0 = 1.78e-5, /* m^2/s */
            Ea = 8.81 * 4184., /* kcal/mol to J/mol */
            Eb,
-           n = 10,
+           n = 2.1,
            Dlfree = D0*exp(-Ea/(R*T)), /* Diffusivity of free water */
            //Dvap = VaporDiff(T, P), /* Vapor diffusivity from BSL */
            //Dvap = 1e-7,
@@ -174,8 +175,7 @@ double DiffAchanta(double X, double T)
 
     /* Eq. 3.39 */
     //term1 = K*rho_w/(eta_w*(1-epsilon)*rho_s) * (rho_w*Rw*T) * DlnawDX;
-    Dlfree = 149.7e-12;
-    term1 = Dlfree*exp(-Eb/(n*R*T));// * eta_w/(rho_w*R*T);
+    term1 = Dlfree*exp(-Eb/(n*R*T));
     term2 = rhoV*Dvap*DrhovwDX/(rho_w*(1-epsilon)*(rhoVW/rhoV));
 
     Deff = term1 + term2;

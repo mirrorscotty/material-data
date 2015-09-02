@@ -30,7 +30,7 @@
  *
  * @see CreateChoiOkos
  */
-#define PASTACOMP .0166, .0239, .784, .0179, .00824, 0, 0
+#define PASTACOMP .166, .0239, .784, .0179, .00824, 0, 0
 
 /* Heat capacities of random stuff */
 /**

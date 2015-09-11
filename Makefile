@@ -52,6 +52,12 @@ poisson-test: test/poisson-test.o material-data.a matrix/matrix.a
 aw-calc: test/aw-calc.o material-data.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+salt-calc: test/salt-calc.o material-data.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+salt-gsp: test/salt-gsp.o material-data.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 xdb-calc: test/xdb-calc.o material-data.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 

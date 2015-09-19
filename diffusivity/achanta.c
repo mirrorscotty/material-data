@@ -185,3 +185,50 @@ double DiffAchanta(double X, double T)
     return Deff;
 }
 
+double AchantaDiffModel(matrix *x, matrix *beta)
+{
+    double D0 = val(beta, 0, 0), /* m^2/s */
+           Ea = val(beta, 0, 1), /* J/mol */
+           Dvap = val(beta, 0, 2); /* m^2/s */
+    double X = val(x, 0, 0), /* kg/kg db */
+           T = val(x, 0, 1); /* K */
+
+    double P = 101325, /* 1 atm converted to Pa*/
+           rho_w, /* water density */
+           rho_s, /* solid density */
+           rhoV, /* <rho^v>^v */
+           rhoVW, /* <rho^v_w>^v */
+           DrhovwDX, /* d/dx [ <rho^v_w>^v/<rho^v>^v ] */
+           epsilon = 0.07, /* Porosity(?) */
+           R = GASCONST, /* Gas constant kg/mol-K */
+           Rw = 461.52, /* (J/kg-K Gas Constant)/(Molar mass of water) */
+           Eb,
+           n = 2.1,
+           Dlfree = D0*exp(-Ea/(R*T)), /* Diffusivity of free water */
+           Deff, term1, term2;
+    oswin *d;
+
+    d = CreateOswinXiong();
+
+    choi_okos *co;
+    co = CreateChoiOkos(PASTACOMP);
+    rho_s = rho(co, T);
+    DestroyChoiOkos(co);
+    co = CreateChoiOkos(WATERCOMP);
+    rho_w = rho(co, T);
+    DestroyChoiOkos(co);
+
+    Eb = BindingEnergyOswin(d, X, T), /* Binding energy */
+    rhoV = rho_v(d,X,T,P),
+    rhoVW = rho_v_w(d,X,T),
+    DrhovwDX = DrhovwDx(d, X, T, P);
+
+    term1 = Dlfree*exp(-Eb/(n*R*T));
+    term2 = rhoV*Dvap*DrhovwDX/(rho_w*(1-epsilon)*(rhoVW/rhoV));
+
+    Deff = term1 + term2;
+
+    DestroyOswinData(d);
+
+    return Deff;
+}

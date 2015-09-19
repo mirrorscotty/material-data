@@ -6,6 +6,7 @@
 #define DIFFUSIVITY_H
 
 #include "../isotherms/isotherms.h"
+#include "matrix.h"
 
 #define OSWINDATA CreateOswinXiong
 #define GABDATA CreateGABAndrieu
@@ -38,6 +39,7 @@ double DiffChemkhi(double, double);
 
 double DiffAchanta(double, double);
 double AchantaOrigDeff(double, double);
+double DiffAchantaModel(matrix*, matrix*);
 
 #endif
 

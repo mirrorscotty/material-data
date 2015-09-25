@@ -40,7 +40,7 @@ double DiffChemkhi(double, double);
 double DiffAchanta(double, double);
 double DiffAchantaFitted(double, double);
 double AchantaOrigDeff(double, double);
-double DiffAchantaModel(matrix*, matrix*);
+double AchantaDiffModel(matrix*, matrix*);
 
 #endif
 

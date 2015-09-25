@@ -158,6 +158,8 @@ double DiffAchanta(double X, double T)
 
     d = CreateOswinXiong();
 
+    /* Calculate the densities for both water and dry pasta at the desired
+     * temperature */
     choi_okos *co;
     co = CreateChoiOkos(PASTACOMP);
     rho_s = rho(co, T);
@@ -185,13 +187,29 @@ double DiffAchanta(double X, double T)
     return Deff;
 }
 
+/**
+ * Function to give to fitnlmM to calculate the D0, Ea, and Dvap values that
+ * best fit a set of data using nonlinear regression.
+ * @param x Row matrix of independent values for the function. x[0,0]: Moisture
+ *      Content [kg/kg db] x[0,1]: Temperature [K]
+ * @param beta Column matrix of the square root of fitting parameters. B[0,0]:
+ *      D0 B[1,0]: Ea B[2,0]:Dvap
+ * @returns Effective diffusivity [m^2/s]
+ */
 double AchantaDiffModel(matrix *x, matrix *beta)
 {
     double D0 = val(beta, 0, 0), /* m^2/s */
-           Ea = val(beta, 0, 1), /* J/mol */
-           Dvap = val(beta, 0, 2); /* m^2/s */
+           Ea = val(beta, 1, 0), /* J/mol */
+           Dvap = val(beta, 2, 0); /* m^2/s */
     double X = val(x, 0, 0), /* kg/kg db */
-           T = val(x, 0, 1); /* K */
+           T = val(x, 0, 1) + 273.15; /* K */
+
+    /* Square the values we're given. The program calling this function passes
+     * the square root of these values, and this ensures that they remain
+     * positive */
+    D0 = pow(D0,2);
+    Ea = pow(Ea,2);
+    Dvap = pow(Dvap,2);
 
     double P = 101325, /* 1 atm converted to Pa*/
            rho_w, /* water density */
@@ -254,3 +272,4 @@ double DiffAchantaFitted(double X, double T)
 
     return Deff;
 }
+

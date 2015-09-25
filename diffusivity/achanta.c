@@ -232,3 +232,25 @@ double AchantaDiffModel(matrix *x, matrix *beta)
 
     return Deff;
 }
+
+double DiffAchantaFitted(double X, double T)
+{
+    double Deff;
+    matrix *x, *beta;
+
+    x = CreateMatrix(1, 2);
+    setval(x, X, 0, 0);
+    setval(x, T, 0, 1);
+
+    beta = CreateMatrix(1, 3);
+    setval(beta, 0.000171135, 0, 0);
+    setval(beta, 41640, 0, 1);
+    setval(beta, 1.32835e-09, 0, 2);
+
+    Deff = AchantaDiffModel(x, beta);
+
+    DestroyMatrix(x);
+    DestroyMatrix(beta);
+
+    return Deff;
+}

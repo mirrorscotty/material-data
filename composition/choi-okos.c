@@ -32,6 +32,7 @@ choi_okos* CreateChoiOkos(double Mpro, double Mfat, double Mcar,
 {
     choi_okos *co;
     co = (choi_okos*) calloc(sizeof(choi_okos), 1);
+    /* Define the proximate composition of the material */
     co->Mpro = Mpro;
     co->Mfat = Mfat;
     co->Mcar = Mcar;
@@ -41,12 +42,12 @@ choi_okos* CreateChoiOkos(double Mpro, double Mfat, double Mcar,
     co->Mice = Mice;
 
     /* We don't do freezing... yet. */
-    /* TODO: Find appropriate values for each of these */
-    co->MW_pro = 2.6148e5;
-    co->MW_fat = 2e5;
-    co->MW_car = 2e5;
-    co->MW_fib = 2e5;
-    co->MW_ash = 2e5;
+    /* TODO: Find better values. Current ones are from Choi-Okos (1986). */
+    co->MW_pro = 3e4; /* Whey protein */
+    co->MW_fat = 3e4; /* Assume this is the same as protein for no reason */
+    co->MW_car = 3e5; /* Starch */
+    co->MW_fib = 3e5; /* Cellulose */
+    co->MW_ash = 158; /* Milksalt */
     co->MW_wat = 18.01528;
 
     co->Hfus = 6010;

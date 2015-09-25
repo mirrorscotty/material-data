@@ -38,6 +38,7 @@ double DiffWaananen(double, double);
 double DiffChemkhi(double, double);
 
 double DiffAchanta(double, double);
+double DiffAchantaFitted(double, double);
 double AchantaOrigDeff(double, double);
 double DiffAchantaModel(matrix*, matrix*);
 

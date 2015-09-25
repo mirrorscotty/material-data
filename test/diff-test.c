@@ -260,7 +260,9 @@ void CompareDiffXdb(double X)
 
 void CompareAllDiff(double T)
 {
-    vector *X, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dhend, *Dlitchfield, *Dwaananen, *Dachanta, *Dachanta2;
+    vector *X, *D10o, *D10g, *D10m, *Dz1, *Dz2,
+           *Dhend, *Dlitchfield, *Dwaananen,
+           *Dachanta, *DachantaOrig, *DachantaFit;
     char *filename;
     matrix *out;
     int i;
@@ -278,7 +280,8 @@ void CompareAllDiff(double T)
     Dlitchfield = CreateVector(300);
     Dwaananen = CreateVector(300);
     Dachanta = CreateVector(300);
-    Dachanta2 = CreateVector(300);
+    DachantaOrig = CreateVector(300);
+    DachantaFit = CreateVector(300);
 
     for(i=0; i<len(X); i++) {
         setvalV(D10o, i, DiffCh10(valV(X, i), T));
@@ -290,11 +293,13 @@ void CompareAllDiff(double T)
         setvalV(Dlitchfield, i, DiffLitchfield(valV(X, i), T));
         setvalV(Dwaananen, i, DiffWaananen(valV(X, i), T));
         setvalV(Dachanta, i, DiffAchanta(valV(X, i), T));
-        setvalV(Dachanta2, i, AchantaOrigDeff(valV(X, i), T));
+        setvalV(DachantaOrig, i, AchantaOrigDeff(valV(X, i), T));
+        setvalV(DachantaFit, i, DiffAchantaFitted(valV(X, i), T));
     }
     sprintf(filename, "Diffusivity%gK.csv", T);
-    out = CatColVector(11, X, Dhend, D10o, D10g, D10m, Dz1, Dz2, Dlitchfield, Dwaananen, Dachanta, Dachanta2);
-    mtxprntfilehdr(out, filename, "Xdb,Henderson,Oswin,GAB,Modified,Zhu1,Zhu2,Litchfield,Waananen,Achanta,Achanta2\n");
+    out = CatColVector(12, X, Dhend, D10o, D10g, D10m, Dz1, Dz2,
+            Dlitchfield, Dwaananen, Dachanta, DachantaOrig, DachantaFit);
+    mtxprntfilehdr(out, filename, "Xdb,Henderson,Oswin,GAB,Modified,Zhu1,Zhu2,Litchfield,Waananen,Achanta,AchantaOrig,AchantaFit\n");
 }
 
 void CompareAllIsotherm(double T)

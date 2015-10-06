@@ -139,6 +139,7 @@ double k(choi_okos *co, double T)
     double k_pro, k_fat, k_car, k_fib, k_ash, k_wat, k_ice;
     double p_pro, p_fat, p_car, p_fib, p_ash, p_wat, p_ice;
     double Xv_pro, Xv_fat, Xv_car, Xv_fib, Xv_ash, Xv_wat, Xv_ice;
+    double Vtot;
 
     /* Freezing currently borked */
     //double Mi = M_ice(X_ice(T), X_solids());
@@ -164,25 +165,16 @@ double k(choi_okos *co, double T)
     p_wat = 997.18 + 3.1439e-3*T - 3.7574e-3*pow(T, 2);
     p_ice = 916.89 - 1.3071e-1*T;
 
+    /* Total volume of all components */
+    Vtot = ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
+           + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
     /* Determine the volume fraction of each component */
-    Xv_pro = (co->Mpro/p_pro) /
-        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
-         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
-    Xv_fat = (co->Mfat/p_fat) /
-        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
-         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
-    Xv_car = (co->Mcar/p_car) /
-        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
-         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
-    Xv_fib = (co->Mfib/p_fib) /
-        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
-         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
-    Xv_ash = (co->Mash/p_ash) /
-        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
-         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
-    Xv_wat = ((co->Mwat-Mi)/p_wat) /
-        ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat
-         + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
+    Xv_pro = (co->Mpro/p_pro) / Vtot;
+    Xv_fat = (co->Mfat/p_fat) / Vtot;
+    Xv_car = (co->Mcar/p_car) / Vtot;
+    Xv_fib = (co->Mfib/p_fib) / Vtot;
+    Xv_ash = (co->Mash/p_ash) / Vtot;
+    Xv_wat = ((co->Mwat-Mi)/p_wat) / Vtot;
     //Xv_ice = (Mi/p_ice) / ((co->Mwat-Mi)/p_wat + Mi/p_ice + co->Mpro/p_pro + co->Mfat/p_fat + co->Mcar/p_car + co->Mfib/p_fib + co->Mash/p_ash);
 
     /* Calculate the thermal conductivity and return it */

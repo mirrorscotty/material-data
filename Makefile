@@ -9,7 +9,8 @@ LIBSRC=$(wildcard composition/*.c) \
        $(wildcard isotherms/*.c) \
        $(wildcard math/*.c) \
        $(wildcard mechanical/*.c) \
-       $(wildcard pasta/*.c)
+       $(wildcard pasta/*.c) \
+       $(wildcard unifac/*.c)
 
 all: sens-analysis diff material-data.a pc_test tg-test poisson-test
 
@@ -83,6 +84,9 @@ diffusivity-sensitivity: test/diffusivity-sensitivity.o material-data.a matrix/m
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 ilt-test: test/ilt-test.o matrix/matrix.a material-data.a 
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+unifac-data-test: test/unifac-data-test.o material-data.a matrix/matrix.a 
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 doc: Doxyfile

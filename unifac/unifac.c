@@ -3,6 +3,9 @@
  * Implementation of the UNIFAC method for predicting VLE.
  */
 
+#include <math.h>
+#include "unifac.h"
+
 /* Combinatorial */
 
 #define Z 10 /* Coordination number */
@@ -15,11 +18,11 @@
  * @param molec Molecule to calculate the surface area for.
  * @returns r_i
  */
-double _ri(unifac_molec *molec)
+double _r(unifac_molec molec)
 {
     int k, sum = 0;
     for(k=0; k<molec.ngroups; k++)
-        sum += molec->ngroups * molec->ngroups->dat->Rk;
+        sum += molec.ngroups * molec.dat->Rk;
     return sum;
 }
 
@@ -31,11 +34,11 @@ double _ri(unifac_molec *molec)
  * @param molec Molecule to calculate the volume for.
  * @returns q_i
  */
-double _qi(unifac_molec *molec)
+double _q(unifac_molec molec)
 {
     int k, sum = 0;
     for(k=0; k<molec.ngroups; k++)
-        sum += molec->ngroups * molec->ngroups->dat->Qk;
+        sum += molec.ngroups * molec.dat->Qk;
     return sum;
 }
 
@@ -49,11 +52,11 @@ double _qi(unifac_molec *molec)
  * @param molec Molecule to calculate the value for
  * @returns L_i
  */
-double _Li(unifac_molec *molec)
+double _L(unifac_molec molec)
 {
     double ri, qi;
-    ri = _ri(molec);
-    qi = _qi(molec);
+    ri = _r(molec);
+    qi = _q(molec);
     return Z/2*(ri - qi) - (ri - 1);
 }
 
@@ -66,13 +69,13 @@ double _Li(unifac_molec *molec)
  * @param s Solution
  * @returns phi_i
  */
-double _phii(int i, unifac_solution *s)
+double _phi(int i, unifac_solution *s)
 {
     int j;
     double numer, denom = 0;
-    numer = s->xi[i] * _ri(s->m[i]);
+    numer = s->xi[i] * _r(s->m[i]);
     for(j=0; j<s->nsolutes; j++)
-        denom += s->xi[j] * _ri(s->m[j]);
+        denom += s->xi[j] * _r(s->m[j]);
     return numer/denom;
 }
 
@@ -85,13 +88,13 @@ double _phii(int i, unifac_solution *s)
  * @param s Solution
  * @returns theta_i
  */
-double _thetai(int i, unifac_solution *s)
+double _theta(int i, unifac_solution *s)
 {
     int j;
     double numer, denom = 0;
-    numer = s->xi[i] * _qi(s->m[i]);
+    numer = s->xi[i] * _q(s->m[i]);
     for(j=0; j<s->nsolutes; j++)
-        denom += s->xi[j] * _qi(s->m[j]);
+        denom += s->xi[j] * _q(s->m[j]);
     return numer/denom;
 }
 
@@ -106,18 +109,18 @@ double _thetai(int i, unifac_solution *s)
  * @param s Solution
  * @returns ln(gamma_i^c)
  */
-double _ln_gammaic(int i, unifac_solution *s)
+double _ln_gammac(int i, unifac_solution *s)
 {
     int j;
     double result, sum = 0;
 
-    for(j=0; j<m->nsolutes; j++)
-        sum += s->xi[i] * _Li(s->m[i]);
+    for(j=0; j<s->nsolutes; j++)
+        sum += s->xi[i] * _L(s->m[i]);
 
-    result = log(_phii(i, s)/s->xi[i])
-            + Z/2*_qi(s->m[i])*log(_thetai(i, s)/_phii(i, s))
-            + _Li(s->m[i])
-            - _phii(i, s)/s->xi[i] * sum;
+    result = log(_phi(i, s)/s->xi[i])
+            + Z/2*_q(s->m[i])*log(_theta(i, s)/_phi(i, s))
+            + _L(s->m[i])
+            - _phi(i, s)/s->xi[i] * sum;
 
     return result;
 }
@@ -156,10 +159,10 @@ double _Xm(int m, unifac_solution *s)
  * @param T Temperature [K]
  * @return Psi_mn
  */
-double _Psimn(int m, int n, unifac_solution *s, double T)
+double _Psi(int m, int n, unifac_solution *s, double T)
 {
-    int id1 = s->m[m]->dat->id,
-        id2 = s->m[n]->dat->id;
+    int id1 = s->m[m].dat->id,
+        id2 = s->m[n].dat->id;
     double a = val(s->dat->interactions, id1, id2);
     return -a/T;
 }
@@ -172,13 +175,13 @@ double _Psimn(int m, int n, unifac_solution *s, double T)
  * @param s Solution
  * @returns Theta_m
  */
-double _Thetam(int m, unifac_solution *s)
+double _Theta(int m, unifac_solution *s)
 {
     int n;
     double sum = 0;
     for(n=0; n<s->dat->ngroups; n++)
-        sum += s->dat->rows[n]->Qk * _Xm(n);
-    return s->dat->rows[n]->Qk * _Xm(n) / sum;
+        sum += s->dat->rows[n].Qk * _Xm(n, s);
+    return s->dat->rows[n].Qk * _Xm(n, s) / sum;
 }
 
 /**
@@ -188,12 +191,12 @@ double _Thetam(int m, unifac_solution *s)
  * @param m Molecule
  * @returns Number of groups
  */
-int molec_group_count(int id, unifac_molec *m)
+int molec_group_count(int id, unifac_molec m)
 {
     int i = 0;
-    while(i<m->ngroups) {
-        if(id == m->ids[i])
-            return m->count[i];
+    while(i<m.ngroups) {
+        if(id == m.ids[i])
+            return m.count[i];
         i++;
     }
     return 0;
@@ -209,20 +212,20 @@ int molec_group_count(int id, unifac_molec *m)
  * @param s Solution
  * @returns Gamma_k
  */
-double _ln_Gammak(int k, unifac_solution *s)
+double _ln_Gamma(int k, unifac_solution *s, double T)
 {
     int m, n;
-    double Qk = s->m[k]->dat->Qk,
+    double Qk = s->m[k].dat->Qk,
            sum1 = 0, sum2 = 0, sum3 = 0,
            result;
 
     for(m=0; m<s->dat->ngroups; m++)
-        sum1 += _Thetam(m, s) * _Psimn(m, k, s);
+        sum1 += _Theta(m, s) * _Psi(m, k, s, T);
 
     for(m=0; m<s->dat->ngroups; m++) {
-        for(n=0; n<s->ngroups; n++)
-            sum3 += _Thetam(n, s) * _Psimn(n, m, s);
-        sum2 += _Thetam(m, s)*_Psimn(k, m, s)/sum3;
+        for(n=0; n<s->dat->ngroups; n++)
+            sum3 += _Theta(n, s) * _Psi(n, m, s, T);
+        sum2 += _Theta(m, s)*_Psi(k, m, s, T)/sum3;
         sum3 = 0;
     }
 
@@ -230,14 +233,17 @@ double _ln_Gammak(int k, unifac_solution *s)
     return result;
 }
 
-double _ln_gammair(int i, unifac_solution *s)
+double _ln_gammar(int i, unifac_solution *s, double T)
 {
     int k;
     double sum = 0,
            lnGammak, lnGammaki;
+    unifac_solution *spure;
     for(k=0; k<s->dat->ngroups; k++) {
-        lnGammak = _lnGammak(k, s);
+        lnGammak = _lnGammak(k, s, T);
+        spure = UnifacPureSolution(i, s);
         lnGammaki = 0; /* Make a new solution consisting only of molecule i */
+        UnifacDestroySolution(spure);
         sum += molec_group_count(k, s->m[i]) * (lnGammak - lnGammaki);
     }
     return sum;

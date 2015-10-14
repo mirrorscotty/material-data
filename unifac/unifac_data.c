@@ -29,6 +29,9 @@ void UnifacPrintTable(unifac_data *d)
     printf("------------------------------------------------------\n");
     for(i=0; i<d->ngroups; i++)
         UnifacPrintRow(d->rows[i]);
+
+    puts("");
+    mtxprnt(d->interactions);
     return;
 }
 
@@ -112,6 +115,12 @@ void UnifacLoadData(unifac_data *d, char* filename)
     free(buffer);
     //free(number);
 
+    return;
+}
+
+void UnifacLoadInteractions(unifac_data *d, char *filename)
+{
+    d->interactions = mtxloadcsv(filename, 1);
     return;
 }
 

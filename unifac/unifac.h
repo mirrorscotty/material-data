@@ -37,5 +37,12 @@ void UnifacPrintRow(unifac_row);
 void UnifacPrintTable(unifac_data*);
 void UnifacLoadData(unifac_data*, char*);
 
+unifac_molec* UnifacCreateMolecule(vector*, vector*, unifac_data*);
+void UnifacPrintMolecule(unifac_molec*);
+
+unifac_solution* UnifacCreateSolution(unifac_data*);
+void UnifacAddMolec(unifac_solution*, unifac_molec*, double);
+void UnifacPrintSolution(unifac_solution*);
+
 #endif
 

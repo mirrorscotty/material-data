@@ -41,8 +41,12 @@ unifac_molec* UnifacCreateMolecule(vector*, vector*, unifac_data*);
 void UnifacPrintMolecule(unifac_molec*);
 
 unifac_solution* UnifacCreateSolution(unifac_data*);
+void UnifacDestroySolution(unifac_solution*);
 void UnifacAddMolec(unifac_solution*, unifac_molec*, double);
 void UnifacPrintSolution(unifac_solution*);
+unifac_solution* UnifacPureSolution(int, unifac_solution*);
+
+double ln_gamma(int, unifac_solution*, double);
 
 #endif
 

@@ -146,6 +146,33 @@ double _ln_gammacElec(int i, unifac_solution *s)
     return result;
 }
 
+/**
+ * Take a count of the number of groups with a particular ID in a specific
+ * molecule. Return zero if the group isn't in there.
+ * @param id Group ID
+ * @param m Molecule
+ * @returns Number of groups
+ */
+int molec_group_count(int id, unifac_molec m)
+{
+    int i = 0;
+    while(i<m.ngroups) {
+        if(id == m.ids[i])
+            return m.count[i];
+        i++;
+    }
+    return 0;
+}
+
+int solution_group_count(int id, unifac_solution *s)
+{
+    int i, sum = 0;
+    for(i=0; i<s->nsolutes; i++)
+        sum += molec_group_count(id, s->m[i]);
+    return sum;
+}
+
+
 /* Residual */
 /**
  * Group mole fraction. (Number of moles of the selected group divided by
@@ -160,15 +187,15 @@ double _ln_gammacElec(int i, unifac_solution *s)
 double _Xm(int m, unifac_solution *s)
 {
     int j, n;
-    double numer = 0, denom = 0;
-    for(j=0; j<s->nsolutes; j++)
-        numer += molec_group_count(m, s->m[j]) * s->xi[j];
+    double numer = 0, denom = 0, result;
     for(j=0; j<s->nsolutes; j++) {
+        numer += molec_group_count(m, s->m[j]) * s->xi[j];
         for(n=0; n<s->dat->ngroups; n++)
             denom += molec_group_count(n, s->m[j]) * s->xi[j];
     }
-
-    return numer/denom;
+    
+    result = numer/denom;
+    return result;
 }
 
 /**
@@ -201,23 +228,28 @@ double _Psi(int m, int n, unifac_solution *s, double T)
 
 double _PsiElec(int m, int n, unifac_solution *s, double T)
 {
-    int id1 = s->m[m].dat->id,
-        id2 = s->m[n].dat->id,
-        i;
+    int i;
     matrix *a;
     double a_mn, b_mn, c_mn;
+    double result;
+
+    if(solution_group_count(m, s) == 0)
+        return 0;
+    if(solution_group_count(n, s) == 0)
+        return 0;
 
     a = s->dat->interactions;
 
     for(i=0; i<nRows(a); i++) {
-        if( (val(a, i, 0) == id1) && (val(a, i, 1) == id2) ) {
+        if( (val(a, i, 0) == m) && (val(a, i, 1) == n) ) {
             a_mn = val(a, i, 2);
             b_mn = val(a, i, 3);
             c_mn = val(a, i, 4);
         }
     }
 
-    return (-a_mn + b_mn*T + c_mn*pow(T,2))/T;
+    result = (-a_mn + b_mn*T + c_mn*pow(T,2))/T;
+    return result;
 }
 
 /**
@@ -231,29 +263,13 @@ double _PsiElec(int m, int n, unifac_solution *s, double T)
 double _Theta(int m, unifac_solution *s)
 {
     int n;
-    double sum = 0;
+    double sum = 0, result;
     for(n=0; n<s->dat->ngroups; n++)
         sum += s->dat->rows[n].Qk * _Xm(n, s);
-    return s->dat->rows[n].Qk * _Xm(n, s) / sum;
+    result = s->dat->rows[m].Qk * _Xm(m, s) / sum;
+    return result;
 }
 
-/**
- * Take a count of the number of groups with a particular ID in a specific
- * molecule. Return zero if the group isn't in there.
- * @param id Group ID
- * @param m Molecule
- * @returns Number of groups
- */
-int molec_group_count(int id, unifac_molec m)
-{
-    int i = 0;
-    while(i<m.ngroups) {
-        if(id == m.ids[i])
-            return m.count[i];
-        i++;
-    }
-    return 0;
-}
 
 /**
  * Activity of an isolated group of ID k in solution s.
@@ -286,6 +302,39 @@ double _ln_Gamma(int k, unifac_solution *s, double T)
     return result;
 }
 
+double _ln_GammaElec(int k, unifac_solution *s, double T)
+{
+    int m, n;
+    double Qk,
+           sum1 = 0, sum2 = 0, sum3 = 0,
+           result;
+
+    for(m=0; m<s->dat->ngroups; m++) {
+        sum1 += _Theta(m, s) * _PsiElec(m, k, s, T);
+    }
+
+    for(m=0; m<s->dat->ngroups; m++) {
+        for(n=0; n<s->dat->ngroups; n++)
+            sum3 += _Theta(n, s) * _PsiElec(n, m, s, T);
+
+        if(sum3 != 0)
+            sum2 += _Theta(m, s)*_PsiElec(k, m, s, T)/sum3;
+
+        sum3 = 0;
+    }
+    if(solution_group_count(k, s))
+        Qk = s->dat->rows[k].Qk;
+    else
+        Qk = 0;
+
+    if(sum1 == 0)
+        return 0;
+    else
+        return Qk * (1 - log(sum1) - sum2);
+
+    //return result;
+}
+
 double _ln_gammar(int i, unifac_solution *s, double T)
 {
     int k;
@@ -295,7 +344,7 @@ double _ln_gammar(int i, unifac_solution *s, double T)
     for(k=0; k<s->dat->ngroups; k++) {
         lnGammak = _ln_Gamma(k, s, T);
         spure = UnifacPureSolution(i, s);
-        lnGammaki = 0; /* Make a new solution consisting only of molecule i */
+        lnGammaki = _ln_Gamma(k, s, T);
         UnifacDestroySolution(spure);
         sum += molec_group_count(k, s->m[i]) * (lnGammak - lnGammaki);
     }
@@ -309,12 +358,20 @@ double _ln_gammarElec(int i, unifac_solution *s, double T)
            lnGammak, lnGammaki;
     unifac_solution *spure;
     for(k=0; k<s->dat->ngroups; k++) {
-        lnGammak = _ln_Gamma(k, s, T);
+        lnGammak = _ln_GammaElec(k, s, T);
         spure = UnifacPureSolution(i, s);
-        lnGammaki = 0; /* Make a new solution consisting only of molecule i */
+        lnGammaki = _ln_GammaElec(k, spure, T); 
         UnifacDestroySolution(spure);
         sum += molec_group_count(k, s->m[i]) * (lnGammak - lnGammaki);
     }
     return sum;
+}
+
+double ln_gamma(int i, unifac_solution *s, double T)
+{
+    if(nCols(s->dat->interactions) == 3)
+        return _ln_gammac(i, s) + _ln_gammar(i, s, T);
+    else
+        return _ln_gammacElec(i, s) + _ln_gammarElec(i, s, T);
 }
 

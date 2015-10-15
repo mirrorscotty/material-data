@@ -1,4 +1,10 @@
 #include "../unifac/unifac.h"
+#include <stdio.h>
+#include <math.h>
+
+double water_vapor_pressure(double T) {
+    return exp(20.386 - 5132/T);
+}
 
 int main(int argc, char *argv[])
 {
@@ -21,7 +27,7 @@ int main(int argc, char *argv[])
     m = UnifacCreateMolec(ids, count, d);
 
     s = UnifacCreateSolution(d);
-    UnifacAddMolec(s, m, .7);
+    UnifacAddMolec(s, m, 1);
 
     DestroyVector(ids);
     DestroyVector(count);
@@ -31,12 +37,14 @@ int main(int argc, char *argv[])
     setvalV(ids, 1, 14);
     count = CreateVector(2);
     setvalV(count, 0, 1);
-    setvalV(count, 1, 2);
+    setvalV(count, 1, 1);
 
     m = UnifacCreateMolec(ids, count, d);
-    UnifacAddMolec(s, m, .3);
+    UnifacAddMolec(s, m, 0);
 
     UnifacPrintSolution(s);
+    printf("gamma = %g\n", exp(ln_gamma(0, s, 298)));
+    printf("pvap = %g\n", exp(ln_gamma(0, s, 298)) * water_vapor_pressure(298) * s->xi[0]);
 
     return 0;
 }

@@ -1,5 +1,6 @@
 #include "unifac.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 unifac_solution* UnifacCreateSolution(unifac_data *dat)
 {
@@ -7,6 +8,11 @@ unifac_solution* UnifacCreateSolution(unifac_data *dat)
     s = (unifac_solution*) calloc(sizeof(unifac_solution), 1);
     s->dat = dat;
     return s;
+}
+
+void UnifacDestroySolution(unifac_solution *s)
+{
+    free(s);
 }
 
 void UnifacAddMolec(unifac_solution *s, unifac_molec *m, double molefrac)

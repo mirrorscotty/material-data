@@ -5,6 +5,7 @@
 
 #include "isotherms.h"
 #include "diffusivity.h"
+#include "binding.h"
 #include "matrix.h"
 #include "choi-okos.h"
 #include "constants.h"
@@ -89,6 +90,37 @@ void PlotEb()
     }
     data = CatColVector(7, X, Eb30, Eb40, Eb50, Eb60, Eb70, Eb80);
     mtxprntfilehdr(data, "EbGAB.csv", "Xdb,30C,40C,50C,60C,70C,80C\n");
+}
+
+void PlotEbLitchfield()
+{
+    vector *X, *Eb30, *Eb40, *Eb50, *Eb60, *Eb70, *Eb80;
+    matrix *data;
+    int i;
+    double A = 2.39e-4; /* Conversion to kcal from J */
+    //oswin *d;
+    gab *d;
+    d = GABDATA();
+
+    X = linspaceV(.01, .25, 300);
+
+    Eb30 = CreateVector(300);
+    Eb40 = CreateVector(300);
+    Eb50 = CreateVector(300);
+    Eb60 = CreateVector(300);
+    Eb70 = CreateVector(300);
+    Eb80 = CreateVector(300);
+
+    for(i=0; i<len(X); i++) {
+        setvalV(Eb30, i, A*BindingEnergyLitchfield(valV(X, i), 30+273.15));
+        setvalV(Eb40, i, A*BindingEnergyLitchfield(valV(X, i), 40+273.15));
+        setvalV(Eb50, i, A*BindingEnergyLitchfield(valV(X, i), 50+273.15));
+        setvalV(Eb60, i, A*BindingEnergyLitchfield(valV(X, i), 60+273.15));
+        setvalV(Eb70, i, A*BindingEnergyLitchfield(valV(X, i), 70+273.15));
+        setvalV(Eb80, i, A*BindingEnergyLitchfield(valV(X, i), 80+273.15));
+    }
+    data = CatColVector(7, X, Eb30, Eb40, Eb50, Eb60, Eb70, Eb80);
+    mtxprntfilehdr(data, "EbLitchfield.csv", "Xdb,30C,40C,50C,60C,70C,80C\n");
 }
 
 void PlotEbOswin()
@@ -415,6 +447,7 @@ int main(int argc, char *argv[])
 
 
     PlotEb();
+    PlotEbLitchfield();
     PlotEbOswin();
     CompareAllIsotherm(40);
     CompareAllIsotherm(60);

@@ -65,9 +65,5 @@ double GABDlnawDx(gab*, double, double);
 double HendersonIsotherm(henderson*, double, double);
 double HendersonInverse(henderson*, double, double);
 
-double BindingEnergyGAB(gab*, double, double);
-double BindingEnergyOswin(oswin*, double, double);
-double BindingEnergyHenderson(henderson*, double, double);
-
 #endif
 

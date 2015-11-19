@@ -45,3 +45,24 @@ double porosity(double Xdb, double T, double strain)
     return phi;
 }
 
+/** Unlike the porosity() function, this should calculate solid fraction
+ * correctly. */
+double solidfrac(double Xo, double T, double strain)
+{
+    double rhow, rhos;
+    choi_okos *co;
+
+    co = CreateChoiOkos(WATERCOMP);
+    rhow = rho(co, T);
+    DestroyChoiOkos(co);
+
+    co = CreateChoiOkos(PASTACOMP);
+    rhos = rho(co, T);
+    DestroyChoiOkos(co);
+
+    /* V/V0 */
+    vv0 = 1 + strain;
+
+    return 1 - 1/(rhos/rhow * Xo * vv0 + vv0 - 1);
+}
+

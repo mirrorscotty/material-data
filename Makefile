@@ -86,6 +86,9 @@ diffusivity-sensitivity: test/diffusivity-sensitivity.o material-data.a matrix/m
 ilt-test: test/ilt-test.o matrix/matrix.a material-data.a 
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+co-test: test/co-test.o matrix/matrix.a material-data.a 
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 unifac-data-test: test/unifac-data-test.o material-data.a matrix/matrix.a 
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 

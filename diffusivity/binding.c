@@ -8,6 +8,7 @@
 
 #include "isotherms.h"
 #include "constants.h"
+#include "diffusivity.h"
 
 #define DX 1e-7
 
@@ -85,5 +86,31 @@ double BindingEnergyHenderson(henderson *d, double X, double T)
     Eb = T*T*R*dlnawdT;
 
     return Eb;
+}
+
+/**
+ * Calculate the required binding energy to fit the Xiong, et al. diffusivity
+ * model to an arbitrary diffusivity.
+ */
+double BindingEnergyDiff(DiffXiongData *d, double Deff, double T)
+{
+   double K = d->K,
+          Eb,
+          R = 8.314; /* Gas Constant */
+   double Dself = d->D0*exp(-d->Ea/(R*T)),
+          Dr = (Deff/Dself > .99)?.99:(Deff/Dself);
+
+   //Eb = -R*T * log(Dr * K/(1-Dr));
+   Eb = -R*T*log(-1*Dr/(K*(Dr-1)));
+   return Eb;
+}
+
+double BindingEnergyLitchfield(double X, double T)
+{
+    DiffXiongData *d;
+    double Deff = DiffLitchfield(X, T);
+
+    d = CreateDefaultXiongData();
+    return BindingEnergyDiff(d, Deff, T);
 }
 

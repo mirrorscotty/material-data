@@ -260,10 +260,10 @@ double DiffAchantaFitted(double X, double T)
     setval(x, X, 0, 0);
     setval(x, T, 0, 1);
 
-    beta = CreateMatrix(1, 3);
+    beta = CreateMatrix(3, 1);
     setval(beta, 0.000171135, 0, 0);
-    setval(beta, 41640, 0, 1);
-    setval(beta, 1.32835e-09, 0, 2);
+    setval(beta, 41640, 1, 0);
+    setval(beta, 1.32835e-09, 2, 0);
 
     Deff = AchantaDiffModel(x, beta);
 

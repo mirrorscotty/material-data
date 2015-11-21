@@ -87,6 +87,7 @@ double DBurgersECreep(burgerse*, double, double, double, double);
 
 double poisson(double, double);
 double porosity(double, double, double);
+double solidfrac(double, double, double);
 
 mechdat* CreateMechDat(double, double, double);
 void DestroyMechDat(mechdat*);

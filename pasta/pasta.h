@@ -10,6 +10,7 @@
 #include "../isotherms/isotherms.h"
 #include "../mechanical/mechanical.h"
 #include "../diffusivity/diffusivity.h"
+#include "../diffusivity/binding.h"
 
 /* Composition ****************************************************************/
 double conc_gas(double, double, double, double, double);

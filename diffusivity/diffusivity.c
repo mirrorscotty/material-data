@@ -9,6 +9,7 @@
 #include "conversions.h"
 #include "pasta.h"
 #include "diffusivity.h"
+#include "binding.h"
 #include <math.h>
 #include <stdlib.h>
 

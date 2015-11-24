@@ -60,9 +60,6 @@ double solidfrac(double Xo, double T, double strain)
     rhos = rho(co, T);
     DestroyChoiOkos(co);
 
-    /* V/V0 */
-    vv0 = 1 + strain;
-
-    return 1 - 1/(rhos/rhow * Xo * vv0 + vv0 - 1);
+    return Xo * (rhos/rhow)*(1-strain) - strain;
 }
 

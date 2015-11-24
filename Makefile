@@ -29,6 +29,9 @@ diff: test/diff-test.o material-data.a matrix/matrix.a
 pc_test: test/pc_test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+solidfrac-test: test/solidfrac-test.o material-data.a matrix/matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 tg-test: test/tg-test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 

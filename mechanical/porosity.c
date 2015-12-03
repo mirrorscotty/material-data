@@ -49,7 +49,7 @@ double porosity(double Xdb, double T, double strain)
  * correctly. */
 double solidfrac(double Xo, double T, double strain)
 {
-    double rhow, rhos, vv0;
+    double rhow, rhos, vv0, xf;
     choi_okos *co;
 
     co = CreateChoiOkos(WATERCOMP);
@@ -60,6 +60,12 @@ double solidfrac(double Xo, double T, double strain)
     rhos = rho(co, T);
     DestroyChoiOkos(co);
 
-    return Xo * (rhos/rhow)*(1-strain) - strain;
+    xf = Xo * (rhos/rhow)*(1-strain) - strain;
+    if(xf < 0)
+        return 0;
+    else if(xf > 1)
+        return 1;
+    else
+        return xf;
 }
 

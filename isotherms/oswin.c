@@ -11,6 +11,19 @@
 #include "isotherms.h"
 #include "conversions.h"
 
+oswin* CreateOswinGriessman()
+{
+    oswin *d;
+    d = (oswin*) calloc(sizeof(oswin), 1);
+
+    d->k0 = 0.0922783;
+    d->k1 = 0.000233034;
+    d->n0 = 0.451519;
+    d->n1 = -0.00105649;
+
+    return d;
+}
+
 /**
  * Set the parameters for the Oswin isotherm model to the ones determined in
  * Gina's thesis.

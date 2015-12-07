@@ -32,6 +32,8 @@
  */
 #define PASTACOMP .166, .0239, .784, .0179, .00824, 0, 0
 
+#define GRAPEJUICECOMP 3.7e-3, 1.3e-3, .1462, .002, 5.138e-5, .8458, 0
+
 /* Heat capacities of random stuff */
 /**
  * Vapor heat capacity at 100C [J/(kg K)]

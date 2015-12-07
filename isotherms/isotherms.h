@@ -40,6 +40,7 @@ typedef struct {
 oswin* CreateOswinData();
 oswin* CreateOswinXiong();
 oswin* CreateOswinXiongR();
+oswin* CreateOswinGriessman();
 void DestroyOswinData(oswin*);
 gab* CreateGABData();
 gab* CreateGABSingh();

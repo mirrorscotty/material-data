@@ -12,17 +12,29 @@ int main(int argc, char *argv[])
     choi_okos *co;
 
     if(argc != 2) {
-        puts("Usage: co-test <T>");
-        puts("T: Temperature [C]");
+        printf("Usage: %s <T>\n", argv[0]);
+        puts("T: Temperature [K]");
         exit(0);
     }
     T = atof(argv[1]);
 
     co = CreateChoiOkos(WATERCOMP);
+    puts("---- Water ----");
     printf("rho_w = %g kg/m^3\n", rho(co, T));
+    printf("k_w = %g W/m-K\n", k(co, T));
+    printf("Cp_w = %g J/kg-K\n", Cp(co, T));
     DestroyChoiOkos(co);
     co = CreateChoiOkos(PASTACOMP);
-    printf("rho_s = %g\n kg/m^3", rho(co, T));
+    puts("---- Pasta ----");
+    printf("rho_s = %g kg/m^3\n", rho(co, T));
+    printf("k_s = %g W/m-K\n", k(co, T));
+    printf("Cp_s = %g J/kg-K\n", Cp(co, T));
+    DestroyChoiOkos(co);
+    co = CreateChoiOkos(GRAPEJUICECOMP);
+    puts("---- Grape Juice ----");
+    printf("rho = %g kg/m^3\n", rho(co, T));
+    printf("k = %g W/m-K\n", k(co, T));
+    printf("Cp = %g J/kg-K\n", Cp(co, T));
     DestroyChoiOkos(co);
 
     return 0;

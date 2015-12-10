@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-I. -Icomposition -Idiffusivity -Iisotherms -Iglass-transition -Imath -Imatrix -Imechanical -Ipasta -ggdb -O0
 LDFLAGS=-lm
 
-SRC=$(wildcard test/*.c) $(LIBSRC)
+SRC=$(wildcard test/*.c) $(wildcard fem-cheat/*.c) $(LIBSRC)
 LIBSRC=$(wildcard composition/*.c) \
        $(wildcard diffusivity/*.c) \
        $(wildcard glass-transition/*.c) \
@@ -10,7 +10,7 @@ LIBSRC=$(wildcard composition/*.c) \
        $(wildcard math/*.c) \
        $(wildcard mechanical/*.c) \
        $(wildcard pasta/*.c) \
-       $(wildcard unifac/*.c)
+       $(wildcard unifac/*.c) \
 
 all: sens-analysis diff material-data.a pc_test tg-test poisson-test
 
@@ -21,6 +21,9 @@ matrix/matrix.a:
 	$(MAKE) -C matrix
 
 sens-analysis: test/pasta-sens.o material-data.a 
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+calc-stress: fem-cheat/calc-stress.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 diff: test/diff-test.o material-data.a matrix/matrix.a

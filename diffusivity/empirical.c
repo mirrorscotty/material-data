@@ -31,3 +31,12 @@ double DiffLitchfield(double X, double T)
                         * Litchfield forgot to. */
 }
 
+double DiffWaananen(double X, double T, double phi, double P)
+{
+    double Cp10 = 1.2e-7, /* m^2/s */
+           Cp20 = 8.0e-5, /* m^2/s */
+           Ea = 22.6, /* kJ/gmol-K */
+           R = 8.313; /*J/mol-K*/
+    return (Cp10 + phi*Cp20/P) * exp((-6.0*exp(-20*X)+Ea)/(R*T));
+}
+

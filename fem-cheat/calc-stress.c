@@ -26,7 +26,7 @@ double linear_strain(double Xi, double Xf, double T)
 
 int main(int argc, char *argv[])
 {
-    vector *Xdb, *strain, *stress, *Pc;
+    vector *Xdb, *strain, *stress, *Pc, *phi, *aw;
     double Xmin = .05,
            Xmax = .29,
            Xi = .33,
@@ -34,20 +34,26 @@ int main(int argc, char *argv[])
            n = 100;
     matrix *output;
     int i;
+    oswin *o;
 
+    o = CreateOswinData();
     Xdb = linspaceV(Xmin, Xmax, n);
     strain = CreateVector(n);
     stress = CreateVector(n);
+    phi = CreateVector(n);
+    aw = CreateVector(n);
     Pc = CreateVector(n);
     for(i=0; i<n; i++) {
         setvalV(strain, i, linear_strain(Xi, valV(Xdb, i), T));
         setvalV(stress, i,
-                valV(strain, i)/CreepLookupJ0("output.csv",
+                valV(strain, i)/CreepLookupJ0("creep-333K.csv",
                                               T, valV(Xdb, i)));
         setvalV(Pc, i, EffPorePress(Xi, valV(Xdb, i), T));
+        setvalV(aw, i, OswinInverse(o, valV(Xdb, i), T));
+        setvalV(phi, i, solidfrac(Xi, T, valV(strain, i)));
     }
 
-    output = CatColVector(4, Xdb, strain, stress, Pc);
-    mtxprntfilehdr(output, "stress.csv", "Xdb,strain,stress,Pc\n");
+    output = CatColVector(6, Xdb, strain, stress, Pc, aw, phi);
+    mtxprntfilehdr(output, "stress.csv", "Xdb,strain,stress,Pc,aw,solidfrac\n");
 }
 

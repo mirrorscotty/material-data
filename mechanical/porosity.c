@@ -67,5 +67,27 @@ double solidfrac(double Xo, double T, double strain)
         return 1;
     else
         return xf;
-}
+} 
+/*
+double porosity-test(double Xo, double T, double strain)
+{
+    double rhow, rhos, vv0, phi;
+    choi_okos *co;
 
+    co = CreateChoiOkos(WATERCOMP);
+    rhow = rho(co, T);
+    DestroyChoiOkos(co);
+
+    co = CreateChoiOkos(PASTACOMP);
+    rhos = rho(co, T);
+    DestroyChoiOkos(co);
+
+    phi = 1 - 1/(strain+1) * (rhos/rhow*Xdb + 1)/(rhos/rhow*Xo + 1);
+    if(phi < 0)
+        return 0;
+    else if(phi > 1)
+        return 1;
+    else
+        return phi;
+} 
+*/

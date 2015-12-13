@@ -31,7 +31,7 @@ double DiffLitchfield(double X, double T)
                         * Litchfield forgot to. */
 }
 
-double DiffWaananen(double X, double T, double phi, double P)
+double DiffWaananenEmp(double X, double T, double phi, double P)
 {
     double Cp10 = 1.2e-7, /* m^2/s */
            Cp20 = 8.0e-5, /* m^2/s */

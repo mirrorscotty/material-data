@@ -59,3 +59,55 @@ double porosity(double Xo, double Xdb, double T, double strain)
         return phi;
 } 
 
+double DporosityDX(double Xo, double Xdb, double T, double strain)
+{
+    double rhow, rhos, vv0, phi, Dphi, rhoR;
+    choi_okos *co;
+
+    co = CreateChoiOkos(WATERCOMP);
+    rhow = rho(co, T);
+    DestroyChoiOkos(co);
+
+    co = CreateChoiOkos(PASTACOMP);
+    rhos = rho(co, T);
+    DestroyChoiOkos(co);
+
+    rhoR = rhos/rhow;
+
+    phi = 1 - 1/(strain+1) * (rhos/rhow*Xdb + 1)/(rhos/rhow*Xo + 1);
+    Dphi = -1*rhoR/(Xo*strain*rhoR + Xo*rhoR + strain + 1);
+    
+    if(phi < 0)
+        return 0;
+    else if(phi > 1)
+        return 0;
+    else
+        return Dphi;
+} 
+
+double DporosityDstrain(double Xo, double Xdb, double T, double strain)
+{
+    double rhow, rhos, vv0, phi, Dphi, rhoR;
+    choi_okos *co;
+
+    co = CreateChoiOkos(WATERCOMP);
+    rhow = rho(co, T);
+    DestroyChoiOkos(co);
+
+    co = CreateChoiOkos(PASTACOMP);
+    rhos = rho(co, T);
+    DestroyChoiOkos(co);
+
+    rhoR = rhos/rhow;
+
+    phi = 1 - 1/(strain+1) * (rhos/rhow*Xdb + 1)/(rhos/rhow*Xo + 1);
+    Dphi = (Xdb*rhoR+1)/pow(strain+1,2)*(Xo*rhoR+1);
+    
+    if(phi < 0)
+        return 0;
+    else if(phi > 1)
+        return 0;
+    else
+        return Dphi;
+} 
+

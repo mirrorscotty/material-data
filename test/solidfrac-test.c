@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
         ei = valV(e, i);
 
         xfi = solidfrac(X0, 300, ei);
-        phii = porosity_test(X0, .15, 300, ei);
+        phii = porosity(X0, .15, 300, ei);
 
         setvalV(xf, i, xfi);
         setvalV(phi, i, phii);

@@ -1,5 +1,6 @@
 #include "matrix.h"
 #include <stdio.h>
+#include <math.h>
 
 enum datacols {
     _M = 1,
@@ -36,14 +37,39 @@ double CreepLookup(char *file, double T, double M, int param)
     return y0 + (y1 - y0) * (M-M0)/(M1-M0);
 } 
 
+double CreepLookupV2(char *file, double T, double M, int param)
+{
+    int i = 0;
+    double M0, M1, y0, y1,
+           Mmin, Mmax,
+           n, i_e;
+
+    if(!IsGo) {
+        data = mtxloadcsv(file, 1);
+        IsGo = 1;
+    }
+
+    n = nRows(data);
+    Mmin = val(data, 0, _M);
+    Mmax = val(data, n-1, _M);
+    i_e = (M - Mmin) * n/(Mmax-Mmin);
+
+    M0 = val(data, floor(i_e), _M);
+    M1 = val(data, ceil(i_e), _M);
+    y0 = val(data, floor(i_e), param);
+    y1 = val(data, ceil(i_e), param);
+
+    return y0 + (y1 - y0) * (M-M0)/(M1-M0);
+} 
+
 double CreepLookupJ0(char *f, double T, double M)
-{ return CreepLookup(f, T, M, _J0); }
+{ return CreepLookupV2(f, T, M, _J0); }
 double CreepLookupJ1(char *f, double T, double M)
-{ return CreepLookup(f, T, M, _J1); }
+{ return CreepLookupV2(f, T, M, _J1); }
 double CreepLookupJ2(char *f, double T, double M)
-{ return CreepLookup(f, T, M, _J2); }
+{ return CreepLookupV2(f, T, M, _J2); }
 double CreepLookupTau1(char *f, double T, double M)
-{ return CreepLookup(f, T, M, _TAU1); }
+{ return CreepLookupV2(f, T, M, _TAU1); }
 double CreepLookupTau2(char *f, double T, double M)
-{ return CreepLookup(f, T, M, _TAU2); }
+{ return CreepLookupV2(f, T, M, _TAU2); }
 

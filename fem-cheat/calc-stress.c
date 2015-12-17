@@ -1,6 +1,8 @@
 #include "matrix.h"
 #include "material-data.h"
 
+#include <stdlib.h>
+
 double EffPorePress(double Xi, double Xf, double T)
 {
     double P = pore_press(Xf, T),
@@ -30,11 +32,19 @@ int main(int argc, char *argv[])
     double Xmin = .05,
            Xmax = .29,
            Xi = .33,
-           T = 333,
+           T,
            n = 100;
     matrix *output;
     int i;
     oswin *o;
+
+    if(argc != 2) {
+        puts("Usage: calc-stress <T>");
+        puts("  <T>: Temperature in Kelvins");
+        exit(0);
+    }
+
+    T = atof(argv[1]);
 
     o = CreateOswinData();
     Xdb = linspaceV(Xmin, Xmax, n);

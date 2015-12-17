@@ -74,6 +74,7 @@ double MeanRelaxTime(maxwell*);
 double MaxwellStress(maxwell*, double, double (*)(double), double (*)(double),
         double (*)(double));
 double pore_press(double, double);
+double pore_press_exp(double, double);
 
 burgers* CreateBurgers();
 burgerse* CreateBurgersE();

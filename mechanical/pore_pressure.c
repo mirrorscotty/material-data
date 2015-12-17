@@ -39,3 +39,17 @@ double pore_press(double Xdb, double T)
     //    return 0;
 }
 
+/**
+ * Valid from 0.05 < Xdb < 0.29, T=333K
+ */
+double pore_press_exp(double Xdb, double T)
+{
+    double a = 17525591599.7807,
+           b = -22416737932.6123,
+           c = 10245390030.7442,
+           d = -1976846350.525,
+           e = 118977609.529277,
+           f = 4533153.23075388;
+    return a*pow(Xdb,5) + b*pow(Xdb,4) + c*pow(Xdb,3) + d*pow(Xdb,2) + e*Xdb + f;
+}
+

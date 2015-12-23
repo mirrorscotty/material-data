@@ -73,6 +73,19 @@ oswin* CreateOswinXiongR()
     return d;
 }
 
+oswin* CreateOswinAndrieu()
+{
+    oswin *d;
+    d = (oswin*) calloc(sizeof(oswin), 1);
+
+    d->k0 = 0.154;
+    d->k1 = -1.22e-3;
+    d->n0 = 0.078;
+    d->n1 = 7.32e-3;
+
+    return d;
+}
+
 /**
  * Oswin parameters for soy from Aviara et al. 2004 (from Handbook of Food
  * Engineering). These parameters were fitted and converted from the modified

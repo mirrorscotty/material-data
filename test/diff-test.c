@@ -336,13 +336,13 @@ void CompareAllDiff(double T)
 
 void CompareAllIsotherm(double T)
 {
-    vector *aw, *Singh, *Xiong, *XiongR, *Erbas, *Andrieu, *Bressani, *Waananen, *Griessman;
+    vector *aw, *Singh, *Xiong, *XiongR, *Erbas, *Andrieu, *Bressani, *Waananen, *Griessman, *AndrieuO, *BressaniO;
     vector *Che, *Kir;
     char *filename;
     matrix *out;
     int i;
     gab *dsingh, *derbas, *dandrieu, *dbressani, *dwaananen;
-    oswin *dxiong, *dxiongr, *dgriessman;
+    oswin *dxiong, *dxiongr, *dgriessman, *dandrieuO, *dbressaniO;
     gab *dkir, *dche;
 
     dxiong = CreateOswinXiong();
@@ -351,6 +351,8 @@ void CompareAllIsotherm(double T)
     derbas = CreateGABErbas();
     dandrieu = CreateGABAndrieu();
     dbressani = CreateGABData();
+    dandrieuO = CreateOswinAndrieu();
+    dbressaniO = CreateOswinData();
     dwaananen = CreateGABWaananen();
     dgriessman = CreateOswinGriessman();
 
@@ -371,10 +373,14 @@ void CompareAllIsotherm(double T)
     Kir = CreateVector(300);
     Che = CreateVector(300);
     Griessman = CreateVector(300);
+    BressaniO = CreateVector(300);
+    AndrieuO = CreateVector(300);
 
     for(i=0; i<len(aw); i++) {
         setvalV(Xiong, i, OswinIsotherm(dxiong, valV(aw, i), T));
         setvalV(XiongR, i, OswinIsotherm(dxiongr, valV(aw, i), T));
+        setvalV(AndrieuO, i, OswinIsotherm(dandrieuO, valV(aw, i), T));
+        setvalV(BressaniO, i, OswinIsotherm(dbressaniO, valV(aw, i), T));
         setvalV(Singh, i, GABIsotherm(dsingh, valV(aw, i), T));
         setvalV(Erbas, i, GABIsotherm(derbas, valV(aw, i), T));
         setvalV(Andrieu, i, GABIsotherm(dandrieu, valV(aw, i), T));
@@ -385,8 +391,8 @@ void CompareAllIsotherm(double T)
         setvalV(Griessman, i, OswinIsotherm(dgriessman, valV(aw, i), T));
     }
     sprintf(filename, "Isotherm%gK.csv", T);
-    out = CatColVector(9, aw, Xiong,XiongR, Singh, Erbas, Andrieu, Bressani, Waananen, Griessman);
-    mtxprntfilehdr(out, filename, "aw,Xiong,XiongR,Singh,Erbas,Andrieu,Bressani,Waananen,Griessman\n");
+    out = CatColVector(11, aw, Xiong,XiongR, Singh, Erbas, Andrieu, Bressani, Waananen, Griessman, AndrieuO, BressaniO);
+    mtxprntfilehdr(out, filename, "aw,Xiong,XiongR,Singh,Erbas,Andrieu,Bressani,Waananen,Griessman,AndrieuO,BressaniO\n");
 }
 
 void Dgas(double P)

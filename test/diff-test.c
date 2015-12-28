@@ -262,10 +262,13 @@ void TestDCap()
 
 void CompareDiffXdb(double X)
 {
-    vector *T, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dhend;
+    vector *T, *D10o, *D10g, *D10m, *Dz1, *Dz2, *Dhend, *Dtest;
     char *filename;
     matrix *out;
     int i;
+
+    double P = 101300, /* Atmospheric pressure in Pa */
+           phi = 0.0612; /* Regular pasta porosity */
 
     filename = (char*) calloc(sizeof(char), 80);
 
@@ -276,6 +279,7 @@ void CompareDiffXdb(double X)
     Dz1 = CreateVector(300);
     Dz2 = CreateVector(300);
     Dhend = CreateVector(300);
+    Dtest = CreateVector(300);
 
     for(i=0; i<len(T); i++) {
         setvalV(D10o, i, DiffCh10(X, valV(T, i)));
@@ -284,9 +288,10 @@ void CompareDiffXdb(double X)
         setvalV(D10m, i, DiffCh10Mod(X, valV(T, i)));
         setvalV(Dz1, i, CapillaryDiff(X, valV(T, i)));
         setvalV(Dz2, i, CapDiff(X, valV(T, i)));
+        setvalV(Dtest, i, DeffModelTest(X, valV(T, i), P, phi));
     }
     sprintf(filename, "Diffusivity%g.csv", X);
-    out = CatColVector(7, T, Dhend, D10o, D10g, D10m, Dz1, Dz2);
+    out = CatColVector(8, T, Dhend, D10o, D10g, D10m, Dz1, Dz2, Dtest);
     mtxprntfile(out, filename);
 }
 
@@ -294,10 +299,14 @@ void CompareAllDiff(double T)
 {
     vector *X, *D10o, *D10g, *D10m, *Dz1, *Dz2,
            *Dhend, *Dlitchfield, *Dwaananen,
-           *Dachanta, *DachantaOrig, *DachantaFit;
+           *Dachanta, *DachantaOrig, *DachantaFit,
+           *Dtest, *Dvap;
     char *filename;
     matrix *out;
     int i;
+
+    double P = 101300, /* Atmospheric pressure in Pa */
+           phi = 0.0612; /* Regular pasta porosity */
 
     filename = (char*) calloc(sizeof(char), 80);
     T = T+273.15;
@@ -314,6 +323,8 @@ void CompareAllDiff(double T)
     Dachanta = CreateVector(300);
     DachantaOrig = CreateVector(300);
     DachantaFit = CreateVector(300);
+    Dtest = CreateVector(300);
+    Dvap = CreateVector(300);
 
     for(i=0; i<len(X); i++) {
         setvalV(D10o, i, DiffCh10(valV(X, i), T));
@@ -327,11 +338,13 @@ void CompareAllDiff(double T)
         setvalV(Dachanta, i, DiffAchanta(valV(X, i), T));
         setvalV(DachantaOrig, i, AchantaOrigDeff(valV(X, i), T));
         setvalV(DachantaFit, i, DiffAchantaFitted(valV(X, i), T));
+        setvalV(Dtest, i, DeffModelTest(valV(X, i), T, P, phi));
+        setvalV(Dvap, i, VaporDiff(T, P));
     }
     sprintf(filename, "Diffusivity%gK.csv", T);
-    out = CatColVector(12, X, Dhend, D10o, D10g, D10m, Dz1, Dz2,
-            Dlitchfield, Dwaananen, Dachanta, DachantaOrig, DachantaFit);
-    mtxprntfilehdr(out, filename, "Xdb,Henderson,Oswin,GAB,Modified,Zhu1,Zhu2,Litchfield,Waananen,Achanta,AchantaOrig,AchantaFit\n");
+    out = CatColVector(14, X, Dhend, D10o, D10g, D10m, Dz1, Dz2,
+            Dlitchfield, Dwaananen, Dachanta, DachantaOrig, DachantaFit, Dtest, Dvap);
+    mtxprntfilehdr(out, filename, "Xdb,Henderson,Oswin,GAB,Modified,Zhu1,Zhu2,Litchfield,Waananen,Achanta,AchantaOrig,AchantaFit,Test,Vapor\n");
 }
 
 void CompareAllIsotherm(double T)

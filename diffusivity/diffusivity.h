@@ -32,6 +32,7 @@ double DiffCh10Mod(double, double);
 double VaporDiff(double, double);
 double VaporDiffCh10(double, double);
 double SelfDiffWater(double);
+double DeffModelTest(double, double, double, double);
 
 double DiffLitchfield(double, double);
 double DiffWaananen(double, double);
@@ -41,6 +42,8 @@ double DiffAchanta(double, double);
 double DiffAchantaFitted(double, double);
 double AchantaOrigDeff(double, double);
 double AchantaDiffModel(matrix*, matrix*);
+
+double pvap_water(double);
 
 #endif
 

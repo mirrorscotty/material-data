@@ -1,6 +1,7 @@
 #include "material-data.h"
+#include <math.h>
 
-double solidfrac(double Xo, double T, double strain)
+double solidfrac_crap(double Xo, double T, double strain)
 {
     double rhow, rhos, vv0, xf;
     choi_okos *co;
@@ -37,7 +38,7 @@ double solidfrac(double Xo, double T, double strain)
  * @param strain Volumetric strain [-]
  * @returns Porosity [-]
  */
-double porosity(double Xo, double Xdb, double T, double strain)
+double porosity_crap(double Xo, double Xdb, double T, double strain)
 {
     double rhow, rhos, vv0, phi;
     choi_okos *co;
@@ -57,6 +58,54 @@ double porosity(double Xo, double Xdb, double T, double strain)
         return 1;
     else
         return phi;
+} 
+
+double porosity(double Xo, double Xdb, double T, double strain)
+{
+    double rhow, rhos, vv0, phi, R;
+    choi_okos *co;
+
+    co = CreateChoiOkos(WATERCOMP);
+    rhow = rho(co, T);
+    DestroyChoiOkos(co);
+
+    co = CreateChoiOkos(PASTACOMP);
+    rhos = rho(co, T);
+    DestroyChoiOkos(co);
+
+    R = rhow/rhos;
+    phi = (Xo*R*(strain+1) + strain - Xdb*R) / (Xo*R*(strain+1)+strain+1);
+
+    if(phi < 0)
+        return 0;
+    else if(phi > 1)
+        return 1;
+    else
+        return phi;
+} 
+
+double solidfrac(double Xo, double T, double strain)
+{
+    double rhow, rhos, vv0, xf, R;
+    choi_okos *co;
+
+    co = CreateChoiOkos(WATERCOMP);
+    rhow = rho(co, T);
+    DestroyChoiOkos(co);
+
+    co = CreateChoiOkos(PASTACOMP);
+    rhos = rho(co, T);
+    DestroyChoiOkos(co);
+
+    R = rhow/rhos;
+    xf = 1 / ((strain+1) * (Xo*R+1));
+
+    if(xf < 0)
+        return 0;
+    else if(xf > 1)
+        return 1;
+    else
+        return xf;
 } 
 
 double DporosityDX(double Xo, double Xdb, double T, double strain)

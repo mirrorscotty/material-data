@@ -101,6 +101,58 @@ double DiffCh10Mod(double X, double T)
 }
 
 /**
+ * Modification of the diffusivity equation from Xiong et al. 1991 to use
+ * the self-diffusivity of water.
+ */
+double DiffBindingCorrection(DiffXiongData *d, double X, double T)
+{
+    oswin *dat;
+    dat = OSWINDATA();
+
+    double corr,
+           K = d->K, /* Source: Xiong et al. (1991) */
+           Eb = BindingEnergyOswin(dat, X, T),
+           R = 8.314; /* Gas Constant */
+
+    /* Equation 13 from Ch10 of Handbook of Food Engineering, Second Edition */
+    
+    corr =  K*exp(-Eb/(R*T)) / (1+K*exp(-Eb/(R*T)));
+
+    return corr;
+}
+
+double DeffModelTest(double X, double T, double P, double phi)
+{
+    oswin *idat;
+    DiffXiongData *ddat;
+    double Dl, Dv, D,
+           R = 8.314,
+           M = 18.0153/1000, /* Molar mass of water */
+           pvap,
+           DooawDX, aw;
+
+    idat = OSWINDATA();
+    ddat = CreateDefaultXiongData();
+
+    /* Calculate d/dx 1/aw -- (d/dx 1/y = -y'/y^2) */
+    DooawDX = -1 * OswinDawDx(idat, X, T)/pow(OswinInverse(idat, X, T), 2);
+    aw = OswinInverse(idat, X, T);
+
+    Dl = DiffCh10new(ddat, idat, X, T);
+
+    Dv = VaporDiff(T, P) * DiffBindingCorrection(ddat, X, T);
+
+    DestroyOswinData(idat);
+    DestroyXiongData(ddat);
+
+    pvap = pvap_water(T);
+
+    D = (1-phi) * Dl + phi * Dv* (R*T)/(aw*pvap*M)/1000;
+    //D = (R*T)/(pvap*M) * DooawDX/1200;
+    return D;
+}
+
+/**
  * Calculate diffusivity in pasta based on the model outlined in chapter 10 of
  * the Handbook of Food Engineering, Second Edition. This function uses the
  * GAB isotherm to determine binding energy.

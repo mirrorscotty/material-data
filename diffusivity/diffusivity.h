@@ -45,5 +45,8 @@ double AchantaDiffModel(matrix*, matrix*);
 
 double pvap_water(double);
 
+double DiffCh10_test(double);
+double DiffCh10mod_test(double);
+
 #endif
 

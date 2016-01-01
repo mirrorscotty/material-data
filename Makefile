@@ -26,6 +26,9 @@ sens-analysis: test/pasta-sens.o material-data.a
 calc-stress: fem-cheat/calc-stress.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+calc-stress-relax: fem-cheat/calc-stress-relax.o material-data.a matrix/matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 diff: test/diff-test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 

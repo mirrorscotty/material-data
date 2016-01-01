@@ -408,6 +408,23 @@ void CompareAllIsotherm(double T)
     mtxprntfilehdr(out, filename, "aw,Xiong,XiongR,Singh,Erbas,Andrieu,Bressani,Waananen,Griessman,AndrieuO,BressaniO\n");
 }
 
+void CompareDmod()
+{
+    matrix *out;
+    vector *T, *Dnorm, *Dmod;
+    int n = 300, i;
+    T = linspaceV(293, 353, n);
+    Dnorm = CreateVector(n);
+    Dmod = CreateVector(n);
+    
+    for(i=0; i<n; i++) {
+        setvalV(Dnorm, i, DiffCh10_test(valV(T, i)));
+        setvalV(Dmod, i, DiffCh10mod_test(valV(T, i)));
+    }
+    out = CatColVector(3, T, Dnorm, Dmod);
+    mtxprntfilehdr(out, "Dmod-test.csv", "T,Ch10,Mod\n");
+}
+
 void Dgas(double P)
 {
     vector *T, *D;
@@ -475,6 +492,7 @@ int main(int argc, char *argv[])
     CompareAllIsotherm(60);
     CompareAllIsotherm(80);
     PlotDeff();
+    CompareDmod();
 
 /*    printf("44 = %g, 55 = %g, 71 = %g, 105 = %g\n",
             VaporDiff(44+273.15, 101325),

@@ -43,3 +43,4 @@ Thumbs.db
 *.mph
 *~
 *.swp
+.~lock*#

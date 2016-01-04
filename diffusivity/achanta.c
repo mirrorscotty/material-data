@@ -202,7 +202,7 @@ double AchantaDiffModel(matrix *x, matrix *beta)
            Ea = val(beta, 1, 0), /* J/mol */
            Dvap = val(beta, 2, 0); /* m^2/s */
     double X = val(x, 0, 0), /* kg/kg db */
-           T = val(x, 0, 1) + 273.15; /* K */
+           T = val(x, 0, 1);// + 273.15; /* K */
 
     /* Square the values we're given. The program calling this function passes
      * the square root of these values, and this ensures that they remain

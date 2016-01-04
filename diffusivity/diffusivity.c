@@ -135,20 +135,20 @@ double DeffModelTest(double X, double T, double P, double phi)
     ddat = CreateDefaultXiongData();
 
     /* Calculate d/dx 1/aw -- (d/dx 1/y = -y'/y^2) */
-    DooawDX = -1 * OswinDawDx(idat, X, T)/pow(OswinInverse(idat, X, T), 2);
     aw = OswinInverse(idat, X, T);
 
     Dl = DiffCh10new(ddat, idat, X, T);
 
     Dv = VaporDiff(T, P) * DiffBindingCorrection(ddat, X, T);
 
-    DestroyOswinData(idat);
-    DestroyXiongData(ddat);
 
     pvap = pvap_water(T);
 
-    D = (1-phi) * Dl + phi * Dv* (R*T)/(aw*pvap*M)/1000;
-    //D = (R*T)/(pvap*M) * DooawDX/1200;
+    D = (1-phi) * Dl + phi * Dv* (pvap*M)/(R*T)*OswinDawDx(idat, X, T);
+
+    DestroyOswinData(idat);
+    DestroyXiongData(ddat);
+
     return D;
 }
 

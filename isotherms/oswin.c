@@ -189,11 +189,13 @@ double OswinInverse(oswin *dat, double X, double T)
  */
 double OswinDawDx(oswin *dat, double X, double T)
 {
-    double D, A;
+    double D, Ab, Ae, A;
     T = T-273.15; /* Convert from K to C */
 
     /* Derivative taken using Wolfram|Alpha */
-    A = pow(X/(dat->k0 + dat->k1*T), 1/(dat->n0 + dat->n1*T));
+    Ab = X/(dat->k0 + dat->k1*T);
+    Ae = 1/(dat->n0 + dat->n1*T);
+    A = pow(Ab, Ae);
     D = A/(X*(dat->n0 + dat->n1*T)*pow(A+1, 2));
 
     return D;

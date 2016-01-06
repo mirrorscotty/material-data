@@ -32,6 +32,9 @@ calc-stress-relax: fem-cheat/calc-stress-relax.o material-data.a matrix/matrix.a
 diff: test/diff-test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+diff-model-test: test/diff-model-test.o material-data.a matrix/matrix.a
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 pc_test: test/pc_test.o material-data.a matrix/matrix.a
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 

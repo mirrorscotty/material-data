@@ -52,6 +52,12 @@ double CreepLookupV2(char *file, double T, double M, int param)
     n = nRows(data);
     Mmin = val(data, 0, _M);
     Mmax = val(data, n-1, _M);
+
+    if(M < Mmin)
+        M = 1.1*Mmin;
+    else if(M > Mmax)
+        M = 0.9*Mmax;
+
     i_e = (M - Mmin) * n/(Mmax-Mmin);
 
     M0 = val(data, floor(i_e), _M);

@@ -15,6 +15,16 @@ double exp_strain(double dX, double T)
     return b0 + b1*T + b2*T*T + b3*dX + b4*dX*dX;
 }
 
+double exp_strain_lin(double dX, double T)
+{
+    double b0 = 1.011,
+           b1 = -3.737e-4,
+           b2 = 0.2407,
+           b3 = -1.080e-5;
+    T = T-273;
+    return b0 + b1*T + b2*dX;
+}
+
 int main(int argc, char *argv[])
 {
     vector *Xe, *phi1, *phi2, *phi3;
@@ -32,13 +42,13 @@ int main(int argc, char *argv[])
     for(i=0; i<n; i++) {
         Xei = valV(Xe, i);
 
-        phii = porosity(X0, Xei, T1, -1*(1-pow(exp_strain(Xei-X0, T1),type)));
+        phii = porosity(X0, Xei, T1, -1*(1-pow(exp_strain_lin(Xei-X0, T1),type)));
         //phii = exp_strain(Xei-X0, T1);
         setvalV(phi1, i, phii);
-        phii = porosity(X0, Xei, T2, -1*(1-pow(exp_strain(Xei-X0, T2),type)));
+        phii = porosity(X0, Xei, T2, -1*(1-pow(exp_strain_lin(Xei-X0, T2),type)));
         //phii = exp_strain(Xei-X0, T2);
         setvalV(phi2, i, phii);
-        phii = porosity(X0, Xei, T3, -1*(1-pow(exp_strain(Xei-X0, T3),type)));
+        phii = porosity(X0, Xei, T3, -1*(1-pow(exp_strain_lin(Xei-X0, T3),type)));
         //phii = exp_strain(Xei-X0, T3);
         setvalV(phi3, i, phii);
 

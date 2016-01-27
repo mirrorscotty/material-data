@@ -40,6 +40,41 @@ double pore_press(double Xdb, double T)
 }
 
 /**
+ * Calculate pore pressure based on the Kelvin equation. Use the GAB equation
+ * this time.
+ * @param Xdb Moisture content [kg/kg db]
+ * @param T Temperature [K]
+ * @returns Capillary pressure [Pa]
+ */
+double pore_press_gab(double Xdb, double T)
+{
+    double rhow,
+           R = GASCONST,
+           Vm = 1.802e-5, /* m^3/mol */
+           aw;
+    choi_okos *co;
+    gab *d;
+//    gordontaylor *gt;
+//    gt = GTSemolina();
+
+    co = CreateChoiOkos(WATERCOMP);
+    rhow = rho(co, T);
+    DestroyChoiOkos(co);
+
+    d = CreateGABAndrieu();
+    aw = GABInverse(d, Xdb, T);
+    DestroyGABData(d);
+
+    /* If there isn't enough water to form a meniscus, then there is no
+     * capillary pressure. The cutoff here is completely made up. */
+    //if(Xdb > GordonTaylorInv(gt,T))
+    //if(aw > .7)
+        return R*T/Vm * log(aw);
+    //else
+    //    return 0;
+}
+
+/**
  * Valid from 0.05 < Xdb < 0.29, T=333K
  */
 double pore_press_exp(double Xdb, double T)

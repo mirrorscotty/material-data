@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
     int i, n=100;
     double Xei, phii, X0 = .33,
            T1=313, T2=333, T3=353,
-           type=1;
+           type=3,
+           coef=-1;
 
     Xe = linspaceV(0, .3, n);
     phi1 = CreateVector(n);
@@ -42,13 +43,13 @@ int main(int argc, char *argv[])
     for(i=0; i<n; i++) {
         Xei = valV(Xe, i);
 
-        phii = porosity(X0, Xei, T1, -1*(1-pow(exp_strain_lin(Xei-X0, T1),type)));
+        phii = porosity(X0, Xei, T1, coef*(1-pow(exp_strain_lin(Xei-X0, T1),type)));
         //phii = exp_strain(Xei-X0, T1);
         setvalV(phi1, i, phii);
-        phii = porosity(X0, Xei, T2, -1*(1-pow(exp_strain_lin(Xei-X0, T2),type)));
+        phii = porosity(X0, Xei, T2, coef*(1-pow(exp_strain_lin(Xei-X0, T2),type)));
         //phii = exp_strain(Xei-X0, T2);
         setvalV(phi2, i, phii);
-        phii = porosity(X0, Xei, T3, -1*(1-pow(exp_strain_lin(Xei-X0, T3),type)));
+        phii = porosity(X0, Xei, T3, coef*(1-pow(exp_strain_lin(Xei-X0, T3),type)));
         //phii = exp_strain(Xei-X0, T3);
         setvalV(phi3, i, phii);
 

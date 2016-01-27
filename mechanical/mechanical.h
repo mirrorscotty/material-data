@@ -75,6 +75,7 @@ double MaxwellStress(maxwell*, double, double (*)(double), double (*)(double),
         double (*)(double));
 double pore_press(double, double);
 double pore_press_exp(double, double);
+double pore_press_gab(double, double);
 
 burgers* CreateBurgers();
 burgerse* CreateBurgersE();

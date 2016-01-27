@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
 {
     vector *Xdb,
            *Pc1, *Pc2, *Pc3,
+           *PcG1, *PcG2, *PcG3,
            *aw1, *aw2, *aw3,
            *Eb1, *Eb2, *Eb3;
     matrix *out;
@@ -28,6 +29,9 @@ int main(int argc, char *argv[])
     Pc1 = CreateVector(L);
     Pc2 = CreateVector(L);
     Pc3 = CreateVector(L);
+    PcG1 = CreateVector(L);
+    PcG2 = CreateVector(L);
+    PcG3 = CreateVector(L);
     aw1 = CreateVector(L);
     aw2 = CreateVector(L);
     aw3 = CreateVector(L);
@@ -53,11 +57,15 @@ int main(int argc, char *argv[])
         setvalV(Pc1, i, pore_press(valV(Xdb, i), T1));
         setvalV(Pc2, i, pore_press(valV(Xdb, i), T2));
         setvalV(Pc3, i, pore_press(valV(Xdb, i), T3));
+        /* GAB capillary pressure */
+        setvalV(PcG1, i, pore_press_gab(valV(Xdb, i), T1));
+        setvalV(PcG2, i, pore_press_gab(valV(Xdb, i), T2));
+        setvalV(PcG3, i, pore_press_gab(valV(Xdb, i), T3));
     }
 
-    out = CatColVector(10, Xdb, aw1, aw2, aw3, Eb1, Eb2, Eb3, Pc1, Pc2, Pc3);
+    out = CatColVector(13, Xdb, aw1, aw2, aw3, Eb1, Eb2, Eb3, Pc1, Pc2, Pc3, PcG1, PcG2, PcG3);
 
-    mtxprntfilehdr(out, "output.csv", "Xdb,aw(40),aw(60),aw(80),Eb(40),Eb(60),Eb(80),Pc(40),Pc(60),Pc(80)\n");
+    mtxprntfilehdr(out, "output.csv", "Xdb,aw(40),aw(60),aw(80),Eb(40),Eb(60),Eb(80),Pc(40),Pc(60),Pc(80),PcGAB(40),PcGAB(60),PcGAB(80)\n");
 
     return 0;
 }

@@ -123,28 +123,34 @@ double DiffBindingCorrection(DiffXiongData *d, double X, double T)
 
 double DeffModelTest(double X, double T, double P, double phi)
 {
+    choi_okos *co;
     oswin *idat;
     DiffXiongData *ddat;
     double Dl, Dv, D,
            R = 8.314,
            M = 18.0153/1000, /* Molar mass of water */
            pvap,
-           DooawDX, aw;
+           DooawDX, aw,
+           rhos;
 
     idat = OSWINDATA();
     ddat = CreateDefaultXiongData();
+    co = CreateChoiOkos(PASTACOMP);
+    rhos = rho(co, T);
+    DestroyChoiOkos(co);
 
     /* Calculate d/dx 1/aw -- (d/dx 1/y = -y'/y^2) */
     aw = OswinInverse(idat, X, T);
 
     Dl = DiffCh10new(ddat, idat, X, T);
 
-    Dv = VaporDiff(T, P) * DiffBindingCorrection(ddat, X, T);
-
+    Dv = VaporDiff(T, P);// * DiffBindingCorrection(ddat, X, T);
 
     pvap = pvap_water(T);
 
-    D = (1-phi) * Dl + phi * Dv* (pvap*M)/(R*T)*OswinDawDx(idat, X, T);
+    D = (1-phi) * Dl + phi * Dv*(pvap*M)/(R*T)*(1/rhos)*OswinDawDx(idat, X, T);
+    //D = (1-phi)*Dl;
+    //D = (pvap*M)/(R*T)*OswinDawDx(idat, X, T);
 
     DestroyOswinData(idat);
     DestroyXiongData(ddat);

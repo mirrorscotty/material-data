@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     vector *D1, *D2, *D3, *X;
     matrix *out;
 
-    X = linspaceV(0.05, 0.3, n);
+    X = linspaceV(0.005, 0.3, n);
     D1 = CreateVector(n);
     D2 = CreateVector(n);
     D3 = CreateVector(n);

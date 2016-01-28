@@ -1,5 +1,8 @@
 material-data
 =============
+* Author: Alex Griessman (alex.griessman@gmail.com)
+* Repository: https://github.com/mirrorscotty/material-data
+
 Code to calculate material properties of foods as a function of temperature.
 
 This includes a set of Choi-Okos equations (Choi and Okos 1986) as well as 
@@ -32,5 +35,3 @@ Include `material-data.h` in any C file that requires functions provided by this
 Dependencies
 ------------
 Compilation requires GCC and GNU Make. Building documentation requires Doxygen and LaTeX to generate PDF output. This code also requires the matrix library found [here](https://github.com/mirrorscotty/matrix).
-
-This project is hosted at https://github.com/mirrorscotty/material-data, and any updates will be posted there.
